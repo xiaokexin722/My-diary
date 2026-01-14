@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的私人日记本</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo i {
+            font-size: 2.8rem;
+            color: #4a6fa5;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-weight: 300;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .editor-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .editor-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .entries-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .entries-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #4a6fa5;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        .mood-selector {
+            margin-bottom: 20px;
+        }
+
+        .mood-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .mood-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mood-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .mood-option:hover {
+            background-color: #f0f5ff;
+        }
+
+        .mood-option.selected {
+            background-color: #e8efff;
+            box-shadow: 0 0 0 2px #c3d4ff;
+        }
+
+        .mood-icon {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .mood-text {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .diary-text {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            transition: border 0.3s;
+        }
+
+        .diary-text:focus {
+            outline: none;
+            border-color: #4a6fa5;
+            background-color: white;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #4a6fa5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5a80;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .entries-container {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .entry-item {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4a6fa5;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .entry-item:hover {
+            transform: translateX(5px);
+            background: #f0f5ff;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .entry-date {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .entry-mood {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.2rem;
+        }
+
+        .entry-content {
+            color: #555;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .entry-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .no-entries {
+            text-align: center;
+            padding: 40px 20px;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: #f9f9f9;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #777;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            color: #4a6fa5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 30px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .editor-section, .entries-section {
+                min-width: 100%;
+            }
+        }
+
+        /* 自定义滚动条 */
+        .entries-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .entries-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .entries-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+
+        .entries-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>我的私人日记本</h1>
+            </div>
+            <p class="subtitle">记录生活中的每一个珍贵时刻</p>
+        </header>
+
+        <main class="main-content">
+            <section class="editor-section">
+                <h2 class="section-title"><i class="fas fa-pen"></i> 写日记</h2>
+                
+                <div class="form-group">
+                    <input type="date" id="dateInput" class="date-input" value="">
+                </div>
+                
+                <div class="mood-selector">
+                    <label class="mood-label">今天的心情：</label>
+                    <div class="mood-options">
+                        <div class="mood-option" data-mood="happy">
+                            <span class="mood-icon">😊</span>
+                            <span class="mood-text">开心</span>
+                        </div>
+                        <div class="mood-option" data-mood="neutral">
+                            <span class="mood-icon">😐</span>
+                            <span class="mood-text">平静</span>
+                        </div>
+                        <div class="mood-option" data-mood="sad">
+                            <span class="mood-icon">😔</span>
+                            <span class="mood-text">难过</span>
+                        </div>
+                        <div class="mood-option" data-mood="excited">
+                            <span class="mood-icon">😄</span>
+                            <span class="mood-text">兴奋</span>
+                        </div>
+                        <div class="mood-option" data-mood="tired">
+                            <span class="mood-icon">😴</span>
+                            <span class="mood-text">疲惫</span>
+                        </div>
+                        <div class="mood-option" data-mood="love">
+                            <span class="mood-icon">🥰</span>
+                            <span class="mood-text">有爱</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <textarea id="diaryText" class="diary-text" placeholder="今天发生了什么？写下你的想法、感受和经历..."></textarea>
+                
+                <div class="actions">
+                    <button id="saveBtn" class="btn btn-primary">
+                        <i class="fas fa-save"></i> 保存日记
+                    </button>
+                    <button id="clearBtn" class="btn btn-secondary">
+                        <i class="fas fa-eraser"></i> 清空
+                    </button>
+                </div>
+            </section>
+            
+            <section class="entries-section">
+                <h2 class="section-title"><i class="fas fa-history"></i> 日记列表</h2>
+                
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="搜索日记内容...">
+                </div>
+                
+                <div class="entries-container" id="entriesContainer">
+                    <!-- 日记条目将通过JavaScript动态添加 -->
+                    <div class="no-entries">
+                        <div class="empty-icon">
+                            <i class="fas fa-journal-whills"></i>
+                        </div>
+                        <p>还没有日记记录</p>
+                        <p>开始写下你的第一篇日记吧！</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>© 2023 我的私人日记本 | 所有日记内容仅保存在您的设备本地，保护您的隐私</p>
+        </footer>
+    </div>
+
+    <script>
+        // 设置默认日期为今天
+        document.getElementById('dateInput').valueAsDate = new Date();
+        
+        // 心情选择
+        const moodOptions = document.querySelectorAll('.mood-option');
+        let selectedMood = 'neutral';
+        
+        // 默认选中平静心情
+        moodOptions.forEach(option => {
+            if (option.dataset.mood === 'neutral') {
+                option.classList.add('selected');
+            }
+            
+            option.addEventListener('click', function() {
+                moodOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedMood = this.dataset.mood;
+            });
+        });
+        
+        // 获取心情对应的图标
+        function getMoodIcon(mood) {
+            const moodIcons = {
+                'happy': '😊',
+                'neutral': '😐',
+                'sad': '😔',
+                'excited': '😄',
+                'tired': '😴',
+                'love': '🥰'
+            };
+            return moodIcons[mood] || '😐';
+        }
+        
+        // 获取心情对应的文字
+        function getMoodText(mood) {
+            const moodTexts = {
+                'happy': '开心',
+                'neutral': '平静',
+                'sad': '难过',
+                'excited': '兴奋',
+                'tired': '疲惫',
+                'love': '有爱'
+            };
+            return moodTexts[mood] || '平静';
+        }
+        
+        // 从本地存储加载日记
+        function loadDiaries() {
+            const diaries = JSON.parse(localStorage.getItem('diaries')) || [];
+            return diaries.sort((a, b) => new Date(b.date) - new Date(a.date)); // 按日期倒序排列
+        }
+        
+        // 保存日记到本地存储
+        function saveDiary(diary) {
+            const diaries = loadDiaries();
+            // 检查是否已存在相同日期的日记
+            const existingIndex = diaries.findIndex(d => d.date === diary.date);
+            
+            if (existingIndex !== -1) {
+                // 更新现有日记
+                diaries[existingIndex] = diary;
+            } else {
+                // 添加新日记
+                diaries.push(diary);
+            }
+            
+            localStorage.setItem('diaries', JSON.stringify(diaries));
+            renderDiaries();
+        }
+        
+        // 删除日记
+        function deleteDiary(date) {
+            if (confirm('确定要删除这篇日记吗？此操作不可撤销。')) {
+                const diaries = loadDiaries();
+                const filteredDiaries = diaries.filter(diary => diary.date !== date);
+                localStorage.setItem('diaries', JSON.stringify(filteredDiaries));
+                renderDiaries();
+            }
+        }
+        
+        // 渲染日记列表
+        function renderDiaries(searchTerm = '') {
+            const entriesContainer = document.getElementById('entriesContainer');
+            const diaries = loadDiaries();
+            
+            // 清空容器
+            entriesContainer.innerHTML = '';
+            
+            // 过滤日记
+            const filteredDiaries = diaries.filter(diary => 
+                diary.content.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                diary.date.includes(searchTerm)
+            );
+            
+            if (filteredDiaries.length === 0) {
+                const noEntriesHTML = `
+                    <div class="no-entries">
+                        <div class="empty-icon">
+                            <i class="fas fa-journal-whills"></i>
+                        </div>
+                        <p>${searchTerm ? '没有找到匹配的日记' : '还没有日记记录'}</p>
+                        <p>${searchTerm ? '尝试其他搜索词' : '开始写下你的第一篇日记吧！'}</p>
+                    </div>
+                `;
+                entriesContainer.innerHTML = noEntriesHTML;
+                return;
+            }
+            
+            // 添加日记条目
+            filteredDiaries.forEach(diary => {
+                const entryElement = document.createElement('div');
+                entryElement.className = 'entry-item';
+                
+                // 格式化日期
+                const dateObj = new Date(diary.date);
+                const formattedDate = dateObj.toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+                
+                // 截取内容预览
+                const previewContent = diary.content.length > 150 ? 
+                    diary.content.substring(0, 150) + '...' : diary.content;
+                
+                entryElement.innerHTML = `
+                    <div class="entry-header">
+                        <div class="entry-date">${formattedDate}</div>
+                        <div class="entry-mood" title="${getMoodText(diary.mood)}">
+                            ${getMoodIcon(diary.mood)}
+                        </div>
+                    </div>
+                    <div class="entry-content">${previewContent}</div>
+                    <div class="entry-footer">
+                        <div class="entry-length">${diary.content.length} 字</div>
+                        <div class="entry-actions">
+                            <button class="action-btn view-btn" data-date="${diary.date}">
+                                <i class="fas fa-eye"></i> 查看
+                            </button>
+                            <button class="action-btn delete-btn" data-date="${diary.date}">
+                                <i class="fas fa-trash"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                entriesContainer.appendChild(entryElement);
+            });
+            
+            // 添加查看和删除事件
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    viewDiary(this.dataset.date);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    deleteDiary(this.dataset.date);
+                });
+            });
+        }
+        
+        // 查看日记
+        function viewDiary(date) {
+            const diaries = loadDiaries();
+            const diary = diaries.find(d => d.date === date);
+            
+            if (diary) {
+                document.getElementById('dateInput').value = diary.date;
+                document.getElementById('diaryText').value = diary.content;
+                
+                // 设置心情
+                moodOptions.forEach(opt => opt.classList.remove('selected'));
+                document.querySelector(`.mood-option[data-mood="${diary.mood}"]`).classList.add('selected');
+                selectedMood = diary.mood;
+                
+                // 滚动到编辑器
+                document.querySelector('.editor-section').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        // 保存按钮事件
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            const date = document.getElementById('dateInput').value;
+            const content = document.getElementById('diaryText').value.trim();
+            
+            if (!date) {
+                alert('请选择日期');
+                return;
+            }
+            
+            if (!content) {
+                alert('请填写日记内容');
+                return;
+            }
+            
+            const diary = {
+                date: date,
+                mood: selectedMood,
+                content: content,
+                timestamp: new Date().toISOString()
+            };
+            
+            saveDiary(diary);
+            
+            // 清空表单
+            document.getElementById('diaryText').value = '';
+            document.getElementById('dateInput').valueAsDate = new Date();
+            
+            // 重置心情为默认
+            moodOptions.forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.mood-option[data-mood="neutral"]').classList.add('selected');
+            selectedMood = 'neutral';
+            
+            // 显示成功消息
+            alert('日记保存成功！');
+        });
+        
+        // 清空按钮事件
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            if (confirm('确定要清空当前日记内容吗？')) {
+                document.getElementById('diaryText').value = '';
+                document.getElementById('dateInput').valueAsDate = new Date();
+                
+                // 重置心情为默认
+                moodOptions.forEach(opt => opt.classList.remove('selected'));
+                document.querySelector('.mood-option[data-mood="neutral"]').classList.add('selected');
+                selectedMood = 'neutral';
+            }
+        });
+        
+        // 搜索功能
+        document.getElementById('searchInput').addEventListener('input', function() {
+            renderDiaries(this.value);
+        });
+        
+        // 初始化：渲染日记列表
+        renderDiaries();
+        
+        // 添加一些示例日记（如果本地存储为空）
+        window.addEventListener('load', function() {
+            const diaries = loadDiaries();
+            if (diaries.length === 0) {
+                const exampleDiaries = [
+                    {
+                        date: new Date().toISOString().split('T')[0],
+                        mood: 'happy',
+                        content: '今天是美好的一天！我完成了个人日记本的设计，感觉非常有成就感。阳光很好，下午还和朋友一起喝了咖啡，聊了很多有趣的话题。希望每天都能像今天这样充满能量和快乐。',
+                        timestamp: new Date().toISOString()
+                    },
+                    {
+                        date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+                        mood: 'excited',
+                        content: '今天收到了一个期待已久的包裹！是我一直想买的那本书。打开包装的那一刻，心情特别激动。晚上准备开始阅读，希望能从中学到新知识。有时候，生活中的小确幸真的能带来很大的快乐。',
+                        timestamp: new Date(Date.now() - 86400000).toISOString()
+                    },
+                    {
+                        date: new Date(Date.now() - 2 * 86400000).toISOString().split('T')[0],
+                        mood: 'neutral',
+                        content: '今天是比较平静的一天。工作按计划进行，没有特别的事情发生。晚上在家看了部电影，放松了一下。有时候平淡的日子也是一种幸福，不需要每天都充满惊喜。',
+                        timestamp: new Date(Date.now() - 2 * 86400000).toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('diaries', JSON.stringify(exampleDiaries));
+                renderDiaries();
+            }
+        });
+    </script>
+</body>
+</html>
