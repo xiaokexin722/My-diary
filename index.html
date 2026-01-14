@@ -28,15 +28,20 @@
             --radius: 20px;
         }
 
+        /* === 新增：网格纸背景 === */
         body {
-            background: linear-gradient(135deg, var(--color-pink-light) 0%, var(--color-yellow) 100%);
+            background-color: #fff9fb; /* 浅粉底色 */
+            background-image: 
+                linear-gradient(rgba(255, 182, 217, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 182, 217, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px; /* 网格大小 */
             min-height: 100vh;
             padding: 20px;
             color: var(--color-text);
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -86,23 +91,85 @@
         .editor-section {
             flex: 1;
             min-width: 320px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.92);
             border-radius: var(--radius);
             padding: 30px;
             box-shadow: var(--shadow);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .entries-section {
             flex: 1.2;
             min-width: 320px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.92);
             border-radius: var(--radius);
             padding: 30px;
             box-shadow: var(--shadow);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* === 新增：导出面板样式 === */
+        .export-panel {
+            flex: 0.8;
+            min-width: 280px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            align-self: flex-start;
+        }
+
+        .export-title {
+            font-size: 1.6rem;
+            color: var(--color-text);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed var(--color-yellow-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .export-controls {
+            margin-bottom: 25px;
+        }
+
+        .month-selector {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--color-yellow-dark);
+            border-radius: 12px;
+            font-size: 1rem;
+            background-color: #fffef0;
+            color: var(--color-text);
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .export-output {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 2px solid var(--color-purple);
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.9);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--color-text);
+            resize: none;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .export-output:focus {
+            outline: none;
+            border-color: var(--color-purple-dark);
         }
 
         .section-title {
@@ -147,7 +214,7 @@
             border-radius: 12px;
             font-size: 1rem;
             color: var(--color-text);
-            background-color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(255, 255, 255, 0.9);
             transition: all 0.3s;
         }
 
@@ -320,6 +387,17 @@
             transform: translateY(-3px);
         }
 
+        .btn-export {
+            background: linear-gradient(to right, var(--color-yellow-dark), #ffcc00);
+            color: var(--color-text);
+            width: 100%;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 204, 0, 0.3);
+        }
+
         .actions {
             display: flex;
             justify-content: space-between;
@@ -355,7 +433,7 @@
         }
 
         .entry-item {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 246, 250, 0.9));
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 246, 250, 0.95));
             border-radius: 18px;
             padding: 25px;
             margin-bottom: 20px;
@@ -486,10 +564,15 @@
             margin-top: 30px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1100px) {
             .main-content {
                 flex-direction: column;
             }
+            .editor-section, .entries-section, .export-panel {
+                min-width: 100%;
+            }
+        }
+        @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
             }
@@ -525,7 +608,7 @@
                 <i class="fas fa-heart"></i>
                 <h1>我的日记本</h1>
             </div>
-            <p class="subtitle">记录每一口甜蜜与每一刻心动 ✨</p>
+            <p class="subtitle">记录生活每一刻 ✨</p>
         </header>
 
         <main class="main-content">
@@ -605,7 +688,7 @@
                 </div>
             </section>
 
-            <!-- 右侧：日记列表 -->
+            <!-- 中间：日记列表 -->
             <section class="entries-section">
                 <h2 class="section-title"><i class="fas fa-history"></i> 我的日记</h2>
                 <div class="search-box">
@@ -616,16 +699,36 @@
                     <!-- 日记条目将通过JavaScript动态生成 -->
                 </div>
             </section>
+
+            <!-- 右侧：新增的月度导出面板 -->
+            <section class="export-panel">
+                <h2 class="export-title"><i class="fas fa-download"></i> 月度导出</h2>
+                <div class="export-controls">
+                    <label for="monthSelect">选择月份</label>
+                    <input type="month" id="monthSelect" class="month-selector">
+                    <button id="exportBtn" class="btn btn-export">
+                        <i class="fas fa-file-export"></i> 生成月报
+                    </button>
+                </div>
+                <label>导出文本（可全选复制）</label>
+                <textarea id="exportOutput" class="export-output" readonly placeholder="点击“生成月报”后，该月的所有日记将以文本形式显示在这里。"></textarea>
+                <p style="font-size:0.85rem; color:var(--color-text-light); text-align:center; margin-top:10px;">
+                    提示：将此文本保存到本地文档，即可完成备份。
+                </p>
+            </section>
         </main>
 
         <footer>
-            <p>🌸 你的私人花园 | 所有数据仅保存在你的设备中，守护你的每一份秘密 🌸</p>
+            <p>🌸 所有数据仅保存在你的设备中，守护你的每一份秘密 🌸</p>
         </footer>
     </div>
 
     <script>
         // 设置默认日期为今天
         document.getElementById('dateInput').valueAsDate = new Date();
+        // 设置月度选择器默认值为当前年月
+        const now = new Date();
+        document.getElementById('monthSelect').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
         
         // 心情选择
         const moodOptions = document.querySelectorAll('.mood-option');
@@ -667,7 +770,7 @@
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    imageData = e.target.result; // 保存Base64数据
+                    imageData = e.target.result;
                     imagePreview.src = imageData;
                     imagePreview.style.display = 'block';
                 };
@@ -770,15 +873,12 @@
                     year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
                 });
 
-                // 构建标签HTML
                 const tagsHtml = diary.tags && diary.tags.length > 0 
                     ? `<div class="entry-tags">${diary.tags.map(tag => `<span class="entry-tag">${tag}</span>`).join('')}</div>` 
                     : '';
 
-                // 构建饮食HTML
                 const foodHtml = diary.food ? `<div class="entry-food"><strong>🍽️ 今日饮食：</strong>${diary.food}</div>` : '';
 
-                // 构建图片HTML
                 const imageHtml = diary.image ? `<img src="${diary.image}" class="entry-image" alt="日记配图">` : '';
 
                 entryElement.innerHTML = `
@@ -824,13 +924,11 @@
             document.getElementById('foodInput').value = diary.food || '';
             document.getElementById('diaryText').value = diary.content;
 
-            // 设置心情
             moodOptions.forEach(opt => opt.classList.remove('selected'));
             const moodOpt = document.querySelector(`.mood-option[data-mood="${diary.mood}"]`);
             if (moodOpt) moodOpt.classList.add('selected');
             selectedMood = diary.mood;
 
-            // 设置标签
             tagOptions.forEach(opt => opt.classList.remove('selected'));
             selectedTags = [];
             if (diary.tags) {
@@ -843,7 +941,6 @@
                 });
             }
 
-            // 设置图片
             if (diary.image) {
                 imageData = diary.image;
                 imagePreview.src = imageData;
@@ -853,9 +950,64 @@
                 imagePreview.style.display = 'none';
             }
 
-            // 滚动到编辑器
             document.querySelector('.editor-section').scrollIntoView({ behavior: 'smooth' });
         }
+
+        // === 新增：月度导出功能 ===
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const monthValue = document.getElementById('monthSelect').value;
+            if (!monthValue) {
+                alert('请先选择月份');
+                return;
+            }
+
+            const [year, month] = monthValue.split('-');
+            const diaries = loadDiaries();
+            // 筛选出该年月的日记
+            const monthDiaries = diaries.filter(diary => {
+                const diaryDate = new Date(diary.date);
+                return diaryDate.getFullYear() == year && (diaryDate.getMonth() + 1) == month;
+            });
+
+            if (monthDiaries.length === 0) {
+                document.getElementById('exportOutput').value = `📅 ${year}年${month}月\n\n该月份没有日记记录。`;
+                return;
+            }
+
+            // 构建导出的文本内容
+            let exportText = `📅 ${year}年${month}月 日记备份\n`;
+            exportText += `生成时间：${new Date().toLocaleString('zh-CN')}\n`;
+            exportText += `共计 ${monthDiaries.length} 篇日记\n`;
+            exportText += "=".repeat(40) + "\n\n";
+
+            monthDiaries.forEach((diary, index) => {
+                const dateObj = new Date(diary.date);
+                const formattedDate = dateObj.toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                });
+
+                exportText += `【日记 ${index + 1}】\n`;
+                exportText += `📅 日期：${formattedDate}\n`;
+                exportText += `😊 心情：${getMoodIcon(diary.mood)} ${diary.mood}\n`;
+                if (diary.tags && diary.tags.length > 0) {
+                    exportText += `🏷️ 标签：${diary.tags.join('， ')}\n`;
+                }
+                if (diary.food) {
+                    exportText += `🍽️ 饮食：${diary.food}\n`;
+                }
+                exportText += `\n📝 正文：\n${diary.content}\n`;
+                exportText += `\n${diary.image ? '[本篇日记包含图片]' : '[本篇日记无图片]'}\n`;
+                exportText += "-".repeat(30) + "\n\n";
+            });
+
+            exportText += `备份提示：此文本文件包含${monthDiaries.length}篇日记的完整内容。\n`;
+            exportText += `请妥善保存，如需重新导入，可手动对照录入。`;
+
+            document.getElementById('exportOutput').value = exportText;
+        });
 
         // 保存按钮事件
         document.getElementById('saveBtn').addEventListener('click', function() {
@@ -876,7 +1028,7 @@
                 date: date,
                 mood: selectedMood,
                 food: food,
-                tags: [...selectedTags], // 复制数组
+                tags: [...selectedTags],
                 content: content,
                 image: imageData,
                 timestamp: new Date().toISOString()
@@ -892,7 +1044,6 @@
             imagePreview.style.display = 'none';
             imageInput.value = '';
             
-            // 重置选择
             moodOptions.forEach(opt => opt.classList.remove('selected'));
             document.querySelector('.mood-option[data-mood="neutral"]').classList.add('selected');
             selectedMood = 'neutral';
