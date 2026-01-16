@@ -3,108 +3,501 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的日记本 - 社交版</title>
+    <title>我的日记本</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ========== 基础样式 ========== */
+        /* ========== CSS 变量 (用于主题切换) ========== */
+        :root {
+            /* 默认经典日记主题 */
+            --primary-color: #4a6fa5;
+            --primary-light: #e8f4ff;
+            --secondary-color: #ffb6d9;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* 社交媒体 (X) 主题变量 - 通过JS切换 */
+        .theme-social {
+            --primary-color: #1d9bf0;
+            --primary-light: #e8f6ff;
+            --secondary-color: #ff6b9d;
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-color: #0f1419;
+            --text-light: #536471;
+            --border-color: #eff3f4;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --radius: 16px;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* 暗色主题变量 */
+        .theme-dark {
+            --primary-color: #4fd1c7;
+            --primary-light: #2d3748;
+            --secondary-color: #9f7aea;
+            --bg-color: #1a202c;
+            --card-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --text-light: #a0aec0;
+            --border-color: #4a5568;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        :root {
-            --twitter-blue: #1d9bf0;
-            --twitter-blue-hover: #1a8cd8;
-            --twitter-gray: #536471;
-            --twitter-light-gray: #eff3f4;
-            --twitter-border: #eff3f4;
-            --twitter-bg: #ffffff;
-            --twitter-card-bg: #f7f9f9;
-            --twitter-text: #0f1419;
-            --twitter-text-light: #536471;
-            --twitter-hover-bg: #f7f7f7;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --radius: 16px;
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         body {
-            background-color: var(--twitter-bg);
-            color: var(--twitter-text);
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
             min-height: 100vh;
-            line-height: 1.5;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 15px;
         }
 
-        /* ========== 顶部导航栏 ========== */
-        .header {
-            position: sticky;
-            top: 0;
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--twitter-border);
-            z-index: 100;
-            padding: 12px 0;
-        }
-
-        .header-content {
+        /* ========== 顶部栏 ========== */
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-icon {
-            color: var(--twitter-blue);
-            font-size: 1.8rem;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .user-nav {
+        .logo-area {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .avatar-small {
-            width: 40px;
-            height: 40px;
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .user-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--twitter-light-gray);
+            border: 3px solid var(--primary-color);
             cursor: pointer;
         }
 
-        .nav-icon {
-            font-size: 1.3rem;
-            color: var(--twitter-gray);
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
             cursor: pointer;
-            padding: 8px;
+            padding: 10px;
             border-radius: 50%;
-            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .nav-icon:hover {
-            background-color: var(--twitter-hover-bg);
+        .icon-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
         }
 
-        /* ========== 个人设置模态框 ========== */
-        .settings-modal {
+        /* ========== 主内容区 ========== */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ========== 日记编辑器卡片 ========== */
+        .editor-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
+
+        .form-textarea {
+            min-height: 180px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .tag-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .tag-option {
+            padding: 8px 16px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tag-option:hover {
+            transform: translateY(-2px);
+        }
+
+        .tag-option.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .mood-grid, .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .mood-option, .weather-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            border-radius: 10px;
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mood-option:hover, .weather-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .mood-option.selected, .weather-option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+
+        .mood-icon, .weather-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .mood-text, .weather-text {
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* ========== 日记列表 & 评论区 ========== */
+        .diary-list {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            max-height: 800px;
+            overflow-y: auto;
+        }
+
+        .diary-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 25px 0;
+        }
+
+        .diary-item:last-child {
+            border-bottom: none;
+        }
+
+        .diary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .diary-date {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .diary-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .diary-content {
+            margin: 20px 0;
+            line-height: 1.7;
+        }
+
+        .diary-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .diary-tag {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        /* 评论区 */
+        .comments-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .comments-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-item {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .comment-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .add-comment {
+            margin-top: 20px;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-family: inherit;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        /* ========== 侧边栏 (设置与数据管理) ========== */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .settings-card, .data-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-selector, .interface-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .theme-btn, .interface-btn {
+            padding: 15px 10px;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .theme-btn:hover, .interface-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        .theme-btn.active, .interface-btn.active {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .export-controls {
+            margin-top: 20px;
+        }
+
+        .data-textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            resize: vertical;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+
+        /* ========== 模态框 (用户设置) ========== */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -117,1060 +510,753 @@
             justify-content: center;
         }
 
-        .modal-content {
-            background: white;
+        .modal {
+            background-color: var(--card-bg);
             width: 90%;
             max-width: 500px;
             border-radius: var(--radius);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
         }
 
         .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--twitter-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 25px;
         }
 
         .modal-title {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 700;
         }
 
         .close-modal {
             background: none;
             border: none;
-            font-size: 1.5rem;
-            color: var(--twitter-gray);
+            font-size: 1.8rem;
+            color: var(--text-light);
             cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            line-height: 1;
         }
 
-        .close-modal:hover {
-            background-color: var(--twitter-hover-bg);
-        }
-
-        .modal-body {
-            padding: 20px;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-
-        .setting-group {
-            margin-bottom: 25px;
-        }
-
-        .setting-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--twitter-text);
-        }
-
-        .setting-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--twitter-border);
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .setting-input:focus {
-            outline: none;
-            border-color: var(--twitter-blue);
-        }
-
-        .theme-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .theme-option {
-            padding: 12px;
-            border: 2px solid var(--twitter-border);
-            border-radius: 8px;
+        .avatar-upload {
             text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .theme-option:hover {
-            border-color: var(--twitter-blue);
-        }
-
-        .theme-option.active {
-            border-color: var(--twitter-blue);
-            background-color: rgba(29, 155, 240, 0.05);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background-color: var(--twitter-blue);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--twitter-blue-hover);
-        }
-
-        .btn-secondary {
-            background-color: var(--twitter-light-gray);
-            color: var(--twitter-text);
-        }
-
-        .btn-secondary:hover {
-            background-color: #e6e6e6;
-        }
-
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid var(--twitter-border);
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        /* ========== 发布框 (日记编辑器) ========== */
-        .compose-section {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--twitter-border);
-        }
-
-        .compose-box {
-            display: flex;
-            gap: 12px;
-        }
-
-        .compose-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .compose-content {
-            flex: 1;
-        }
-
-        .compose-textarea {
-            width: 100%;
-            min-height: 120px;
-            border: none;
-            resize: none;
-            font-size: 1.25rem;
-            color: var(--twitter-text);
-            margin-bottom: 15px;
-            padding: 8px 0;
-        }
-
-        .compose-textarea:focus {
-            outline: none;
-        }
-
-        .compose-textarea::placeholder {
-            color: var(--twitter-text-light);
-        }
-
-        .compose-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding: 12px 0;
-            border-top: 1px solid var(--twitter-border);
-            border-bottom: 1px solid var(--twitter-border);
-        }
-
-        .option-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 50px;
-            transition: background-color 0.2s;
-        }
-
-        .option-group:hover {
-            background-color: rgba(29, 155, 240, 0.1);
-        }
-
-        .option-icon {
-            color: var(--twitter-blue);
-            font-size: 1.2rem;
-        }
-
-        .option-text {
-            color: var(--twitter-blue);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .mood-options, .tag-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .mood-option, .tag-option {
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: 1px solid var(--twitter-border);
-            background-color: white;
-            transition: all 0.2s;
-        }
-
-        .mood-option:hover, .tag-option:hover {
-            background-color: var(--twitter-hover-bg);
-        }
-
-        .mood-option.selected {
-            background-color: var(--twitter-blue);
-            color: white;
-            border-color: var(--twitter-blue);
-        }
-
-        .tag-option.selected {
-            background-color: rgba(29, 155, 240, 0.1);
-            color: var(--twitter-blue);
-            border-color: var(--twitter-blue);
-        }
-
-        .image-upload-area {
-            border: 2px dashed var(--twitter-border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin: 15px 0;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .image-upload-area:hover {
-            border-color: var(--twitter-blue);
-            background-color: rgba(29, 155, 240, 0.02);
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 12px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .compose-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-
-        .compose-counter {
-            color: var(--twitter-text-light);
-            font-size: 0.9rem;
-        }
-
-        /* ========== 日记动态卡片 ========== */
-        .diary-feed {
-            padding: 16px 0;
-        }
-
-        .diary-card {
-            padding: 16px;
-            border-bottom: 1px solid var(--twitter-border);
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-
-        .diary-card:hover {
-            background-color: rgba(0, 0, 0, 0.02);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .card-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 12px;
-        }
-
-        .card-user-info {
-            flex: 1;
-        }
-
-        .card-user-name {
-            font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 2px;
-        }
-
-        .card-date {
-            color: var(--twitter-text-light);
-            font-size: 0.9rem;
-        }
-
-        .card-mood {
-            font-size: 1.3rem;
-        }
-
-        .card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin: 10px 0;
-        }
-
-        .card-tag {
-            background-color: rgba(29, 155, 240, 0.1);
-            color: var(--twitter-blue);
-            padding: 4px 10px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .card-food {
-            background-color: rgba(255, 200, 0, 0.1);
-            border-left: 3px solid #ffcc00;
-            padding: 10px 15px;
-            border-radius: 0 8px 8px 0;
-            margin: 10px 0;
-            font-size: 0.95rem;
-        }
-
-        .card-content {
-            font-size: 1.1rem;
-            margin: 12px 0;
-            line-height: 1.6;
-        }
-
-        .card-image {
-            width: 100%;
-            max-height: 400px;
-            border-radius: 12px;
-            margin: 15px 0;
-            object-fit: cover;
-        }
-
-        .card-actions {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 15px;
-            padding-top: 12px;
-            border-top: 1px solid var(--twitter-border);
-        }
-
-        .card-action {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--twitter-text-light);
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .card-action:hover {
-            background-color: rgba(29, 155, 240, 0.1);
-            color: var(--twitter-blue);
-        }
-
-        .action-icon {
-            font-size: 1.1rem;
-        }
-
-        .action-count {
-            font-weight: 500;
-        }
-
-        .card-countdown {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .countdown-badge {
-            background: linear-gradient(135deg, var(--twitter-blue), #8a2be2);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        /* ========== 数据管理面板 ========== */
-        .data-panel {
-            background-color: var(--twitter-card-bg);
-            border-radius: var(--radius);
-            padding: 20px;
             margin: 20px 0;
         }
 
-        .panel-title {
-            font-size: 1.2rem;
-            font-weight: 700;
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--primary-color);
             margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .modal-footer {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
         }
 
-        .panel-controls {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .panel-textarea {
-            width: 100%;
-            height: 200px;
-            padding: 12px;
-            border: 1px solid var(--twitter-border);
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            resize: vertical;
-            margin-bottom: 15px;
-        }
-
-        /* ========== 响应式设计 ========== */
-        @media (max-width: 500px) {
-            .container {
-                padding: 0 10px;
-            }
-            
-            .compose-options {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .card-actions {
-                justify-content: space-between;
-            }
-            
-            .theme-options {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ========== 辅助类 ========== */
+        /* ========== 工具类 ========== */
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .text-center {
             text-align: center;
         }
 
-        .mt-2 { margin-top: 8px; }
-        .mt-3 { margin-top: 12px; }
-        .mt-4 { margin-top: 16px; }
-        .mb-2 { margin-bottom: 8px; }
-        .mb-3 { margin-bottom: 12px; }
-        .mb-4 { margin-bottom: 16px; }
+        .mt-3 { margin-top: 15px; }
+        .mb-3 { margin-bottom: 15px; }
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏 -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-feather-alt logo-icon"></i>
-                    <div class="logo-text" id="pageTitle">我的日记本</div>
-                </div>
-                <div class="user-nav">
-                    <i class="fas fa-search nav-icon" title="搜索日记"></i>
-                    <i class="fas fa-download nav-icon" title="导出数据" id="exportPanelToggle"></i>
-                    <img id="headerAvatar" class="avatar-small" src="https://cdn-icons-png.flaticon.com/512/3237/3237472.png" alt="头像" title="个人设置">
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- 个人设置模态框 -->
-    <div id="settingsModal" class="settings-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title"><i class="fas fa-user-cog"></i> 个人设置</div>
-                <button class="close-modal" id="closeSettingsBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="setting-group">
-                    <label class="setting-label"><i class="fas fa-user-edit"></i> 基本资料</label>
-                    <input type="text" id="inputUserName" class="setting-input" placeholder="你的昵称" value="我">
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <input type="number" id="inputUserAge" class="setting-input" placeholder="年龄" style="flex: 1;">
-                        <input type="text" id="inputUserMotto" class="setting-input" placeholder="个性签名" style="flex: 2;">
-                    </div>
-                </div>
-                <div class="setting-group">
-                    <label class="setting-label"><i class="fas fa-clock"></i> 倒计时管理</label>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <input type="text" id="inputCountdownName" class="setting-input" placeholder="事件名称 (如：高考)" style="flex: 2;">
-                        <input type="date" id="inputCountdownDate" class="setting-input" style="flex: 1;">
-                        <button id="addCountdownBtn" class="btn btn-primary" style="white-space: nowrap;">添加</button>
-                    </div>
-                    <ul id="countdownList" class="countdown-list">
-                        <!-- 倒计时列表动态生成 -->
-                    </ul>
-                </div>
-                <div class="setting-group">
-                    <label class="setting-label"><i class="fas fa-palette"></i> 主题配色</label>
-                    <div class="theme-options">
-                        <div class="theme-option active" data-theme="twitter">默认 (Twitter蓝)</div>
-                        <div class="theme-option" data-theme="dark">深夜模式</div>
-                        <div class="theme-option" data-theme="pink">粉色少女</div>
-                        <div class="theme-option" data-theme="green">清新绿</div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelSettingsBtn">取消</button>
-                <button class="btn btn-primary" id="saveSettingsBtn">保存设置</button>
-            </div>
-        </div>
-    </div>
-
     <div class="container">
-        <!-- 发布框 (日记编辑器) -->
-        <section class="compose-section">
-            <div class="compose-box">
-                <img id="composeAvatar" class="compose-avatar" src="https://cdn-icons-png.flaticon.com/512/3237/3237472.png" alt="头像">
-                <div class="compose-content">
-                    <textarea id="diaryText" class="compose-textarea" placeholder="今天有什么新鲜事？" maxlength="500"></textarea>
-                    <div class="compose-counter" id="charCounter">0/500</div>
-                    
-                    <div class="compose-options">
-                        <div class="option-group" id="toggleMood">
-                            <i class="far fa-smile option-icon"></i>
-                            <span class="option-text">心情</span>
+        <!-- 顶部栏 -->
+        <div class="top-bar">
+            <div class="logo-area">
+                <i class="fas fa-book-open logo-icon"></i>
+                <h1 id="pageTitle" class="page-title">我的日记本</h1>
+            </div>
+            <div class="user-controls">
+                <button id="settingsToggle" class="icon-btn" title="设置">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <img id="userAvatar" class="avatar" src="https://cdn-icons-png.flaticon.com/512/3237/3237472.png" alt="头像" title="点击修改头像和名称">
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-layout">
+            <!-- 左侧：编辑器与日记列表 -->
+            <div class="main-content">
+                <!-- 日记编辑器 -->
+                <section class="editor-card">
+                    <h2 class="card-title"><i class="fas fa-edit"></i> 记录今天</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><i class="far fa-calendar"></i> 日期</label>
+                            <input type="date" id="dateInput" class="form-input" value="">
                         </div>
-                        <div class="option-group" id="toggleTags">
-                            <i class="fas fa-tags option-icon"></i>
-                            <span class="option-text">标签</span>
-                        </div>
-                        <div class="option-group" id="toggleFood">
-                            <i class="fas fa-utensils option-icon"></i>
-                            <span class="option-text">饮食</span>
-                        </div>
-                        <div class="option-group" id="toggleImage">
-                            <i class="fas fa-image option-icon"></i>
-                            <span class="option-text">图片</span>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-utensils"></i> 今日美食</label>
+                            <input type="text" id="foodInput" class="form-input" placeholder="吃了什么好吃的？">
                         </div>
                     </div>
 
-                    <!-- 心情选择 (默认隐藏) -->
-                    <div id="moodSelector" class="hidden">
-                        <div class="mood-options">
-                            <div class="mood-option" data-mood="happy">😊 开心</div>
-                            <div class="mood-option" data-mood="love">🥰 有爱</div>
-                            <div class="mood-option" data-mood="neutral">😌 平静</div>
-                            <div class="mood-option" data-mood="sad">😔 低落</div>
-                            <div class="mood-option" data-mood="tired">😴 疲惫</div>
-                            <div class="mood-option" data-mood="excited">🤩 兴奋</div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="far fa-smile"></i> 心情</label>
+                        <div class="mood-grid">
+                            <div class="mood-option" data-mood="happy">
+                                <span class="mood-icon">😊</span>
+                                <span class="mood-text">开心</span>
+                            </div>
+                            <div class="mood-option" data-mood="excited">
+                                <span class="mood-icon">🤩</span>
+                                <span class="mood-text">兴奋</span>
+                            </div>
+                            <div class="mood-option" data-mood="love">
+                                <span class="mood-icon">🥰</span>
+                                <span class="mood-text">有爱</span>
+                            </div>
+                            <div class="mood-option" data-mood="peaceful">
+                                <span class="mood-icon">😌</span>
+                                <span class="mood-text">平和</span>
+                            </div>
+                            <div class="mood-option" data-mood="grateful">
+                                <span class="mood-icon">🙏</span>
+                                <span class="mood-text">感恩</span>
+                            </div>
+                            <div class="mood-option" data-mood="sad">
+                                <span class="mood-icon">😔</span>
+                                <span class="mood-text">低落</span>
+                            </div>
+                            <div class="mood-option" data-mood="tired">
+                                <span class="mood-icon">😴</span>
+                                <span class="mood-text">疲惫</span>
+                            </div>
+                            <div class="mood-option" data-mood="angry">
+                                <span class="mood-icon">😠</span>
+                                <span class="mood-text">生气</span>
+                            </div>
+                            <div class="mood-option" data-mood="anxious">
+                                <span class="mood-icon">😰</span>
+                                <span class="mood-text">焦虑</span>
+                            </div>
+                            <div class="mood-option" data-mood="sick">
+                                <span class="mood-icon">🤒</span>
+                                <span class="mood-text">不适</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 标签选择 (默认隐藏) -->
-                    <div id="tagSelector" class="hidden">
-                        <div class="tag-options">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-cloud"></i> 天气</label>
+                        <div class="weather-grid">
+                            <div class="weather-option" data-weather="sunny">
+                                <span class="weather-icon">☀️</span>
+                                <span class="weather-text">晴天</span>
+                            </div>
+                            <div class="weather-option" data-weather="cloudy">
+                                <span class="weather-icon">⛅</span>
+                                <span class="weather-text">多云</span>
+                            </div>
+                            <div class="weather-option" data-weather="rainy">
+                                <span class="weather-icon">🌧️</span>
+                                <span class="weather-text">雨天</span>
+                            </div>
+                            <div class="weather-option" data-weather="snowy">
+                                <span class="weather-icon">❄️</span>
+                                <span class="weather-text">雪天</span>
+                            </div>
+                            <div class="weather-option" data-weather="windy">
+                                <span class="weather-icon">💨</span>
+                                <span class="weather-text">刮风</span>
+                            </div>
+                            <div class="weather-option" data-weather="stormy">
+                                <span class="weather-icon">⛈️</span>
+                                <span class="weather-text">雷暴</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-tags"></i> 分类标签</label>
+                        <div class="tag-selector">
                             <div class="tag-option" data-tag="日常">日常</div>
+                            <div class="tag-option" data-tag="工作">工作</div>
+                            <div class="tag-option" data-tag="学习">学习</div>
                             <div class="tag-option" data-tag="美食">美食</div>
                             <div class="tag-option" data-tag="旅行">旅行</div>
-                            <div class="tag-option" data-tag="学习">学习</div>
-                            <div class="tag-option" data-tag="工作">工作</div>
+                            <div class="tag-option" data-tag="健康">健康</div>
+                            <div class="tag-option" data-tag="家庭">家庭</div>
+                            <div class="tag-option" data-tag="朋友">朋友</div>
+                            <div class="tag-option" data-tag="创意">创意</div>
                             <div class="tag-option" data-tag="梦境">梦境</div>
                         </div>
                     </div>
 
-                    <!-- 饮食输入 (默认隐藏) -->
-                    <div id="foodInputContainer" class="hidden">
-                        <input type="text" id="foodInput" class="setting-input" placeholder="今天吃了什么？">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-book-open"></i> 日记正文</label>
+                        <textarea id="diaryText" class="form-textarea" placeholder="今天发生了什么？写下你的想法..."></textarea>
                     </div>
 
-                    <!-- 图片上传 (默认隐藏) -->
-                    <div id="imageUploadContainer" class="hidden">
-                        <div class="image-upload-area" id="imageUploadArea">
-                            <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--twitter-blue); margin-bottom: 10px;"></i>
-                            <p>点击或拖拽上传图片</p>
-                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                            <img id="imagePreview" class="image-preview" alt="图片预览">
-                        </div>
-                    </div>
-
-                    <div class="compose-actions">
-                        <div style="color: var(--twitter-text-light); font-size: 0.9rem;">
-                            <i class="far fa-calendar-alt"></i>
-                            <span id="currentDateDisplay">今天</span>
-                            <input type="date" id="dateInput" style="border: none; background: none; color: var(--twitter-text-light);">
-                        </div>
-                        <button id="publishBtn" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i> 发布日记
+                    <div class="actions">
+                        <button id="clearBtn" class="btn btn-secondary">
+                            <i class="fas fa-eraser"></i> 清空
+                        </button>
+                        <button id="saveDiaryBtn" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 保存日记
                         </button>
                     </div>
-                </div>
-            </div>
-        </section>
+                </section>
 
-        <!-- 日记动态流 -->
-        <section class="diary-feed" id="diaryFeed">
-            <!-- 日记卡片将动态生成在这里 -->
-        </section>
+                <!-- 日记列表与评论区 -->
+                <section class="diary-list" id="diaryListContainer">
+                    <!-- 日记将通过JS动态生成 -->
+                    <div class="text-center" id="emptyState">
+                        <i class="fas fa-journal-whills" style="font-size:4rem; color:var(--text-light); opacity:0.5; margin:40px 0 20px;"></i>
+                        <h3 style="color:var(--text-light);">还没有日记</h3>
+                        <p>写下你的第一篇日记吧！</p>
+                    </div>
+                </section>
+            </div>
 
-        <!-- 数据管理面板 (默认隐藏) -->
-        <section id="dataPanel" class="data-panel hidden">
-            <h3 class="panel-title"><i class="fas fa-database"></i> 数据管理</h3>
-            
-            <div class="panel-controls">
-                <input type="month" id="monthSelect" class="setting-input" style="flex: 1;">
-                <button id="exportBtn" class="btn btn-primary">生成月报</button>
-                <button id="importToggleBtn" class="btn btn-secondary">恢复数据</button>
-            </div>
-            
-            <div id="exportSection">
-                <textarea id="exportOutput" class="panel-textarea" readonly placeholder="选择月份后点击生成月报..."></textarea>
-            </div>
-            
-            <div id="importSection" class="hidden">
-                <p class="mb-3">粘贴之前导出的完整月报文本，系统将自动解析并恢复日记。</p>
-                <textarea id="importTextarea" class="panel-textarea" placeholder="请将完整的月报备份文本粘贴在此处..."></textarea>
-                <button id="importBtn" class="btn btn-primary">一键恢复日记</button>
-                <p class="mt-3" style="color: #e74c3c; font-size: 0.9rem;">
-                    ⚠️ 注意：这会覆盖当前相同日期的日记。
-                </p>
-            </div>
-        </section>
+            <!-- 右侧：侧边栏 (设置与数据管理) -->
+            <div class="sidebar">
+                <!-- 界面与主题设置 -->
+                <section class="settings-card">
+                    <h3 class="card-title"><i class="fas fa-sliders-h"></i> 界面设置</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">界面风格</label>
+                        <div class="interface-selector">
+                            <div class="interface-btn active" data-interface="classic">
+                                <i class="fas fa-book"></i> 经典日记
+                            </div>
+                            <div class="interface-btn" data-interface="social">
+                                <i class="fas fa-comment-dots"></i> 社交媒体
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- 空状态提示 -->
-        <div id="emptyState" class="text-center" style="padding: 60px 20px; color: var(--twitter-text-light);">
-            <i class="fas fa-feather-alt" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
-            <h3 style="font-size: 1.3rem; margin-bottom: 10px;">还没有日记</h3>
-            <p>写下你的第一篇日记，开始记录生活吧！</p>
+                    <div class="form-group">
+                        <label class="form-label">主题配色</label>
+                        <div class="theme-selector">
+                            <div class="theme-btn active" data-theme="default">默认蓝</div>
+                            <div class="theme-btn" data-theme="social">Twitter蓝</div>
+                            <div class="theme-btn" data-theme="dark">深夜模式</div>
+                            <div class="theme-btn" data-theme="pink">少女粉</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 数据管理 -->
+                <section class="data-card">
+                    <h3 class="card-title"><i class="fas fa-database"></i> 数据管理</h3>
+                    
+                    <div class="export-controls">
+                        <label class="form-label">导出日记 (按月份)</label>
+                        <input type="month" id="exportMonth" class="form-input mb-3">
+                        <button id="exportBtn" class="btn btn-primary" style="width:100%;">
+                            <i class="fas fa-download"></i> 生成并复制月报
+                        </button>
+                        <p class="hint">生成该月所有日记的备份文本，并自动复制到剪贴板。</p>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">导入/恢复日记</label>
+                        <p class="hint">粘贴之前导出的完整备份文本，系统将自动解析。</p>
+                        <textarea id="importTextarea" class="data-textarea" placeholder="请将备份文本粘贴在此处..."></textarea>
+                        <button id="importBtn" class="btn btn-secondary" style="width:100%;">
+                            <i class="fas fa-upload"></i> 一键导入日记
+                        </button>
+                        <p class="hint" style="color:#e74c3c;">注意：会覆盖相同日期的日记主篇，但保留其评论区。</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户设置模态框 -->
+    <div id="userSettingsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-user-cog"></i> 用户设置</h2>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            
+            <div class="avatar-upload">
+                <img id="avatarPreview" class="avatar-preview" src="https://cdn-icons-png.flaticon.com/512/3237/3237472.png" alt="头像预览">
+                <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
+                <button id="changeAvatarBtn" class="btn btn-secondary">
+                    <i class="fas fa-camera"></i> 更换头像
+                </button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">你的昵称</label>
+                <input type="text" id="userNameInput" class="form-input" placeholder="输入你的名字" value="我">
+                <p class="hint">此名称将显示在标题“XX的日记本”中。</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="cancelSettingsBtn" class="btn btn-secondary">取消</button>
+                <button id="saveSettingsBtn" class="btn btn-primary">保存设置</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // ========== 全局状态 ==========
+        // ========== 全局状态与配置 ==========
+        const APP_STORAGE_KEYS = {
+            USER: 'diaryUserSettings',
+            DIARIES: 'diaries',
+            COMMENTS: 'diaryComments'
+        };
+
         let userSettings = {
             name: '我',
-            age: '',
-            motto: '',
             avatar: 'https://cdn-icons-png.flaticon.com/512/3237/3237472.png',
-            countdowns: [],
-            theme: 'twitter'
+            theme: 'default',
+            interface: 'classic'
         };
-        
-        let diaryState = {
-            selectedMood: 'neutral',
+
+        let currentEditorState = {
+            selectedMood: 'peaceful',
+            selectedWeather: 'sunny',
             selectedTags: [],
-            imageData: null,
-            editingDate: null // 记录当前正在编辑的日记日期
+            editingDiaryId: null // 用于区分新增还是补充
         };
-        
-        const now = new Date();
 
         // ========== 初始化函数 ==========
         function initApp() {
-            // 设置当前日期
-            document.getElementById('dateInput').valueAsDate = now;
-            document.getElementById('currentDateDisplay').textContent = formatDate(now);
-            document.getElementById('monthSelect').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+            console.log('正在初始化日记本...');
             
             // 加载用户设置
             loadUserSettings();
             
-            // 初始化字符计数器
-            document.getElementById('diaryText').addEventListener('input', updateCharCounter);
-            updateCharCounter();
+            // 设置今天为默认日期
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').value = today;
             
-            // 绑定事件监听器
-            bindEventListeners();
+            // 绑定所有事件监听器
+            bindAllEventListeners();
             
-            // 渲染日记
-            renderDiaries();
+            // 初始渲染
+            renderDiaryList();
             
-            console.log('社交媒体日记本已加载！');
+            console.log('日记本初始化完成！');
         }
 
-        // ========== 用户设置管理 ==========
+        // ========== 数据存储与加载 ==========
         function loadUserSettings() {
-            const saved = localStorage.getItem('diaryUserSettings');
+            const saved = localStorage.getItem(APP_STORAGE_KEYS.USER);
             if (saved) {
                 try {
                     userSettings = JSON.parse(saved);
                     applyUserSettings();
                 } catch(e) {
-                    console.error('加载用户设置失败', e);
+                    console.error('加载用户设置失败，使用默认值:', e);
                 }
             }
         }
-        
+
         function saveUserSettings() {
-            localStorage.setItem('diaryUserSettings', JSON.stringify(userSettings));
-        }
-        
-        function applyUserSettings() {
-            document.getElementById('pageTitle').textContent = userSettings.name + '的日记本';
-            document.getElementById('inputUserName').value = userSettings.name;
-            document.getElementById('headerAvatar').src = userSettings.avatar;
-            document.getElementById('composeAvatar').src = userSettings.avatar;
-            document.getElementById('inputUserAge').value = userSettings.age || '';
-            document.getElementById('inputUserMotto').value = userSettings.motto || '';
-            applyTheme(userSettings.theme);
-            renderCountdownList();
+            localStorage.setItem(APP_STORAGE_KEYS.USER, JSON.stringify(userSettings));
         }
 
-        // ========== 主题管理 ==========
-        function applyTheme(themeName) {
-            const root = document.documentElement;
-            
-            if (themeName === 'dark') {
-                root.style.setProperty('--twitter-bg', '#000000');
-                root.style.setProperty('--twitter-text', '#e7e9ea');
-                root.style.setProperty('--twitter-card-bg', '#16181c');
-                root.style.setProperty('--twitter-border', '#2f3336');
-                root.style.setProperty('--twitter-text-light', '#71767b');
-                root.style.setProperty('--twitter-hover-bg', '#181818');
-            } else if (themeName === 'pink') {
-                root.style.setProperty('--twitter-blue', '#ff6b9d');
-                root.style.setProperty('--twitter-blue-hover', '#e0558a');
-            } else if (themeName === 'green') {
-                root.style.setProperty('--twitter-blue', '#1db954');
-                root.style.setProperty('--twitter-blue-hover', '#1aa34a');
-            } else {
-                // 恢复默认
-                root.style.setProperty('--twitter-bg', '#ffffff');
-                root.style.setProperty('--twitter-text', '#0f1419');
-                root.style.setProperty('--twitter-card-bg', '#f7f9f9');
-                root.style.setProperty('--twitter-border', '#eff3f4');
-                root.style.setProperty('--twitter-text-light', '#536471');
-                root.style.setProperty('--twitter-hover-bg', '#f7f7f7');
-                root.style.setProperty('--twitter-blue', '#1d9bf0');
-                root.style.setProperty('--twitter-blue-hover', '#1a8cd8');
-            }
-            
-            userSettings.theme = themeName;
-            document.querySelectorAll('.theme-option').forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.theme === themeName);
-            });
-        }
-
-        // ========== 倒计时管理 ==========
-        function renderCountdownList() {
-            const listEl = document.getElementById('countdownList');
-            listEl.innerHTML = '';
-            
-            userSettings.countdowns.forEach((cd, index) => {
-                const li = document.createElement('li');
-                li.className = 'countdown-item';
-                const daysLeft = Math.ceil((new Date(cd.date) - now) / (1000*60*60*24));
-                li.innerHTML = `
-                    <span><i class="far fa-calendar-alt"></i> ${cd.name} (${daysLeft}天)</span>
-                    <button class="btn-small btn-delete" data-index="${index}" style="background:#ff6b6b; color:white; border:none; border-radius:4px; padding:4px 8px; font-size:0.8rem;">删除</button>
-                `;
-                listEl.appendChild(li);
-            });
-            
-            // 绑定删除事件
-            listEl.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    userSettings.countdowns.splice(index, 1);
-                    saveUserSettings();
-                    renderCountdownList();
-                    renderDiaries();
-                });
-            });
-        }
-
-        // ========== 日记核心功能 ==========
         function loadDiaries() {
-            const diaries = JSON.parse(localStorage.getItem('diaries')) || [];
-            return diaries.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const saved = localStorage.getItem(APP_STORAGE_KEYS.DIARIES);
+            return saved ? JSON.parse(saved) : [];
         }
-        
-        function saveDiary(diary) {
-            const diaries = loadDiaries();
-            const existingIndex = diaries.findIndex(d => d.date === diary.date);
+
+        function saveDiaries(diaries) {
+            localStorage.setItem(APP_STORAGE_KEYS.DIARIES, JSON.stringify(diaries));
+        }
+
+        function loadComments() {
+            const saved = localStorage.getItem(APP_STORAGE_KEYS.COMMENTS);
+            return saved ? JSON.parse(saved) : {};
+        }
+
+        function saveComments(comments) {
+            localStorage.setItem(APP_STORAGE_KEYS.COMMENTS, JSON.stringify(comments));
+        }
+
+        // ========== 应用设置到界面 ==========
+        function applyUserSettings() {
+            // 更新页面标题
+            document.getElementById('pageTitle').textContent = `${userSettings.name}的日记本`;
+            document.getElementById('userNameInput').value = userSettings.name;
             
-            // 修复：明确处理覆盖逻辑
-            if (existingIndex !== -1) {
-                // 如果是在编辑同一篇日记，直接覆盖
-                if (diaryState.editingDate === diary.date) {
-                    diaries[existingIndex] = diary;
-                } else {
-                    // 如果是新编辑同一天的不同日记，询问覆盖
-                    if (confirm(`${formatDate(new Date(diary.date))} 已有日记，是否覆盖？`)) {
-                        diaries[existingIndex] = diary;
-                    } else {
-                        return false; // 用户取消
-                    }
-                }
-            } else {
-                diaries.push(diary);
+            // 更新头像
+            document.getElementById('userAvatar').src = userSettings.avatar;
+            document.getElementById('avatarPreview').src = userSettings.avatar;
+            
+            // 应用主题
+            document.body.className = `theme-${userSettings.theme}`;
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === userSettings.theme);
+            });
+            
+            // 应用界面风格
+            document.querySelectorAll('.interface-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.interface === userSettings.interface);
+            });
+        }
+
+        // ========== 核心日记功能 ==========
+        function getCurrentDiaryData() {
+            const date = document.getElementById('dateInput').value;
+            const food = document.getElementById('foodInput').value.trim();
+            const content = document.getElementById('diaryText').value.trim();
+            
+            if (!date) {
+                alert('请选择日期');
+                return null;
             }
             
-            localStorage.setItem('diaries', JSON.stringify(diaries));
-            renderDiaries();
+            // 至少需要填写内容、心情、天气、美食或标签中的一项
+            if (!content && currentEditorState.selectedTags.length === 0 && !food) {
+                alert('请至少填写日记内容、选择心情/天气、填写美食或选择标签中的一项');
+                return null;
+            }
+            
+            return {
+                id: currentEditorState.editingDiaryId || `diary_${Date.now()}`,
+                date: date,
+                mood: currentEditorState.selectedMood,
+                weather: currentEditorState.selectedWeather,
+                food: food,
+                tags: [...currentEditorState.selectedTags],
+                content: content,
+                createdAt: new Date().toISOString()
+            };
+        }
+
+        function saveNewDiary() {
+            const diaryData = getCurrentDiaryData();
+            if (!diaryData) return false;
+            
+            const diaries = loadDiaries();
+            
+            // 检查是否已存在同一天的日记（主篇）
+            const existingIndex = diaries.findIndex(d => d.date === diaryData.date && !d.isComment);
+            
+            if (existingIndex !== -1) {
+                // 改为补充模式：保存为“评论”
+                saveAsComment(diaryData);
+                alert(`${formatDate(diaryData.date)} 已有主日记，已为您保存为补充记录（在评论区查看）。`);
+            } else {
+                // 保存为新主日记
+                diaryData.isComment = false;
+                diaries.push(diaryData);
+                saveDiaries(diaries);
+                alert('日记保存成功！');
+            }
+            
+            resetEditor();
+            renderDiaryList();
             return true;
         }
-        
-        function renderDiaries(searchTerm = '') {
-            const feedEl = document.getElementById('diaryFeed');
-            const emptyStateEl = document.getElementById('emptyState');
-            const diaries = loadDiaries();
+
+        function saveAsComment(diaryData) {
+            diaryData.isComment = true;
+            diaryData.parentDate = diaryData.date; // 关联到主日记
+            diaryData.id = `comment_${Date.now()}`;
+            
+            const comments = loadComments();
+            if (!comments[diaryData.date]) {
+                comments[diaryData.date] = [];
+            }
+            comments[diaryData.date].push(diaryData);
+            saveComments(comments);
+        }
+
+        function getCommentsForDate(date) {
+            const comments = loadComments();
+            return comments[date] || [];
+        }
+
+        function resetEditor() {
+            document.getElementById('diaryText').value = '';
+            document.getElementById('foodInput').value = '';
+            
+            // 重置为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').value = today;
+            
+            // 重置选择
+            currentEditorState.selectedMood = 'peaceful';
+            currentEditorState.selectedWeather = 'sunny';
+            currentEditorState.selectedTags = [];
+            currentEditorState.editingDiaryId = null;
+            
+            // 更新UI选择状态
+            document.querySelectorAll('.mood-option, .weather-option, .tag-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // 设置默认选中项
+            document.querySelector('.mood-option[data-mood="peaceful"]').classList.add('selected');
+            document.querySelector('.weather-option[data-weather="sunny"]').classList.add('selected');
+        }
+
+        // ========== 渲染功能 ==========
+        function renderDiaryList() {
+            const container = document.getElementById('diaryListContainer');
+            const diaries = loadDiaries().filter(d => !d.isComment); // 只显示主日记
+            const emptyState = document.getElementById('emptyState');
             
             if (diaries.length === 0) {
-                feedEl.innerHTML = '';
-                emptyStateEl.style.display = 'block';
+                container.innerHTML = '<div id="emptyState" class="text-center"><i class="fas fa-journal-whills" style="font-size:4rem; color:var(--text-light); opacity:0.5; margin:40px 0 20px;"></i><h3 style="color:var(--text-light);">还没有日记</h3><p>写下你的第一篇日记吧！</p></div>';
                 return;
             }
             
-            emptyStateEl.style.display = 'none';
-            feedEl.innerHTML = '';
+            emptyState.style.display = 'none';
             
+            // 按日期倒序排序
+            diaries.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '';
             diaries.forEach(diary => {
-                const card = createDiaryCard(diary);
-                feedEl.appendChild(card);
+                const comments = getCommentsForDate(diary.date);
+                html += renderDiaryItem(diary, comments);
+            });
+            
+            container.innerHTML = html;
+            
+            // 为每个日记项绑定事件
+            diaries.forEach(diary => {
+                const editBtn = document.querySelector(`[data-diary-id="${diary.id}"] .edit-btn`);
+                const deleteBtn = document.querySelector(`[data-diary-id="${diary.id}"] .delete-btn`);
+                const addCommentBtn = document.querySelector(`[data-diary-id="${diary.id}"] .add-comment-btn`);
+                const commentForm = document.querySelector(`[data-diary-id="${diary.id}"] .comment-form`);
+                
+                if (editBtn) editBtn.addEventListener('click', () => editDiary(diary.id));
+                if (deleteBtn) deleteBtn.addEventListener('click', () => deleteDiary(diary.id));
+                if (addCommentBtn) addCommentBtn.addEventListener('click', () => {
+                    commentForm.classList.toggle('hidden');
+                });
+                
+                const saveCommentBtn = document.querySelector(`[data-diary-id="${diary.id}"] .save-comment-btn`);
+                if (saveCommentBtn) saveCommentBtn.addEventListener('click', () => saveComment(diary.date));
             });
         }
-        
-        function createDiaryCard(diary) {
-            const cardEl = document.createElement('div');
-            cardEl.className = 'diary-card';
-            cardEl.dataset.date = diary.date;
+
+        function renderDiaryItem(diary, comments) {
+            const moodIcons = {
+                happy: '😊', excited: '🤩', love: '🥰', peaceful: '😌',
+                grateful: '🙏', sad: '😔', tired: '😴', angry: '😠',
+                anxious: '😰', sick: '🤒'
+            };
             
-            const dateObj = new Date(diary.date);
-            const formattedDate = formatDate(dateObj);
-            const moodIcon = getMoodIcon(diary.mood);
-            const tagsHtml = diary.tags && diary.tags.length > 0 
-                ? `<div class="card-tags">${diary.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}</div>` 
-                : '';
+            const weatherIcons = {
+                sunny: '☀️', cloudy: '⛅', rainy: '🌧️',
+                snowy: '❄️', windy: '💨', stormy: '⛈️'
+            };
             
-            const foodHtml = diary.food 
-                ? `<div class="card-food">🍽️ ${diary.food}</div>` 
-                : '';
+            const date = new Date(diary.date);
+            const formattedDate = date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
             
-            const imageHtml = diary.image 
-                ? `<img src="${diary.image}" class="card-image" alt="日记图片">` 
-                : '';
+            const tagsHtml = diary.tags.map(tag => 
+                `<span class="diary-tag">${tag}</span>`
+            ).join('');
             
-            // 计算互动数据（随机生成，增加真实感）
-            const likes = Math.floor(Math.random() * 50);
-            const comments = Math.floor(Math.random() * 20);
-            
-            cardEl.innerHTML = `
-                <div class="card-header">
-                    <img src="${userSettings.avatar}" class="card-avatar" alt="头像">
-                    <div class="card-user-info">
-                        <div class="card-user-name">${userSettings.name}</div>
-                        <div class="card-date">${formattedDate}</div>
+            const commentsHtml = comments.length > 0 ? comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-meta">
+                        <span>${formatTime(comment.createdAt)}</span>
+                        <span>${getMoodText(comment.mood)} ${weatherIcons[comment.weather] || ''}</span>
                     </div>
-                    <div class="card-mood">${moodIcon}</div>
+                    <div class="diary-content">${comment.content || ''}</div>
+                    ${comment.food ? `<div><i class="fas fa-utensils"></i> ${comment.food}</div>` : ''}
+                    ${comment.tags.length > 0 ? `<div class="diary-tags">${comment.tags.map(t => `<span class="diary-tag">${t}</span>`).join('')}</div>` : ''}
                 </div>
-                
-                ${tagsHtml}
-                ${foodHtml}
-                
-                <div class="card-content">${diary.content}</div>
-                ${imageHtml}
-                
-                <div class="card-actions">
-                    <div class="card-action" data-action="like">
-                        <i class="far fa-heart action-icon"></i>
-                        <span class="action-count">${likes}</span>
+            `).join('') : '<p style="color:var(--text-light); font-style:italic;">暂无补充记录</p>';
+            
+            return `
+                <div class="diary-item" data-diary-id="${diary.id}">
+                    <div class="diary-header">
+                        <div class="diary-date">${formattedDate}</div>
+                        <div>
+                            <button class="icon-btn edit-btn" title="编辑主日记"><i class="fas fa-edit"></i></button>
+                            <button class="icon-btn delete-btn" title="删除"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
-                    <div class="card-action" data-action="comment">
-                        <i class="far fa-comment action-icon"></i>
-                        <span class="action-count">${comments}</span>
+                    
+                    <div class="diary-meta">
+                        <span class="meta-item">${moodIcons[diary.mood] || '😊'} ${getMoodText(diary.mood)}</span>
+                        <span class="meta-item">${weatherIcons[diary.weather] || '☀️'} ${getWeatherText(diary.weather)}</span>
+                        ${diary.food ? `<span class="meta-item"><i class="fas fa-utensils"></i> ${diary.food}</span>` : ''}
                     </div>
-                    <div class="card-action" data-action="edit">
-                        <i class="far fa-edit action-icon"></i>
-                        <span>编辑</span>
-                    </div>
-                    <div class="card-action" data-action="delete">
-                        <i class="far fa-trash-alt action-icon"></i>
-                        <span>删除</span>
+                    
+                    ${diary.tags.length > 0 ? `<div class="diary-tags">${tagsHtml}</div>` : ''}
+                    
+                    <div class="diary-content">${diary.content}</div>
+                    
+                    <div class="comments-section">
+                        <h4 class="comments-title"><i class="fas fa-comments"></i> 补充记录 (${comments.length})</h4>
+                        <div class="comments-list">
+                            ${commentsHtml}
+                        </div>
+                        
+                        <div class="add-comment">
+                            <button class="btn btn-secondary add-comment-btn" style="width:100%;">
+                                <i class="fas fa-plus"></i> 添加补充记录
+                            </button>
+                            
+                            <div class="comment-form hidden">
+                                <textarea class="comment-textarea" placeholder="补充今天的新想法..." rows="3"></textarea>
+                                <button class="btn btn-primary save-comment-btn" style="width:100%;">
+                                    <i class="fas fa-paper-plane"></i> 保存补充
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
-            
-            // 绑定卡片内按钮事件
-            cardEl.querySelector('[data-action="edit"]').addEventListener('click', (e) => {
-                e.stopPropagation();
-                editDiary(diary.date);
-            });
-            
-            cardEl.querySelector('[data-action="delete"]').addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteDiary(diary.date);
-            });
-            
-            // 点击卡片也可以编辑
-            cardEl.addEventListener('click', () => {
-                editDiary(diary.date);
-            });
-            
-            return cardEl;
         }
-        
-        function editDiary(date) {
+
+        // ========== 编辑与删除 ==========
+        function editDiary(diaryId) {
             const diaries = loadDiaries();
-            const diary = diaries.find(d => d.date === date);
-            if (!diary) return;
+            const diary = diaries.find(d => d.id === diaryId);
+            
+            if (!diary) {
+                alert('未找到日记');
+                return;
+            }
             
             // 填充编辑器
-            document.getElementById('diaryText').value = diary.content;
             document.getElementById('dateInput').value = diary.date;
-            document.getElementById('currentDateDisplay').textContent = formatDate(new Date(diary.date));
             document.getElementById('foodInput').value = diary.food || '';
+            document.getElementById('diaryText').value = diary.content;
             
             // 设置心情
+            currentEditorState.selectedMood = diary.mood;
             document.querySelectorAll('.mood-option').forEach(opt => {
                 opt.classList.toggle('selected', opt.dataset.mood === diary.mood);
             });
-            diaryState.selectedMood = diary.mood;
+            
+            // 设置天气
+            currentEditorState.selectedWeather = diary.weather;
+            document.querySelectorAll('.weather-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.weather === diary.weather);
+            });
             
             // 设置标签
+            currentEditorState.selectedTags = diary.tags || [];
             document.querySelectorAll('.tag-option').forEach(opt => {
-                opt.classList.toggle('selected', diary.tags && diary.tags.includes(opt.dataset.tag));
+                opt.classList.toggle('selected', diary.tags.includes(opt.dataset.tag));
             });
-            diaryState.selectedTags = diary.tags || [];
             
-            // 设置图片
-            if (diary.image) {
-                diaryState.imageData = diary.image;
-                document.getElementById('imagePreview').src = diary.image;
-                document.getElementById('imagePreview').style.display = 'block';
-            } else {
-                diaryState.imageData = null;
-                document.getElementById('imagePreview').style.display = 'none';
-            }
-            
-            // 标记正在编辑的日记日期
-            diaryState.editingDate = diary.date;
+            // 标记为编辑模式
+            currentEditorState.editingDiaryId = diaryId;
             
             // 滚动到编辑器
-            document.getElementById('diaryText').focus();
-            
-            // 更新字符计数器
-            updateCharCounter();
-        }
-        
-        function deleteDiary(date) {
-            if (confirm('确定要删除这篇日记吗？此操作不可撤销。')) {
-                const diaries = loadDiaries();
-                const filteredDiaries = diaries.filter(diary => diary.date !== date);
-                localStorage.setItem('diaries', JSON.stringify(filteredDiaries));
-                renderDiaries();
-                
-                // 如果删除的是正在编辑的日记，清空编辑器
-                if (diaryState.editingDate === date) {
-                    resetEditor();
-                }
-            }
+            document.querySelector('.editor-card').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // ========== 编辑器功能 ==========
-        function resetEditor() {
-            document.getElementById('diaryText').value = '';
-            document.getElementById('dateInput').valueAsDate = new Date();
-            document.getElementById('currentDateDisplay').textContent = '今天';
-            document.getElementById('foodInput').value = '';
-            
-            document.querySelectorAll('.mood-option').forEach(opt => {
-                opt.classList.toggle('selected', opt.dataset.mood === 'neutral');
-            });
-            diaryState.selectedMood = 'neutral';
-            
-            document.querySelectorAll('.tag-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            diaryState.selectedTags = [];
-            
-            diaryState.imageData = null;
-            document.getElementById('imagePreview').style.display = 'none';
-            
-            diaryState.editingDate = null;
-            
-            updateCharCounter();
-            
-            // 隐藏所有选项面板
-            hideAllOptionPanels();
-        }
-        
-        function updateCharCounter() {
-            const textarea = document.getElementById('diaryText');
-            const counter = document.getElementById('charCounter');
-            const length = textarea.value.length;
-            counter.textContent = `${length}/500`;
-            
-            if (length > 450) {
-                counter.style.color = '#e74c3c';
-            } else if (length > 400) {
-                counter.style.color = '#f39c12';
-            } else {
-                counter.style.color = 'var(--twitter-text-light)';
+        function deleteDiary(diaryId) {
+            if (!confirm('确定要删除这篇日记吗？这也会删除所有补充记录。')) {
+                return;
             }
+            
+            const diaries = loadDiaries();
+            const diary = diaries.find(d => d.id === diaryId);
+            
+            if (!diary) return;
+            
+            // 删除主日记
+            const filteredDiaries = diaries.filter(d => d.id !== diaryId);
+            saveDiaries(filteredDiaries);
+            
+            // 删除相关评论
+            const comments = loadComments();
+            if (comments[diary.date]) {
+                delete comments[diary.date];
+                saveComments(comments);
+            }
+            
+            // 如果正在编辑这篇日记，清空编辑器
+            if (currentEditorState.editingDiaryId === diaryId) {
+                resetEditor();
+            }
+            
+            renderDiaryList();
+            alert('日记已删除');
         }
-        
-        function hideAllOptionPanels() {
-            document.getElementById('moodSelector').classList.add('hidden');
-            document.getElementById('tagSelector').classList.add('hidden');
-            document.getElementById('foodInputContainer').classList.add('hidden');
-            document.getElementById('imageUploadContainer').classList.add('hidden');
+
+        function saveComment(parentDate) {
+            const commentText = document.querySelector(`[data-diary-id="${currentEditorState.editingDiaryId || 'new'}"] .comment-textarea`)?.value.trim();
+            const food = document.getElementById('foodInput').value.trim();
+            
+            if (!commentText && currentEditorState.selectedTags.length === 0 && !food) {
+                alert('请至少填写补充内容、选择标签或填写美食中的一项');
+                return;
+            }
+            
+            const commentData = {
+                id: `comment_${Date.now()}`,
+                date: parentDate,
+                mood: currentEditorState.selectedMood,
+                weather: currentEditorState.selectedWeather,
+                food: food,
+                tags: [...currentEditorState.selectedTags],
+                content: commentText || '',
+                createdAt: new Date().toISOString(),
+                isComment: true,
+                parentDate: parentDate
+            };
+            
+            const comments = loadComments();
+            if (!comments[parentDate]) {
+                comments[parentDate] = [];
+            }
+            comments[parentDate].push(commentData);
+            saveComments(comments);
+            
+            // 清空评论表单
+            document.querySelectorAll('.comment-textarea').forEach(ta => ta.value = '');
+            document.querySelectorAll('.comment-form').forEach(form => form.classList.add('hidden'));
+            
+            renderDiaryList();
+            alert('补充记录已保存！');
         }
 
         // ========== 数据导入导出 ==========
-        function exportMonthDiaries() {
-            const monthValue = document.getElementById('monthSelect').value;
+        function exportMonthlyDiaries() {
+            const monthValue = document.getElementById('exportMonth').value;
             if (!monthValue) {
-                alert('请选择月份');
+                alert('请先选择月份');
                 return;
             }
             
             const [year, month] = monthValue.split('-');
-            const diaries = loadDiaries();
+            const diaries = loadDiaries().filter(d => !d.isComment);
+            const allComments = loadComments();
+            
             const monthDiaries = diaries.filter(diary => {
                 const diaryDate = new Date(diary.date);
                 return diaryDate.getFullYear() == year && (diaryDate.getMonth() + 1) == month;
             });
             
             if (monthDiaries.length === 0) {
-                document.getElementById('exportOutput').value = `📅 ${year}年${month}月\n\n该月份没有日记记录。`;
+                alert('该月份没有日记记录');
                 return;
             }
             
@@ -1181,35 +1267,56 @@
             
             monthDiaries.forEach((diary, index) => {
                 const dateObj = new Date(diary.date);
-                const formattedDate = dateObj.toLocaleDateString('zh-CN', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric', 
-                    weekday: 'long' 
+                const formattedDate = dateObj.toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
                 });
                 
                 exportText += `【日记 ${index + 1}】\n`;
                 exportText += `📅 日期：${formattedDate}\n`;
-                exportText += `😊 心情：${getMoodIcon(diary.mood)} ${diary.mood}\n`;
-                
-                if (diary.tags && diary.tags.length > 0) {
-                    exportText += `🏷️ 标签：${diary.tags.join('， ')}\n`;
-                }
+                exportText += `😊 心情：${getMoodText(diary.mood)}\n`;
+                exportText += `🌤️ 天气：${getWeatherText(diary.weather)}\n`;
                 
                 if (diary.food) {
                     exportText += `🍽️ 饮食：${diary.food}\n`;
                 }
                 
+                if (diary.tags.length > 0) {
+                    exportText += `🏷️ 标签：${diary.tags.join('， ')}\n`;
+                }
+                
                 exportText += `\n📝 正文：\n${diary.content}\n`;
-                exportText += `\n${diary.image ? '[本篇日记包含图片]' : '[本篇日记无图片]'}\n`;
-                exportText += "-".repeat(30) + "\n\n";
+                
+                // 添加评论/补充记录
+                const comments = allComments[diary.date] || [];
+                if (comments.length > 0) {
+                    exportText += `\n💬 补充记录 (${comments.length}条)：\n`;
+                    comments.forEach((comment, idx) => {
+                        exportText += `  ${idx + 1}. ${formatTime(comment.createdAt)} - ${comment.content || '(无正文)'}`;
+                        if (comment.food) exportText += ` | 🍽️ ${comment.food}`;
+                        if (comment.tags.length > 0) exportText += ` | 🏷️ ${comment.tags.join(',')}`;
+                        exportText += '\n';
+                    });
+                }
+                
+                exportText += "\n" + "-".repeat(30) + "\n\n";
             });
             
-            exportText += `备份提示：此文本文件包含${monthDiaries.length}篇日记的完整内容。\n请妥善保存，如需重新导入，可手动对照录入。`;
+            exportText += `备份提示：此文本文件包含${monthDiaries.length}篇日记及补充记录。\n请妥善保存，可使用下方导入功能恢复。`;
             
-            document.getElementById('exportOutput').value = exportText;
+            // 复制到剪贴板
+            navigator.clipboard.writeText(exportText).then(() => {
+                document.getElementById('exportOutput').value = exportText;
+                alert(`已生成${monthDiaries.length}篇日记的备份文本，并复制到剪贴板！\n\n你可以直接粘贴到文本文件中保存。`);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                document.getElementById('exportOutput').value = exportText;
+                alert(`已生成备份文本，但自动复制失败。请手动复制上方文本框内容。`);
+            });
         }
-        
+
         function importDiaries() {
             const importText = document.getElementById('importTextarea').value.trim();
             if (!importText) {
@@ -1221,141 +1328,112 @@
                 return;
             }
             
-            const importedDiaries = parseBackupText(importText);
-            if (importedDiaries.length === 0) {
+            const importedData = parseBackupText(importText);
+            if (importedData.diaries.length === 0) {
                 alert('未能从文本中解析出有效的日记。请检查格式。');
                 return;
             }
             
-            const existingDiaries = loadDiaries();
+            // 合并日记
+            const existingDiaries = loadDiaries().filter(d => !d.isComment);
             const dateMap = new Map();
-            
             existingDiaries.forEach(d => dateMap.set(d.date, d));
-            importedDiaries.forEach(newDiary => {
+            
+            importedData.diaries.forEach(newDiary => {
                 dateMap.set(newDiary.date, newDiary);
             });
             
             const mergedDiaries = Array.from(dateMap.values());
-            localStorage.setItem('diaries', JSON.stringify(mergedDiaries));
+            saveDiaries(mergedDiaries);
             
-            alert(`成功导入 ${importedDiaries.length} 篇日记！`);
+            // 合并评论（如果有）
+            if (importedData.comments && Object.keys(importedData.comments).length > 0) {
+                const existingComments = loadComments();
+                Object.keys(importedData.comments).forEach(date => {
+                    existingComments[date] = importedData.comments[date];
+                });
+                saveComments(existingComments);
+            }
+            
+            alert(`成功导入 ${importedData.diaries.length} 篇日记！`);
             document.getElementById('importTextarea').value = '';
-            renderDiaries();
+            renderDiaryList();
         }
 
         // ========== 工具函数 ==========
-        function formatDate(date) {
-            const today = new Date();
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            
-            if (date.toDateString() === today.toDateString()) {
-                return '今天';
-            } else if (date.toDateString() === yesterday.toDateString()) {
-                return '昨天';
-            } else {
-                return date.toLocaleDateString('zh-CN', { 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-            }
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
         }
-        
-        function getMoodIcon(mood) {
-            const icons = { 
-                'happy': '😊', 
-                'neutral': '😌', 
-                'sad': '😔', 
-                'excited': '🤩', 
-                'tired': '😴', 
-                'love': '🥰' 
+
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getMoodText(mood) {
+            const moodMap = {
+                happy: '开心', excited: '兴奋', love: '有爱', peaceful: '平和',
+                grateful: '感恩', sad: '低落', tired: '疲惫', angry: '生气',
+                anxious: '焦虑', sick: '不适'
             };
-            return icons[mood] || '😌';
+            return moodMap[mood] || mood;
+        }
+
+        function getWeatherText(weather) {
+            const weatherMap = {
+                sunny: '晴天', cloudy: '多云', rainy: '雨天',
+                snowy: '雪天', windy: '刮风', stormy: '雷暴'
+            };
+            return weatherMap[weather] || weather;
         }
 
         // ========== 事件监听器绑定 ==========
-        function bindEventListeners() {
-            // 头像点击 - 打开设置
-            document.getElementById('headerAvatar').addEventListener('click', () => {
-                document.getElementById('settingsModal').style.display = 'flex';
+        function bindAllEventListeners() {
+            console.log('绑定事件监听器...');
+            
+            // 用户设置模态框
+            document.getElementById('userAvatar').addEventListener('click', () => {
+                document.getElementById('userSettingsModal').style.display = 'flex';
             });
             
-            // 关闭设置模态框
-            document.getElementById('closeSettingsBtn').addEventListener('click', () => {
-                document.getElementById('settingsModal').style.display = 'none';
+            document.getElementById('settingsToggle').addEventListener('click', () => {
+                document.getElementById('userSettingsModal').style.display = 'flex';
+            });
+            
+            document.getElementById('closeModalBtn').addEventListener('click', () => {
+                document.getElementById('userSettingsModal').style.display = 'none';
             });
             
             document.getElementById('cancelSettingsBtn').addEventListener('click', () => {
-                document.getElementById('settingsModal').style.display = 'none';
+                document.getElementById('userSettingsModal').style.display = 'none';
                 applyUserSettings(); // 恢复原设置
             });
             
-            // 保存设置
+            // 头像上传
+            document.getElementById('changeAvatarBtn').addEventListener('click', () => {
+                document.getElementById('avatarUpload').click();
+            });
+            
+            document.getElementById('avatarUpload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        userSettings.avatar = e.target.result;
+                        document.getElementById('avatarPreview').src = userSettings.avatar;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // 保存用户设置
             document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-                userSettings.name = document.getElementById('inputUserName').value.trim() || '我';
-                userSettings.age = document.getElementById('inputUserAge').value;
-                userSettings.motto = document.getElementById('inputUserMotto').value.trim();
+                userSettings.name = document.getElementById('userNameInput').value.trim() || '我';
                 saveUserSettings();
                 applyUserSettings();
-                document.getElementById('settingsModal').style.display = 'none';
-            });
-            
-            // 主题选择
-            document.querySelectorAll('.theme-option').forEach(opt => {
-                opt.addEventListener('click', function() {
-                    applyTheme(this.dataset.theme);
-                });
-            });
-            
-            // 添加倒计时
-            document.getElementById('addCountdownBtn').addEventListener('click', () => {
-                const name = document.getElementById('inputCountdownName').value.trim();
-                const date = document.getElementById('inputCountdownDate').value;
-                
-                if (!name || !date) {
-                    alert('请填写事件名称和日期');
-                    return;
-                }
-                
-                userSettings.countdowns.push({ name, date });
-                document.getElementById('inputCountdownName').value = '';
-                document.getElementById('inputCountdownDate').value = '';
-                saveUserSettings();
-                renderCountdownList();
-                renderDiaries();
-            });
-            
-            // 编辑器选项切换
-            document.getElementById('toggleMood').addEventListener('click', () => {
-                const panel = document.getElementById('moodSelector');
-                panel.classList.toggle('hidden');
-                document.getElementById('tagSelector').classList.add('hidden');
-                document.getElementById('foodInputContainer').classList.add('hidden');
-                document.getElementById('imageUploadContainer').classList.add('hidden');
-            });
-            
-            document.getElementById('toggleTags').addEventListener('click', () => {
-                const panel = document.getElementById('tagSelector');
-                panel.classList.toggle('hidden');
-                document.getElementById('moodSelector').classList.add('hidden');
-                document.getElementById('foodInputContainer').classList.add('hidden');
-                document.getElementById('imageUploadContainer').classList.add('hidden');
-            });
-            
-            document.getElementById('toggleFood').addEventListener('click', () => {
-                const panel = document.getElementById('foodInputContainer');
-                panel.classList.toggle('hidden');
-                document.getElementById('moodSelector').classList.add('hidden');
-                document.getElementById('tagSelector').classList.add('hidden');
-                document.getElementById('imageUploadContainer').classList.add('hidden');
-            });
-            
-            document.getElementById('toggleImage').addEventListener('click', () => {
-                const panel = document.getElementById('imageUploadContainer');
-                panel.classList.toggle('hidden');
-                document.getElementById('moodSelector').classList.add('hidden');
-                document.getElementById('tagSelector').classList.add('hidden');
-                document.getElementById('foodInputContainer').classList.add('hidden');
+                document.getElementById('userSettingsModal').style.display = 'none';
+                alert('设置已保存！');
             });
             
             // 心情选择
@@ -1363,7 +1441,16 @@
                 opt.addEventListener('click', function() {
                     document.querySelectorAll('.mood-option').forEach(o => o.classList.remove('selected'));
                     this.classList.add('selected');
-                    diaryState.selectedMood = this.dataset.mood;
+                    currentEditorState.selectedMood = this.dataset.mood;
+                });
+            });
+            
+            // 天气选择
+            document.querySelectorAll('.weather-option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    document.querySelectorAll('.weather-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    currentEditorState.selectedWeather = this.dataset.weather;
                 });
             });
             
@@ -1374,101 +1461,75 @@
                     const tag = this.dataset.tag;
                     
                     if (this.classList.contains('selected')) {
-                        if (!diaryState.selectedTags.includes(tag)) {
-                            diaryState.selectedTags.push(tag);
+                        if (!currentEditorState.selectedTags.includes(tag)) {
+                            currentEditorState.selectedTags.push(tag);
                         }
                     } else {
-                        diaryState.selectedTags = diaryState.selectedTags.filter(t => t !== tag);
+                        currentEditorState.selectedTags = currentEditorState.selectedTags.filter(t => t !== tag);
                     }
                 });
             });
             
-            // 图片上传
-            document.getElementById('imageUploadArea').addEventListener('click', () => {
-                document.getElementById('imageInput').click();
+            // 主题选择
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    userSettings.theme = this.dataset.theme;
+                    document.body.className = `theme-${userSettings.theme}`;
+                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    saveUserSettings();
+                });
             });
             
-            document.getElementById('imageInput').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        diaryState.imageData = e.target.result;
-                        document.getElementById('imagePreview').src = diaryState.imageData;
-                        document.getElementById('imagePreview').style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
+            // 界面风格选择
+            document.querySelectorAll('.interface-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    userSettings.interface = this.dataset.interface;
+                    document.querySelectorAll('.interface-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 这里可以根据不同界面风格调整更多样式
+                    if (userSettings.interface === 'social') {
+                        document.body.classList.add('theme-social');
+                    } else {
+                        document.body.classList.remove('theme-social');
+                    }
+                    
+                    saveUserSettings();
+                    alert(`已切换为${this.textContent.trim()}模式，部分样式已调整。`);
+                });
+            });
+            
+            // 保存日记按钮
+            document.getElementById('saveDiaryBtn').addEventListener('click', saveNewDiary);
+            
+            // 清空按钮
+            document.getElementById('clearBtn').addEventListener('click', () => {
+                if (confirm('清空当前编辑内容？')) {
+                    resetEditor();
                 }
             });
             
-            // 日期选择
-            document.getElementById('dateInput').addEventListener('change', function() {
-                const date = new Date(this.value);
-                document.getElementById('currentDateDisplay').textContent = formatDate(date);
-            });
+            // 导出按钮 (修复：确保绑定正确)
+            document.getElementById('exportBtn').addEventListener('click', exportMonthlyDiaries);
             
-            // 发布日记
-            document.getElementById('publishBtn').addEventListener('click', publishDiary);
-            
-            // 导出面板切换
-            document.getElementById('exportPanelToggle').addEventListener('click', () => {
-                const panel = document.getElementById('dataPanel');
-                panel.classList.toggle('hidden');
-                
-                if (!panel.classList.contains('hidden')) {
-                    document.getElementById('importSection').classList.add('hidden');
-                    document.getElementById('exportSection').classList.remove('hidden');
-                }
-            });
-            
-            // 导出功能
-            document.getElementById('exportBtn').addEventListener('click', exportMonthDiaries);
-            
-            // 导入切换
-            document.getElementById('importToggleBtn').addEventListener('click', () => {
-                document.getElementById('importSection').classList.toggle('hidden');
-                document.getElementById('exportSection').classList.toggle('hidden');
-            });
-            
-            // 导入功能
+            // 导入按钮
             document.getElementById('importBtn').addEventListener('click', importDiaries);
-        }
-        
-        function publishDiary() {
-            const content = document.getElementById('diaryText').value.trim();
-            const date = document.getElementById('dateInput').value;
-            const food = document.getElementById('foodInput').value.trim();
             
-            if (!content) {
-                alert('请填写日记内容');
-                return;
-            }
+            // 设置默认选中项
+            document.querySelector('.mood-option[data-mood="peaceful"]').classList.add('selected');
+            document.querySelector('.weather-option[data-weather="sunny"]').classList.add('selected');
             
-            if (!date) {
-                alert('请选择日期');
-                return;
-            }
-            
-            const diary = {
-                date: date,
-                mood: diaryState.selectedMood,
-                food: food,
-                tags: [...diaryState.selectedTags],
-                content: content,
-                image: diaryState.imageData,
-                timestamp: new Date().toISOString()
-            };
-            
-            const success = saveDiary(diary);
-            
-            if (success) {
-                alert('日记发布成功！');
-                resetEditor();
-            }
+            console.log('事件监听器绑定完成。');
         }
 
-        // ========== 初始化应用 ==========
-        document.addEventListener('DOMContentLoaded', initApp);
+        // ========== 应用启动 ==========
+        // 确保DOM完全加载后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
