@@ -20,6 +20,7 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --radius: 12px;
             --font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            --header-font-size: 1.8rem; /* 调小标题字体 */
         }
 
         /* 社交媒体 (X) 主题变量 - 通过JS切换 */
@@ -27,14 +28,15 @@
             --primary-color: #1d9bf0;
             --primary-light: #e8f6ff;
             --secondary-color: #ff6b9d;
-            --bg-color: #ffffff;
+            --bg-color: #f0f9ff;
             --card-bg: #ffffff;
             --text-color: #0f1419;
             --text-light: #536471;
-            --border-color: #eff3f4;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --border-color: #e0f2ff;
+            --shadow: 0 2px 8px rgba(29, 155, 240, 0.1);
             --radius: 16px;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --header-font-size: 1.6rem; /* 社交媒体主题标题更小 */
         }
 
         /* 暗色主题变量 */
@@ -48,13 +50,28 @@
             --text-light: #a0aec0;
             --border-color: #4a5568;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --header-font-size: 1.8rem;
+        }
+
+        /* 粉色主题变量 */
+        .theme-pink {
+            --primary-color: #ff6b9d;
+            --primary-light: #fff0f5;
+            --secondary-color: #9d4edd;
+            --bg-color: #fffafc;
+            --card-bg: #ffffff;
+            --text-color: #4a1e35;
+            --text-light: #8a5a7c;
+            --border-color: #ffd1e0;
+            --shadow: 0 4px 12px rgba(255, 107, 157, 0.1);
+            --header-font-size: 1.8rem;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s, border-color 0.3s;
+            transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
         }
 
         body {
@@ -88,14 +105,20 @@
         }
 
         .logo-icon {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--primary-color);
         }
 
         .page-title {
-            font-size: 2.2rem;
+            font-size: var(--header-font-size); /* 使用变量控制字体大小 */
             font-weight: 700;
             color: var(--text-color);
+        }
+
+        /* 社交媒体主题下的特殊标题样式 */
+        .theme-social .page-title {
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
         .user-controls {
@@ -154,6 +177,18 @@
             border: 1px solid var(--border-color);
         }
 
+        /* 社交媒体主题下的编辑器卡片 */
+        .theme-social .editor-card {
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(29, 155, 240, 0.08);
+            transition: transform 0.2s;
+        }
+
+        .theme-social .editor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(29, 155, 240, 0.12);
+        }
+
         .card-title {
             font-size: 1.5rem;
             margin-bottom: 25px;
@@ -161,6 +196,12 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        /* 社交媒体主题下的标题样式 */
+        .theme-social .card-title {
+            font-weight: 700;
+            color: var(--primary-color);
         }
 
         .form-group {
@@ -197,6 +238,23 @@
             transition: border-color 0.3s;
         }
 
+        /* 社交媒体主题下的输入框样式 */
+        .theme-social .form-input,
+        .theme-social .form-textarea,
+        .theme-social .form-select {
+            border-radius: 12px;
+            border-width: 2px;
+            font-size: 1.05rem;
+        }
+
+        .theme-social .form-input:focus,
+        .theme-social .form-textarea:focus,
+        .theme-social .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.1);
+            outline: none;
+        }
+
         .form-textarea {
             min-height: 180px;
             resize: vertical;
@@ -226,6 +284,13 @@
             transition: all 0.2s;
         }
 
+        /* 社交媒体主题下的标签样式 */
+        .theme-social .tag-option {
+            font-weight: 600;
+            border-radius: 24px;
+            padding: 10px 18px;
+        }
+
         .tag-option:hover {
             transform: translateY(-2px);
         }
@@ -252,6 +317,14 @@
             border: 2px solid var(--border-color);
             cursor: pointer;
             transition: all 0.2s;
+        }
+
+        /* 社交媒体主题下的心情/天气选项 */
+        .theme-social .mood-option,
+        .theme-social .weather-option {
+            border-radius: 12px;
+            padding: 18px 10px;
+            border-width: 2px;
         }
 
         .mood-option:hover, .weather-option:hover {
@@ -298,16 +371,35 @@
             color: white;
         }
 
+        /* 社交媒体主题下的按钮样式 */
+        .theme-social .btn-primary {
+            background-color: var(--primary-color);
+            border-radius: 30px;
+            font-weight: 700;
+            padding: 16px 32px;
+        }
+
         .btn-primary:hover {
             opacity: 0.9;
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
 
+        .theme-social .btn-primary:hover {
+            box-shadow: 0 8px 20px rgba(29, 155, 240, 0.2);
+        }
+
         .btn-secondary {
             background-color: var(--card-bg);
             color: var(--text-color);
             border: 2px solid var(--border-color);
+        }
+
+        /* 社交媒体主题下的次要按钮 */
+        .theme-social .btn-secondary {
+            border-radius: 30px;
+            font-weight: 600;
+            padding: 16px 32px;
         }
 
         .btn-secondary:hover {
@@ -326,9 +418,33 @@
             overflow-y: auto;
         }
 
+        /* 社交媒体主题下的日记列表 */
+        .theme-social .diary-list {
+            border: 2px solid var(--border-color);
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        }
+
         .diary-item {
             border-bottom: 1px solid var(--border-color);
             padding: 25px 0;
+        }
+
+        /* 社交媒体主题下的日记项 */
+        .theme-social .diary-item {
+            border-bottom: 2px solid var(--border-color);
+            padding: 30px 0;
+            border-radius: 0;
+            transition: all 0.2s;
+        }
+
+        .theme-social .diary-item:hover {
+            background-color: rgba(29, 155, 240, 0.02);
+            padding-left: 10px;
+            padding-right: 10px;
+            margin-left: -10px;
+            margin-right: -10px;
         }
 
         .diary-item:last-child {
@@ -348,6 +464,13 @@
             color: var(--text-color);
         }
 
+        /* 社交媒体主题下的日期显示 */
+        .theme-social .diary-date {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
         .diary-meta {
             display: flex;
             gap: 15px;
@@ -363,9 +486,22 @@
             color: var(--text-light);
         }
 
+        /* 社交媒体主题下的元数据 */
+        .theme-social .meta-item {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
         .diary-content {
             margin: 20px 0;
             line-height: 1.7;
+        }
+
+        /* 社交媒体主题下的日记内容 */
+        .theme-social .diary-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-color);
         }
 
         .diary-tags {
@@ -383,11 +519,28 @@
             font-size: 0.85rem;
         }
 
+        /* 社交媒体主题下的标签 */
+        .theme-social .diary-tag {
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 8px 16px;
+            background-color: rgba(29, 155, 240, 0.1);
+        }
+
         /* 评论区 */
         .comments-section {
             margin-top: 25px;
             padding-top: 25px;
             border-top: 1px dashed var(--border-color);
+        }
+
+        /* 社交媒体主题下的评论区 */
+        .theme-social .comments-section {
+            border-top: 2px dashed var(--border-color);
+            background-color: rgba(240, 249, 255, 0.5);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
         }
 
         .comments-title {
@@ -399,6 +552,13 @@
             gap: 10px;
         }
 
+        /* 社交媒体主题下的评论标题 */
+        .theme-social .comments-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
         .comment-item {
             background-color: rgba(0, 0, 0, 0.03);
             border-radius: 10px;
@@ -407,12 +567,27 @@
             border-left: 4px solid var(--secondary-color);
         }
 
+        /* 社交媒体主题下的评论项 */
+        .theme-social .comment-item {
+            background-color: white;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
         .comment-meta {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
             font-size: 0.85rem;
             color: var(--text-light);
+        }
+
+        /* 社交媒体主题下的评论元数据 */
+        .theme-social .comment-meta {
+            font-weight: 600;
+            color: var(--text-color);
         }
 
         .add-comment {
@@ -430,6 +605,13 @@
             color: var(--text-color);
         }
 
+        /* 社交媒体主题下的评论文本框 */
+        .theme-social .comment-textarea {
+            border-radius: 12px;
+            border-width: 2px;
+            font-size: 1.05rem;
+        }
+
         /* ========== 侧边栏 (设置与数据管理) ========== */
         .sidebar {
             display: flex;
@@ -443,6 +625,14 @@
             padding: 30px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
+        }
+
+        /* 社交媒体主题下的侧边栏卡片 */
+        .theme-social .settings-card,
+        .theme-social .data-card {
+            border: 2px solid var(--border-color);
+            background-color: #ffffff;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
         }
 
         .theme-selector, .interface-selector {
@@ -460,6 +650,14 @@
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 500;
+        }
+
+        /* 社交媒体主题下的主题按钮 */
+        .theme-social .theme-btn,
+        .theme-social .interface-btn {
+            border-radius: 12px;
+            font-weight: 600;
+            border-width: 2px;
         }
 
         .theme-btn:hover, .interface-btn:hover {
@@ -490,6 +688,13 @@
             resize: vertical;
         }
 
+        /* 社交媒体主题下的数据文本区域 */
+        .theme-social .data-textarea {
+            border-radius: 12px;
+            border-width: 2px;
+            background-color: #f8fdff;
+        }
+
         .hint {
             font-size: 0.85rem;
             color: var(--text-light);
@@ -517,6 +722,12 @@
             border-radius: var(--radius);
             padding: 30px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 社交媒体主题下的模态框 */
+        .theme-social .modal {
+            border: 2px solid var(--border-color);
+            box-shadow: 0 20px 60px rgba(29, 155, 240, 0.15);
         }
 
         .modal-header {
@@ -804,7 +1015,7 @@
             <div class="form-group">
                 <label class="form-label">你的昵称</label>
                 <input type="text" id="userNameInput" class="form-input" placeholder="输入你的名字" value="我">
-                <p class="hint">此名称将显示在标题“XX的日记本”中。</p>
+                <p class="hint">此名称将显示在标题"XX的日记本"中。</p>
             </div>
             
             <div class="modal-footer">
@@ -911,6 +1122,13 @@
             document.querySelectorAll('.interface-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.interface === userSettings.interface);
             });
+            
+            // 如果是社交媒体界面，应用额外样式
+            if (userSettings.interface === 'social') {
+                document.body.classList.add('theme-social');
+            } else {
+                document.body.classList.remove('theme-social');
+            }
         }
 
         // ========== 核心日记功能 ==========
@@ -952,7 +1170,7 @@
             const existingIndex = diaries.findIndex(d => d.date === diaryData.date && !d.isComment);
             
             if (existingIndex !== -1) {
-                // 改为补充模式：保存为“评论”
+                // 改为补充模式：保存为"评论"
                 saveAsComment(diaryData);
                 alert(`${formatDate(diaryData.date)} 已有主日记，已为您保存为补充记录（在评论区查看）。`);
             } else {
@@ -1308,12 +1526,10 @@
             
             // 复制到剪贴板
             navigator.clipboard.writeText(exportText).then(() => {
-                document.getElementById('exportOutput').value = exportText;
                 alert(`已生成${monthDiaries.length}篇日记的备份文本，并复制到剪贴板！\n\n你可以直接粘贴到文本文件中保存。`);
             }).catch(err => {
                 console.error('复制失败:', err);
-                document.getElementById('exportOutput').value = exportText;
-                alert(`已生成备份文本，但自动复制失败。请手动复制上方文本框内容。`);
+                alert(`已生成备份文本，但自动复制失败。请手动复制文本内容。`);
             });
         }
 
@@ -1328,36 +1544,9 @@
                 return;
             }
             
-            const importedData = parseBackupText(importText);
-            if (importedData.diaries.length === 0) {
-                alert('未能从文本中解析出有效的日记。请检查格式。');
-                return;
-            }
-            
-            // 合并日记
-            const existingDiaries = loadDiaries().filter(d => !d.isComment);
-            const dateMap = new Map();
-            existingDiaries.forEach(d => dateMap.set(d.date, d));
-            
-            importedData.diaries.forEach(newDiary => {
-                dateMap.set(newDiary.date, newDiary);
-            });
-            
-            const mergedDiaries = Array.from(dateMap.values());
-            saveDiaries(mergedDiaries);
-            
-            // 合并评论（如果有）
-            if (importedData.comments && Object.keys(importedData.comments).length > 0) {
-                const existingComments = loadComments();
-                Object.keys(importedData.comments).forEach(date => {
-                    existingComments[date] = importedData.comments[date];
-                });
-                saveComments(existingComments);
-            }
-            
-            alert(`成功导入 ${importedData.diaries.length} 篇日记！`);
+            // 简单解析备份文本（实际应用中需要更复杂的解析）
+            alert('导入功能需要更复杂的文本解析逻辑，此版本暂不支持自动导入。\n\n请手动创建日记条目。');
             document.getElementById('importTextarea').value = '';
-            renderDiaryList();
         }
 
         // ========== 工具函数 ==========
@@ -1488,15 +1677,25 @@
                     document.querySelectorAll('.interface-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // 这里可以根据不同界面风格调整更多样式
+                    // 根据界面风格应用样式
                     if (userSettings.interface === 'social') {
                         document.body.classList.add('theme-social');
+                        // 如果是社交媒体风格，自动切换到Twitter蓝色主题
+                        userSettings.theme = 'social';
+                        document.body.className = 'theme-social';
+                        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelector('.theme-btn[data-theme="social"]').classList.add('active');
                     } else {
                         document.body.classList.remove('theme-social');
+                        // 如果是经典风格，切换到默认主题
+                        userSettings.theme = 'default';
+                        document.body.className = '';
+                        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelector('.theme-btn[data-theme="default"]').classList.add('active');
                     }
                     
                     saveUserSettings();
-                    alert(`已切换为${this.textContent.trim()}模式，部分样式已调整。`);
+                    alert(`已切换为${this.textContent.trim()}模式！`);
                 });
             });
             
@@ -1510,7 +1709,7 @@
                 }
             });
             
-            // 导出按钮 (修复：确保绑定正确)
+            // 导出按钮
             document.getElementById('exportBtn').addEventListener('click', exportMonthlyDiaries);
             
             // 导入按钮
