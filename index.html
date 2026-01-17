@@ -20,13 +20,13 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --radius: 12px;
             --font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            --header-font-size: 1.8rem; /* 调小标题字体 */
+            --header-font-size: 1.8rem;
         }
 
         /* 社交媒体 (X) 主题变量 - 通过JS切换 */
         .theme-social {
             --primary-color: #1d9bf0;
-            --primary-light: #e8f6ff;
+            --primary-light: rgba(29, 155, 240, 0.1);
             --secondary-color: #ff6b9d;
             --bg-color: #f0f9ff;
             --card-bg: #ffffff;
@@ -36,7 +36,7 @@
             --shadow: 0 2px 8px rgba(29, 155, 240, 0.1);
             --radius: 16px;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --header-font-size: 1.6rem; /* 社交媒体主题标题更小 */
+            --header-font-size: 1.6rem;
         }
 
         /* 暗色主题变量 */
@@ -71,7 +71,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+            transition: background-color 0.3s, border-color 0.3s, transform 0.2s, opacity 0.3s;
         }
 
         body {
@@ -110,7 +110,7 @@
         }
 
         .page-title {
-            font-size: var(--header-font-size); /* 使用变量控制字体大小 */
+            font-size: var(--header-font-size);
             font-weight: 700;
             color: var(--text-color);
         }
@@ -119,6 +119,7 @@
         .theme-social .page-title {
             font-weight: 800;
             letter-spacing: -0.5px;
+            color: var(--primary-color);
         }
 
         .user-controls {
@@ -175,18 +176,19 @@
             box-shadow: var(--shadow);
             margin-bottom: 30px;
             border: 1px solid var(--border-color);
+            position: sticky;
+            top: 20px;
+            z-index: 10;
         }
 
         /* 社交媒体主题下的编辑器卡片 */
         .theme-social .editor-card {
             border: 2px solid var(--border-color);
             box-shadow: 0 4px 20px rgba(29, 155, 240, 0.08);
-            transition: transform 0.2s;
-        }
-
-        .theme-social .editor-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(29, 155, 240, 0.12);
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 20px;
         }
 
         .card-title {
@@ -422,33 +424,84 @@
         .theme-social .diary-list {
             border: 2px solid var(--border-color);
             background-color: #ffffff;
-            padding: 20px;
+            padding: 0;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            max-height: none;
+            overflow-y: visible;
+            border-radius: 0;
         }
 
         .diary-item {
             border-bottom: 1px solid var(--border-color);
             padding: 25px 0;
+            transition: all 0.3s;
         }
 
         /* 社交媒体主题下的日记项 */
         .theme-social .diary-item {
             border-bottom: 2px solid var(--border-color);
-            padding: 30px 0;
+            padding: 25px 30px;
+            position: relative;
             border-radius: 0;
             transition: all 0.2s;
         }
 
         .theme-social .diary-item:hover {
-            background-color: rgba(29, 155, 240, 0.02);
-            padding-left: 10px;
-            padding-right: 10px;
-            margin-left: -10px;
-            margin-right: -10px;
+            background-color: rgba(240, 249, 255, 0.5);
         }
 
         .diary-item:last-child {
             border-bottom: none;
+        }
+
+        /* 社交媒体主题下的推文头部 */
+        .tweet-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .tweet-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+        }
+
+        .tweet-user-info {
+            flex: 1;
+        }
+
+        .tweet-username {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            display: block;
+        }
+
+        .tweet-userhandle {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-top: 2px;
+        }
+
+        .tweet-date {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .tweet-more {
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .tweet-more:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
         }
 
         .diary-header {
@@ -466,9 +519,7 @@
 
         /* 社交媒体主题下的日期显示 */
         .theme-social .diary-date {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--primary-color);
+            display: none; /* 在推文样式中隐藏传统日期显示 */
         }
 
         .diary-meta {
@@ -490,18 +541,24 @@
         .theme-social .meta-item {
             font-weight: 600;
             color: var(--text-color);
+            background-color: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-bottom: 5px;
         }
 
         .diary-content {
             margin: 20px 0;
             line-height: 1.7;
+            font-size: 1.1rem;
         }
 
         /* 社交媒体主题下的日记内容 */
         .theme-social .diary-content {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             line-height: 1.8;
             color: var(--text-color);
+            margin: 15px 0 25px;
         }
 
         .diary-tags {
@@ -527,6 +584,43 @@
             background-color: rgba(29, 155, 240, 0.1);
         }
 
+        /* 社交媒体主题下的互动按钮 */
+        .tweet-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tweet-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .tweet-action-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .tweet-action-btn i {
+            font-size: 1.2rem;
+        }
+
+        .comment-count, .like-count {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
         /* 评论区 */
         .comments-section {
             margin-top: 25px;
@@ -541,6 +635,7 @@
             padding: 20px;
             border-radius: 12px;
             margin-top: 30px;
+            margin-left: 75px; /* 与推文头像对齐 */
         }
 
         .comments-title {
@@ -574,6 +669,21 @@
             border: 2px solid var(--border-color);
             border-left: 4px solid var(--primary-color);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .comment-content {
+            flex: 1;
         }
 
         .comment-meta {
@@ -617,6 +727,9 @@
             display: flex;
             flex-direction: column;
             gap: 30px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
         }
 
         .settings-card, .data-card {
@@ -786,6 +899,30 @@
 
         .mt-3 { margin-top: 15px; }
         .mb-3 { margin-bottom: 15px; }
+        
+        /* 社交媒体主题下的空状态 */
+        .theme-social #emptyState {
+            padding: 60px 30px;
+            text-align: center;
+        }
+        
+        .theme-social #emptyState i {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            opacity: 0.3;
+        }
+        
+        .theme-social #emptyState h3 {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .theme-social #emptyState p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -1126,9 +1263,17 @@
             // 如果是社交媒体界面，应用额外样式
             if (userSettings.interface === 'social') {
                 document.body.classList.add('theme-social');
+                // 如果是社交媒体风格，自动切换到Twitter蓝色主题
+                userSettings.theme = 'social';
+                document.body.className = 'theme-social';
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('.theme-btn[data-theme="social"]').classList.add('active');
             } else {
                 document.body.classList.remove('theme-social');
             }
+            
+            saveUserSettings();
+            renderDiaryList(); // 重新渲染日记列表以应用新样式
         }
 
         // ========== 核心日记功能 ==========
@@ -1156,7 +1301,9 @@
                 food: food,
                 tags: [...currentEditorState.selectedTags],
                 content: content,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                userName: userSettings.name,
+                userAvatar: userSettings.avatar
             };
         }
 
@@ -1247,7 +1394,13 @@
             let html = '';
             diaries.forEach(diary => {
                 const comments = getCommentsForDate(diary.date);
-                html += renderDiaryItem(diary, comments);
+                
+                // 根据界面风格选择渲染函数
+                if (userSettings.interface === 'social') {
+                    html += renderDiaryItemSocial(diary, comments);
+                } else {
+                    html += renderDiaryItemClassic(diary, comments);
+                }
             });
             
             container.innerHTML = html;
@@ -1270,7 +1423,8 @@
             });
         }
 
-        function renderDiaryItem(diary, comments) {
+        // 经典日记样式渲染
+        function renderDiaryItemClassic(diary, comments) {
             const moodIcons = {
                 happy: '😊', excited: '🤩', love: '🥰', peaceful: '😌',
                 grateful: '🙏', sad: '😔', tired: '😴', angry: '😠',
@@ -1338,6 +1492,109 @@
                             </button>
                             
                             <div class="comment-form hidden">
+                                <textarea class="comment-textarea" placeholder="补充今天的新想法..." rows="3"></textarea>
+                                <button class="btn btn-primary save-comment-btn" style="width:100%;">
+                                    <i class="fas fa-paper-plane"></i> 保存补充
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 社交媒体样式渲染
+        function renderDiaryItemSocial(diary, comments) {
+            const moodIcons = {
+                happy: '😊', excited: '🤩', love: '🥰', peaceful: '😌',
+                grateful: '🙏', sad: '😔', tired: '😴', angry: '😠',
+                anxious: '😰', sick: '🤒'
+            };
+            
+            const weatherIcons = {
+                sunny: '☀️', cloudy: '⛅', rainy: '🌧️',
+                snowy: '❄️', windy: '💨', stormy: '⛈️'
+            };
+            
+            const date = new Date(diary.date);
+            const formattedDate = date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+            
+            const formattedTime = formatTime(diary.createdAt);
+            const relativeTime = getRelativeTime(diary.createdAt);
+            
+            const tagsHtml = diary.tags.map(tag => 
+                `<span class="diary-tag">${tag}</span>`
+            ).join('');
+            
+            const commentsHtml = comments.length > 0 ? comments.map(comment => `
+                <div class="comment-item">
+                    <img src="${comment.userAvatar || userSettings.avatar}" class="comment-avatar" alt="头像">
+                    <div class="comment-content">
+                        <div class="comment-meta">
+                            <span>${comment.userName || userSettings.name} · ${formatTime(comment.createdAt)}</span>
+                            <span>${getMoodText(comment.mood)} ${weatherIcons[comment.weather] || ''}</span>
+                        </div>
+                        <div class="diary-content">${comment.content || ''}</div>
+                        ${comment.food ? `<div><i class="fas fa-utensils"></i> ${comment.food}</div>` : ''}
+                        ${comment.tags.length > 0 ? `<div class="diary-tags">${comment.tags.map(t => `<span class="diary-tag">${t}</span>`).join('')}</div>` : ''}
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light); font-style:italic; padding:15px;">暂无补充记录</p>';
+            
+            return `
+                <div class="diary-item" data-diary-id="${diary.id}">
+                    <div class="tweet-header">
+                        <img src="${diary.userAvatar || userSettings.avatar}" class="tweet-avatar" alt="头像">
+                        <div class="tweet-user-info">
+                            <span class="tweet-username">${diary.userName || userSettings.name}</span>
+                            <span class="tweet-userhandle">@${(diary.userName || userSettings.name).replace(/\s+/g, '').toLowerCase()}</span>
+                            <span class="tweet-date">${relativeTime} · ${formattedDate}</span>
+                        </div>
+                        <div class="tweet-more" title="更多选项">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="diary-content">${diary.content}</div>
+                    
+                    <div class="diary-meta">
+                        <span class="meta-item">${moodIcons[diary.mood] || '😊'} ${getMoodText(diary.mood)}</span>
+                        <span class="meta-item">${weatherIcons[diary.weather] || '☀️'} ${getWeatherText(diary.weather)}</span>
+                        ${diary.food ? `<span class="meta-item"><i class="fas fa-utensils"></i> ${diary.food}</span>` : ''}
+                    </div>
+                    
+                    ${diary.tags.length > 0 ? `<div class="diary-tags">${tagsHtml}</div>` : ''}
+                    
+                    <div class="tweet-actions">
+                        <button class="tweet-action-btn comment-btn" title="评论">
+                            <i class="far fa-comment"></i>
+                            <span class="comment-count">${comments.length}</span>
+                        </button>
+                        <button class="tweet-action-btn like-btn" title="点赞">
+                            <i class="far fa-heart"></i>
+                            <span class="like-count">0</span>
+                        </button>
+                        <button class="tweet-action-btn edit-btn" title="编辑">
+                            <i class="far fa-edit"></i>
+                        </button>
+                        <button class="tweet-action-btn delete-btn" title="删除">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="comments-section">
+                        <h4 class="comments-title"><i class="fas fa-comments"></i> 补充记录 (${comments.length})</h4>
+                        <div class="comments-list">
+                            ${commentsHtml}
+                        </div>
+                        
+                        <div class="add-comment">
+                            <div class="comment-form">
                                 <textarea class="comment-textarea" placeholder="补充今天的新想法..." rows="3"></textarea>
                                 <button class="btn btn-primary save-comment-btn" style="width:100%;">
                                     <i class="fas fa-paper-plane"></i> 保存补充
@@ -1438,7 +1695,9 @@
                 content: commentText || '',
                 createdAt: new Date().toISOString(),
                 isComment: true,
-                parentDate: parentDate
+                parentDate: parentDate,
+                userName: userSettings.name,
+                userAvatar: userSettings.avatar
             };
             
             const comments = loadComments();
@@ -1558,6 +1817,28 @@
         function formatTime(isoString) {
             const date = new Date(isoString);
             return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getRelativeTime(isoString) {
+            const now = new Date();
+            const date = new Date(isoString);
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) {
+                return '刚刚';
+            } else if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes}分钟前`;
+            } else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours}小时前`;
+            } else if (diffInSeconds < 2592000) {
+                const days = Math.floor(diffInSeconds / 86400);
+                return `${days}天前`;
+            } else {
+                const months = Math.floor(diffInSeconds / 2592000);
+                return `${months}个月前`;
+            }
         }
 
         function getMoodText(mood) {
@@ -1695,6 +1976,7 @@
                     }
                     
                     saveUserSettings();
+                    renderDiaryList(); // 重新渲染日记列表
                     alert(`已切换为${this.textContent.trim()}模式！`);
                 });
             });
