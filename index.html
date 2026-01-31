@@ -2,1461 +2,1223 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>苹果骑士拯救国王</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>苹果骑士：手机横版大冒险</title>
     <style>
+        /* 全局重置与基础样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
             font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #1a3c1a 0%, #0d261a 100%);
-            color: #f0f8ff;
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            background: linear-gradient(to bottom, #1a5f7a, #0a2647);
+            color: #fff;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-        
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            color: #ff6b6b;
-            text-shadow: 0 0 10px #ff3333, 2px 2px 0 #8b0000;
-            letter-spacing: 2px;
-        }
-        
-        .subtitle {
-            font-size: 1.5rem;
-            color: #ffd166;
-            margin-bottom: 30px;
-        }
-        
-        .game-wrapper {
-            display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 30px;
-            width: 100%;
         }
-        
-        .left-panel, .right-panel {
-            flex: 1;
-            min-width: 300px;
+
+        /* 游戏标题 */
+        .game-title {
+            position: absolute;
+            top: 10px;
+            text-align: center;
+            width: 100%;
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #FFD700;
+            text-shadow: 0 3px 0 #8B4513, 0 5px 10px rgba(0,0,0,0.7);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #87CEEB;
+        }
+
+        /* 游戏主画布容器 */
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            height: 65vh;
             max-width: 500px;
-            background-color: rgba(30, 60, 30, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border: 3px solid #4a7c59;
-        }
-        
-        .game-area {
-            flex: 2;
-            min-width: 500px;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .screen {
-            width: 100%;
-            background-color: #152614;
             border-radius: 10px;
             overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
-            border: 4px solid #8b4513;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 4px solid #FFA500;
+            background: #87CEEB;
+            margin-top: 20px;
         }
-        
+
         #gameCanvas {
             display: block;
             width: 100%;
+            height: 100%;
             background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
         }
-        
-        .intro-screen {
-            height: 400px;
-            background: linear-gradient(45deg, #0d261a 0%, #1a3c1a 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 30px;
+
+        /* 虚拟控制层 */
+        #controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35vh;
+            pointer-events: none;
+            z-index: 50;
         }
-        
-        .intro-screen h2 {
-            color: #ff9966;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
+
+        /* 左侧虚拟摇杆 */
+        #joystickContainer {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            pointer-events: auto;
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+
+        #joystickBase {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.6);
         }
-        
-        .intro-screen p {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            max-width: 700px;
+
+        #joystickHandle {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid #FFA500;
         }
-        
-        .story-text {
-            color: #ffd166;
-            font-size: 1.4rem;
-            line-height: 1.7;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            background: linear-gradient(to bottom, #ff6b6b 0%, #cc3333 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.3rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-            box-shadow: 0 5px 0 #8b0000;
-            margin-top: 20px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 0 #8b0000;
-        }
-        
-        .btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 3px 0 #8b0000;
-        }
-        
-        .btn-skill {
-            background: linear-gradient(to bottom, #ff9966 0%, #e67300 100%);
-            box-shadow: 0 5px 0 #cc5500;
-        }
-        
-        .btn-skill:hover {
-            box-shadow: 0 8px 0 #cc5500;
-        }
-        
-        .stats {
+
+        /* 右侧动作按钮 */
+        #actionButtons {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 20px;
+            pointer-events: auto;
         }
-        
-        .stat-box {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            border: 2px solid #4a7c59;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ffd166;
-            display: block;
-            margin-top: 5px;
-        }
-        
-        .stat-label {
-            font-size: 1.1rem;
-            color: #a8e6a8;
-        }
-        
-        .equipment-shop {
-            margin-top: 20px;
-        }
-        
-        .shop-title {
-            color: #ff9966;
+
+        .action-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
             font-size: 1.8rem;
-            margin-bottom: 15px;
-            text-align: center;
-            border-bottom: 2px solid #ff9966;
-            padding-bottom: 5px;
-        }
-        
-        .shop-items {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .shop-item {
-            background-color: rgba(50, 80, 50, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px solid #8b4513;
-            transition: all 0.2s;
-        }
-        
-        .shop-item:hover {
-            background-color: rgba(70, 110, 70, 0.9);
-            transform: translateY(-3px);
-        }
-        
-        .item-name {
-            font-size: 1.2rem;
-            color: #ffd166;
-            margin-bottom: 8px;
-        }
-        
-        .item-stats {
-            font-size: 0.9rem;
-            color: #a8e6a8;
-            margin-bottom: 10px;
-        }
-        
-        .item-price {
-            color: #ffd700;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-        
-        .buy-btn {
-            background: linear-gradient(to bottom, #4CAF50 0%, #2E7D32 100%);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            transition: all 0.2s;
-        }
-        
-        .buy-btn:hover {
-            background: linear-gradient(to bottom, #66BB6A 0%, #388E3C 100%);
-        }
-        
-        .buy-btn:disabled {
-            background: #666;
-            cursor: not-allowed;
-        }
-        
-        .controls {
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 20px;
-            margin-top: 15px;
-            width: 100%;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.4), 0 8px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.1s;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
         }
-        
-        .monster-log {
-            background-color: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            max-height: 200px;
-            overflow-y: auto;
+
+        .action-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.4);
         }
-        
-        .log-title {
-            color: #ff9966;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+
+        #jumpBtn {
+            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+            border: 3px solid #A5D6A7;
         }
-        
-        .log-entry {
-            padding: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        #attackBtn {
+            background: linear-gradient(to bottom, #F44336, #C62828);
+            border: 3px solid #FFAB91;
+        }
+
+        #bombBtn {
+            background: linear-gradient(to bottom, #FF9800, #EF6C00);
+            border: 3px solid #FFCC80;
+            grid-column: span 2;
+            width: 180px;
+            border-radius: 40px;
+            font-size: 1.5rem;
+        }
+
+        .btn-label {
+            position: absolute;
+            bottom: -25px;
             font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px black;
+            width: 100%;
+            text-align: center;
         }
-        
-        .log-good {
-            color: #a8e6a8;
+
+        /* 游戏状态面板 */
+        #hud {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 100;
+            pointer-events: none;
         }
-        
-        .log-bad {
-            color: #ff9999;
+
+        .hud-item {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
         }
-        
-        .log-neutral {
-            color: #ffd166;
+
+        .hud-item span {
+            margin-left: 8px;
+            font-weight: bold;
+            color: #FFD700;
         }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .game-over-screen, .victory-screen {
+
+        /* 游戏开始/结束界面 */
+        .screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            z-index: 200;
             text-align: center;
+            padding: 20px;
         }
-        
-        .game-over-screen h2, .victory-screen h2 {
-            color: #ff3333;
-            font-size: 4rem;
+
+        .screen h2 {
+            font-size: 3rem;
+            color: #FFD700;
             margin-bottom: 20px;
+            text-shadow: 0 3px 0 #8B4513;
         }
-        
-        .victory-screen h2 {
-            color: #ffd700;
-        }
-        
-        .game-over-screen p, .victory-screen p {
-            font-size: 1.5rem;
+
+        .screen p {
+            font-size: 1.3rem;
             margin-bottom: 30px;
-            max-width: 600px;
+            max-width: 80%;
+            line-height: 1.5;
+            color: #E0E0E0;
         }
-        
-        @media (max-width: 1100px) {
-            .game-wrapper {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .game-area {
-                order: -1;
-            }
-            
-            .left-panel, .right-panel {
-                max-width: 800px;
-                width: 100%;
-            }
+
+        #startScreen {
+            background: linear-gradient(135deg, rgba(26, 35, 126, 0.9), rgba(56, 142, 60, 0.9));
         }
-        
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-            
-            .game-area {
-                min-width: 100%;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .shop-items {
-                grid-template-columns: 1fr;
-            }
-            
-            .controls {
-                flex-wrap: wrap;
-            }
+
+        .btn {
+            background: linear-gradient(to bottom, #FF6B6B, #C2185B);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #8B0000, 0 15px 25px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
+        }
+
+        .btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #8B0000, 0 5px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 操作提示 */
+        #mobileTips {
+            position: absolute;
+            bottom: 160px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            padding: 0 20px;
+            z-index: 40;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🍎 苹果骑士拯救国王 🍎</h1>
-            <div class="subtitle">穿越水果怪物森林，拯救被囚禁的苹果国王！</div>
-        </header>
+    <div class="game-title">
+        <h1>🍎 苹果骑士 🍎</h1>
+        <div class="subtitle">横版动作冒险 - 手机触控版</div>
+    </div>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
         
-        <div class="game-wrapper">
-            <div class="left-panel">
-                <div class="stats">
-                    <div class="stat-box">
-                        <span class="stat-label">关卡</span>
-                        <span id="level" class="stat-value">1</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">金币</span>
-                        <span id="gold" class="stat-value">50</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">生命值</span>
-                        <span id="health" class="stat-value">100</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">攻击力</span>
-                        <span id="attack" class="stat-value">15</span>
-                    </div>
-                </div>
-                
-                <div class="equipment-shop">
-                    <div class="shop-title">🛒 装备商店</div>
-                    <div class="shop-items">
-                        <!-- 装备项将通过JavaScript动态生成 -->
-                    </div>
-                </div>
-                
-                <div class="monster-log">
-                    <div class="log-title">战斗日志</div>
-                    <div class="log-entries">
-                        <div class="log-entry log-neutral">欢迎，苹果骑士！准备好开始冒险了吗？</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="game-area">
-                <div class="screen">
-                    <div id="introScreen" class="intro-screen">
-                        <h2>苹果王国的危机</h2>
-                        <div class="story-text">
-                            <p>在遥远的苹果王国，邪恶的腐烂水果军团绑架了善良的苹果国王！</p>
-                            <p>作为苹果王国最勇敢的骑士，你必须穿越危险的怪物森林，击败各种可怕的水果怪物，拯救国王！</p>
-                            <p>一路上你可以用击败怪物获得的金币购买装备，让自己变得更强大。</p>
-                            <p>记住，森林深处隐藏着更强大的怪物，小心前进！</p>
-                        </div>
-                        <button id="startGameBtn" class="btn">开始冒险</button>
-                    </div>
-                    
-                    <canvas id="gameCanvas" width="800" height="500"></canvas>
-                    
-                    <div id="gameOverScreen" class="game-over-screen hidden">
-                        <h2>游戏结束</h2>
-                        <p>苹果骑士被怪物击败了... 苹果国王还在等待救援！</p>
-                        <button id="restartGameBtn" class="btn">重新开始</button>
-                    </div>
-                    
-                    <div id="victoryScreen" class="victory-screen hidden">
-                        <h2>胜利！</h2>
-                        <p>你成功拯救了苹果国王！王国恢复了和平与繁荣！</p>
-                        <button id="newGameBtn" class="btn">新的冒险</button>
-                    </div>
-                </div>
-                
-                <div class="controls">
-                    <button id="attackBtn" class="btn">🗡️ 攻击怪物</button>
-                    <button id="skillBtn" class="btn btn-skill">🍎 苹果炸弹 (3)</button>
-                    <button id="nextLevelBtn" class="btn">下一关</button>
-                </div>
-            </div>
-            
-            <div class="right-panel">
-                <div class="stats">
-                    <div class="stat-box">
-                        <span class="stat-label">当前怪物</span>
-                        <span id="monsterName" class="stat-value">草莓怪</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">怪物生命</span>
-                        <span id="monsterHealth" class="stat-value">30</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">怪物攻击</span>
-                        <span id="monsterAttack" class="stat-value">8</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">剩余怪物</span>
-                        <span id="monstersLeft" class="stat-value">5</span>
-                    </div>
-                </div>
-                
-                <div class="equipment-shop">
-                    <div class="shop-title">🎯 技能与物品</div>
-                    <div class="shop-items">
-                        <div class="shop-item">
-                            <div class="item-name">🍎 苹果炸弹</div>
-                            <div class="item-stats">对怪物造成50点伤害，无视防御</div>
-                            <div class="item-price">价格: 20 金币</div>
-                            <button id="buyBombBtn" class="buy-btn">购买炸弹</button>
-                        </div>
-                        <div class="shop-item">
-                            <div class="item-name">❤️ 治疗药剂</div>
-                            <div class="item-stats">恢复30点生命值</div>
-                            <div class="item-price">价格: 25 金币</div>
-                            <button id="buyPotionBtn" class="buy-btn">购买药剂</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="equipment-status">
-                    <div class="shop-title">🛡️ 当前装备</div>
-                    <div class="shop-items">
-                        <div class="shop-item">
-                            <div class="item-name">剑: <span id="currentSword">木剑</span></div>
-                            <div class="item-stats">攻击力加成: <span id="swordBonus">+5</span></div>
-                        </div>
-                        <div class="shop-item">
-                            <div class="item-name">护甲: <span id="currentArmor">布甲</span></div>
-                            <div class="item-stats">防御力加成: <span id="armorBonus">+3</span></div>
-                        </div>
-                        <div class="shop-item">
-                            <div class="item-name">鞋子: <span id="currentBoots">草鞋</span></div>
-                            <div class="item-stats">闪避加成: <span id="bootsBonus">+5%</span></div>
-                        </div>
-                        <div class="shop-item">
-                            <div class="item-name">斗篷: <span id="currentCloak">破斗篷</span></div>
-                            <div class="item-stats">生命加成: <span id="cloakBonus">+10</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- 游戏状态显示 -->
+        <div id="hud">
+            <div class="hud-item">❤️ <span id="healthValue">100</span></div>
+            <div class="hud-item">⭐ <span id="scoreValue">0</span></div>
+            <div class="hud-item">💣 <span id="bombValue">3</span></div>
+        </div>
+        
+        <!-- 游戏开始界面 -->
+        <div id="startScreen" class="screen">
+            <h2>苹果骑士大冒险</h2>
+            <p>邪恶的腐烂水果军团绑架了国王！<br>使用虚拟摇杆移动，按钮跳跃和攻击。<br>穿越危险森林，击败所有怪物！</p>
+            <button id="startBtn" class="btn">开始游戏</button>
+            <p style="margin-top: 20px; font-size: 1rem; color: #FFCC80;">提示：摇杆控制移动，右侧按钮跳跃/攻击</p>
+        </div>
+        
+        <!-- 游戏结束界面（默认隐藏） -->
+        <div id="gameOverScreen" class="screen" style="display: none;">
+            <h2>游戏结束</h2>
+            <p>苹果骑士被击败了...<br>你的得分：<span id="finalScore">0</span></p>
+            <button id="restartBtn" class="btn">重新开始</button>
+        </div>
+    </div>
+    
+    <!-- 虚拟控制层 -->
+    <div id="controls">
+        <div id="joystickContainer">
+            <div id="joystickBase"></div>
+            <div id="joystickHandle"></div>
+        </div>
+        
+        <div id="actionButtons">
+            <button id="jumpBtn" class="action-btn">
+                ⬆️
+                <div class="btn-label">跳跃</div>
+            </button>
+            <button id="attackBtn" class="action-btn">
+                ⚔️
+                <div class="btn-label">攻击</div>
+            </button>
+            <button id="bombBtn" class="action-btn">
+                💣 苹果炸弹
+                <div class="btn-label">技能</div>
+            </button>
+        </div>
+        
+        <div id="mobileTips">
+            使用左侧摇杆移动，右侧按钮执行动作
         </div>
     </div>
 
     <script>
-        // 游戏状态
-        const gameState = {
-            level: 1,
-            gold: 50,
-            health: 100,
-            maxHealth: 100,
-            baseAttack: 10,
-            attackBonus: 5,
-            bombs: 3,
-            potions: 1,
-            monstersDefeated: 0,
-            totalMonsters: 5,
-            gameActive: false,
-            inCombat: false,
-            currentMonster: null,
-            equipment: {
-                sword: { name: "木剑", attackBonus: 5, price: 0 },
-                armor: { name: "布甲", defenseBonus: 3, price: 0 },
-                boots: { name: "草鞋", dodgeBonus: 5, price: 0 },
-                cloak: { name: "破斗篷", healthBonus: 10, price: 0 }
-            },
-            shopItems: [
-                { type: "sword", name: "铁剑", attackBonus: 10, price: 30 },
-                { type: "sword", name: "钢剑", attackBonus: 15, price: 60 },
-                { type: "sword", name: "王者之剑", attackBonus: 25, price: 120 },
-                { type: "armor", name: "锁子甲", defenseBonus: 8, price: 40 },
-                { type: "armor", name: "板甲", defenseBonus: 15, price: 80 },
-                { type: "armor", name: "龙鳞甲", defenseBonus: 25, price: 150 },
-                { type: "boots", name: "皮靴", dodgeBonus: 10, price: 25 },
-                { type: "boots", name: "骑士靴", dodgeBonus: 15, price: 50 },
-                { type: "boots", name: "疾风靴", dodgeBonus: 25, price: 100 },
-                { type: "cloak", name: "羊毛斗篷", healthBonus: 20, price: 35 },
-                { type: "cloak", name: "魔法斗篷", healthBonus: 35, price: 70 },
-                { type: "cloak", name: "神圣斗篷", healthBonus: 50, price: 140 }
-            ]
+        // ==================== 游戏核心配置 ====================
+        const config = {
+            gravity: 0.8,
+            playerSpeed: 6,
+            jumpForce: -16,
+            worldWidth: 2000,
+            cameraSmooth: 0.1
         };
 
-        // 怪物定义
-        const monsters = [
-            { name: "草莓怪", health: 30, attack: 8, gold: 10, color: "#FF6B6B" },
-            { name: "腐烂香蕉", health: 45, attack: 12, gold: 15, color: "#FFD166" },
-            { name: "恐怖葡萄", health: 60, attack: 15, gold: 20, color: "#9B5DE5" },
-            { name: "尖刺菠萝", health: 80, attack: 18, gold: 25, color: "#FFE066" },
-            { name: "剧毒西瓜", health: 100, attack: 22, gold: 30, color: "#06D6A0" },
-            { name: "诅咒柠檬", health: 120, attack: 26, gold: 35, color: "#FFEE93" },
-            { name: "恶魔榴莲", health: 150, attack: 30, gold: 40, color: "#A663CC" },
-            { name: "腐烂水果王", health: 200, attack: 35, gold: 50, color: "#6A041D" }
-        ];
+        // ==================== 游戏状态 ====================
+        const gameState = {
+            player: {
+                x: 300,
+                y: 300,
+                width: 60,
+                height: 80,
+                velocityX: 0,
+                velocityY: 0,
+                isOnGround: false,
+                facingRight: true,
+                isAttacking: false,
+                attackTimer: 0,
+                health: 100,
+                maxHealth: 100,
+                bombs: 3,
+                score: 0,
+                // 动画状态
+                state: 'idle', // idle, running, jumping, attacking
+                frame: 0,
+                frameTimer: 0
+            },
+            
+            joystick: {
+                active: false,
+                x: 0,
+                y: 0,
+                baseX: 0,
+                baseY: 0,
+                maxDistance: 50
+            },
+            
+            keys: {
+                left: false,
+                right: false,
+                up: false,
+                attack: false
+            },
+            
+            camera: {
+                x: 0,
+                y: 0
+            },
+            
+            gameRunning: false,
+            gameOver: false,
+            
+            platforms: [
+                // 地面
+                {x: 0, y: 450, width: 400, height: 50},
+                {x: 450, y: 420, width: 200, height: 30},
+                {x: 700, y: 380, width: 150, height: 30},
+                {x: 900, y: 350, width: 200, height: 30},
+                {x: 1200, y: 320, width: 250, height: 30},
+                {x: 1550, y: 280, width: 300, height: 40},
+                // 浮空平台
+                {x: 300, y: 350, width: 100, height: 20},
+                {x: 600, y: 300, width: 80, height: 20},
+                {x: 850, y: 250, width: 100, height: 20},
+                {x: 1100, y: 220, width: 120, height: 20},
+                {x: 1400, y: 200, width: 100, height: 20}
+            ],
+            
+            monsters: [
+                {x: 500, y: 370, width: 50, height: 60, type: 'strawberry', health: 30, speed: 1.5},
+                {x: 800, y: 330, width: 60, height: 70, type: 'pineapple', health: 50, speed: 1},
+                {x: 1050, y: 170, width: 55, height: 65, type: 'grape', health: 40, speed: 2},
+                {x: 1350, y: 150, width: 70, height: 80, type: 'watermelon', health: 80, speed: 0.8}
+            ],
+            
+            particles: []
+        };
 
-        // DOM元素
-        const introScreen = document.getElementById('introScreen');
-        const gameCanvas = document.getElementById('gameCanvas');
+        // ==================== DOM元素 ====================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('startScreen');
         const gameOverScreen = document.getElementById('gameOverScreen');
-        const victoryScreen = document.getElementById('victoryScreen');
-        const startGameBtn = document.getElementById('startGameBtn');
-        const restartGameBtn = document.getElementById('restartGameBtn');
-        const newGameBtn = document.getElementById('newGameBtn');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const healthValue = document.getElementById('healthValue');
+        const scoreValue = document.getElementById('scoreValue');
+        const bombValue = document.getElementById('bombValue');
+        const finalScore = document.getElementById('finalScore');
+        
+        const joystickContainer = document.getElementById('joystickContainer');
+        const joystickHandle = document.getElementById('joystickHandle');
+        const jumpBtn = document.getElementById('jumpBtn');
         const attackBtn = document.getElementById('attackBtn');
-        const skillBtn = document.getElementById('skillBtn');
-        const nextLevelBtn = document.getElementById('nextLevelBtn');
-        const buyBombBtn = document.getElementById('buyBombBtn');
-        const buyPotionBtn = document.getElementById('buyPotionBtn');
-        const ctx = gameCanvas.getContext('2d');
+        const bombBtn = document.getElementById('bombBtn');
 
-        // 游戏变量
-        let animationId;
-        let knightX = 100;
-        let knightY = 300;
-        let monsterX = 600;
-        let monsterY = 300;
-        let combatLog = [];
-        let currentMonsterIndex = 0;
-
-        // 初始化游戏
-        function initGame() {
-            gameState.level = 1;
-            gameState.gold = 50;
-            gameState.health = 100;
-            gameState.maxHealth = 100;
-            gameState.baseAttack = 10;
-            gameState.attackBonus = 5;
-            gameState.bombs = 3;
-            gameState.potions = 1;
-            gameState.monstersDefeated = 0;
-            gameState.totalMonsters = 5;
-            gameState.gameActive = true;
-            gameState.inCombat = true;
+        // ==================== 初始化 ====================
+        function init() {
+            // 设置画布大小
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
             
-            // 重置装备
-            gameState.equipment = {
-                sword: { name: "木剑", attackBonus: 5, price: 0 },
-                armor: { name: "布甲", defenseBonus: 3, price: 0 },
-                boots: { name: "草鞋", dodgeBonus: 5, price: 0 },
-                cloak: { name: "破斗篷", healthBonus: 10, price: 0 }
-            };
+            // 游戏开始按钮
+            startBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', startGame);
             
-            // 生成第一个怪物
-            generateMonster();
+            // 虚拟摇杆事件
+            initJoystick();
             
-            // 更新UI
-            updateUI();
-            
-            // 生成商店物品
-            generateShopItems();
+            // 动作按钮事件
+            initActionButtons();
             
             // 开始游戏循环
-            gameCanvas.classList.remove('hidden');
-            introScreen.classList.add('hidden');
-            gameOverScreen.classList.add('hidden');
-            victoryScreen.classList.add('hidden');
-            
-            // 清空战斗日志
-            combatLog = [];
-            addLogEntry("游戏开始！苹果骑士踏上了拯救国王的冒险！", "neutral");
-            
-            // 开始动画循环
-            if (animationId) cancelAnimationFrame(animationId);
-            animate();
+            requestAnimationFrame(gameLoop);
         }
 
-        // 生成怪物
-        function generateMonster() {
-            // 根据关卡决定怪物强度
-            const monsterLevel = Math.min(gameState.level - 1 + currentMonsterIndex, monsters.length - 1);
-            const baseMonster = monsters[monsterLevel];
+        // ==================== 虚拟摇杆实现 ====================
+        function initJoystick() {
+            let isTouching = false;
             
-            // 增加难度：每关怪物属性增加
-            const difficultyMultiplier = 1 + (gameState.level - 1) * 0.3;
-            
-            gameState.currentMonster = {
-                name: baseMonster.name,
-                health: Math.floor(baseMonster.health * difficultyMultiplier),
-                maxHealth: Math.floor(baseMonster.health * difficultyMultiplier),
-                attack: Math.floor(baseMonster.attack * difficultyMultiplier),
-                gold: Math.floor(baseMonster.gold * difficultyMultiplier),
-                color: baseMonster.color
-            };
-            
-            updateMonsterUI();
-        }
-
-        // 玩家攻击
-        function playerAttack() {
-            if (!gameState.inCombat || !gameState.gameActive) return;
-            
-            const totalAttack = gameState.baseAttack + gameState.attackBonus;
-            const damage = Math.floor(totalAttack + Math.random() * 5);
-            
-            gameState.currentMonster.health -= damage;
-            addLogEntry(`你对${gameState.currentMonster.name}造成了 ${damage} 点伤害！`, "good");
-            
-            // 检查怪物是否被击败
-            if (gameState.currentMonster.health <= 0) {
-                monsterDefeated();
-            } else {
-                // 怪物反击
-                monsterAttack();
-            }
-            
-            updateUI();
-        }
-
-        // 使用苹果炸弹
-        function useBomb() {
-            if (!gameState.inCombat || !gameState.gameActive || gameState.bombs <= 0) return;
-            
-            gameState.bombs--;
-            const damage = 50;
-            gameState.currentMonster.health -= damage;
-            addLogEntry(`你使用了苹果炸弹，对${gameState.currentMonster.name}造成了 ${damage} 点巨大伤害！`, "good");
-            
-            // 检查怪物是否被击败
-            if (gameState.currentMonster.health <= 0) {
-                monsterDefeated();
-            } else {
-                // 怪物反击
-                monsterAttack();
-            }
-            
-            updateUI();
-        }
-
-        // 怪物攻击
-        function monsterAttack() {
-            // 计算闪避几率（基于鞋子加成）
-            const dodgeChance = gameState.equipment.boots.dodgeBonus / 100;
-            if (Math.random() < dodgeChance) {
-                addLogEntry(`${gameState.currentMonster.name}的攻击被闪避了！`, "good");
-                return;
-            }
-            
-            // 计算防御减伤（基于护甲加成）
-            const defenseReduction = gameState.equipment.armor.defenseBonus * 0.5;
-            const damage = Math.max(1, Math.floor(gameState.currentMonster.attack - defenseReduction + Math.random() * 3));
-            
-            gameState.health -= damage;
-            addLogEntry(`${gameState.currentMonster.name}对你造成了 ${damage} 点伤害！`, "bad");
-            
-            // 检查玩家是否死亡
-            if (gameState.health <= 0) {
-                gameState.health = 0;
-                gameOver();
-            }
-            
-            updateUI();
-        }
-
-        // 怪物被击败
-        function monsterDefeated() {
-            gameState.currentMonster.health = 0;
-            const goldEarned = gameState.currentMonster.gold;
-            gameState.gold += goldEarned;
-            gameState.monstersDefeated++;
-            
-            addLogEntry(`你击败了${gameState.currentMonster.name}，获得了 ${goldEarned} 金币！`, "good");
-            
-            // 检查关卡是否完成
-            if (gameState.monstersDefeated >= gameState.totalMonsters) {
-                levelComplete();
-            } else {
-                // 生成新怪物
-                currentMonsterIndex++;
-                setTimeout(() => {
-                    generateMonster();
-                    updateUI();
-                }, 1000);
-            }
-        }
-
-        // 关卡完成
-        function levelComplete() {
-            gameState.inCombat = false;
-            addLogEntry(`恭喜！你完成了第 ${gameState.level} 关！`, "neutral");
-            addLogEntry("前往装备商店购买新装备，然后进入下一关。", "neutral");
-            
-            // 如果是最后一关，显示胜利画面
-            if (gameState.level >= 5) {
-                setTimeout(() => {
-                    victory();
-                }, 1500);
-            }
-            
-            updateUI();
-        }
-
-        // 进入下一关
-        function nextLevel() {
-            gameState.level++;
-            gameState.monstersDefeated = 0;
-            currentMonsterIndex = 0;
-            gameState.totalMonsters = Math.min(5 + gameState.level, 8); // 每关最多8个怪物
-            
-            // 每关恢复一些生命值
-            gameState.health = Math.min(gameState.maxHealth, gameState.health + 30);
-            
-            // 生成新怪物
-            generateMonster();
-            
-            gameState.inCombat = true;
-            addLogEntry(`进入第 ${gameState.level} 关！准备好面对更强大的怪物！`, "neutral");
-            
-            updateUI();
-        }
-
-        // 购买装备
-        function buyEquipment(item) {
-            if (gameState.gold < item.price) {
-                addLogEntry("金币不足，无法购买此装备！", "bad");
-                return;
-            }
-            
-            if (item.type === "sword" && item.attackBonus <= gameState.equipment.sword.attackBonus) {
-                addLogEntry("你已经拥有更好的武器！", "bad");
-                return;
-            }
-            
-            if (item.type === "armor" && item.defenseBonus <= gameState.equipment.armor.defenseBonus) {
-                addLogEntry("你已经拥有更好的护甲！", "bad");
-                return;
-            }
-            
-            if (item.type === "boots" && item.dodgeBonus <= gameState.equipment.boots.dodgeBonus) {
-                addLogEntry("你已经拥有更好的鞋子！", "bad");
-                return;
-            }
-            
-            if (item.type === "cloak" && item.healthBonus <= gameState.equipment.cloak.healthBonus) {
-                addLogEntry("你已经拥有更好的斗篷！", "bad");
-                return;
-            }
-            
-            // 购买装备
-            gameState.gold -= item.price;
-            
-            // 更新装备
-            switch(item.type) {
-                case "sword":
-                    gameState.equipment.sword = item;
-                    gameState.attackBonus = item.attackBonus;
-                    break;
-                case "armor":
-                    gameState.equipment.armor = item;
-                    break;
-                case "boots":
-                    gameState.equipment.boots = item;
-                    break;
-                case "cloak":
-                    gameState.equipment.cloak = item;
-                    gameState.maxHealth = 100 + item.healthBonus;
-                    break;
-            }
-            
-            addLogEntry(`你购买了${item.name}！`, "good");
-            updateUI();
-            generateShopItems(); // 重新生成商店物品，移除已购买的
-        }
-
-        // 购买苹果炸弹
-        function buyBomb() {
-            if (gameState.gold < 20) {
-                addLogEntry("金币不足，无法购买苹果炸弹！", "bad");
-                return;
-            }
-            
-            gameState.gold -= 20;
-            gameState.bombs++;
-            addLogEntry("你购买了一个苹果炸弹！", "good");
-            updateUI();
-        }
-
-        // 购买治疗药剂
-        function buyPotion() {
-            if (gameState.gold < 25) {
-                addLogEntry("金币不足，无法购买治疗药剂！", "bad");
-                return;
-            }
-            
-            gameState.gold -= 25;
-            gameState.potions++;
-            addLogEntry("你购买了一个治疗药剂！", "good");
-            updateUI();
-        }
-
-        // 使用治疗药剂
-        function usePotion() {
-            if (gameState.potions <= 0) return;
-            
-            gameState.potions--;
-            const healAmount = 30;
-            gameState.health = Math.min(gameState.maxHealth, gameState.health + healAmount);
-            addLogEntry(`你使用治疗药剂，恢复了 ${healAmount} 点生命值！`, "good");
-            updateUI();
-        }
-
-        // 游戏结束
-        function gameOver() {
-            gameState.gameActive = false;
-            gameState.inCombat = false;
-            gameOverScreen.classList.remove('hidden');
-            addLogEntry("苹果骑士被击败了...游戏结束！", "bad");
-            
-            if (animationId) cancelAnimationFrame(animationId);
-        }
-
-        // 游戏胜利
-        function victory() {
-            gameState.gameActive = false;
-            gameState.inCombat = false;
-            victoryScreen.classList.remove('hidden');
-            addLogEntry("恭喜！你拯救了苹果国王！王国恢复了和平！", "good");
-            
-            if (animationId) cancelAnimationFrame(animationId);
-        }
-
-        // 更新UI
-        function updateUI() {
-            // 更新玩家状态
-            document.getElementById('level').textContent = gameState.level;
-            document.getElementById('gold').textContent = gameState.gold;
-            document.getElementById('health').textContent = gameState.health;
-            document.getElementById('attack').textContent = gameState.baseAttack + gameState.attackBonus;
-            
-            // 更新技能按钮
-            skillBtn.textContent = `🍎 苹果炸弹 (${gameState.bombs})`;
-            skillBtn.disabled = gameState.bombs <= 0 || !gameState.inCombat;
-            
-            // 更新攻击按钮状态
-            attackBtn.disabled = !gameState.inCombat;
-            nextLevelBtn.disabled = gameState.inCombat;
-            
-            // 更新装备状态
-            document.getElementById('currentSword').textContent = gameState.equipment.sword.name;
-            document.getElementById('swordBonus').textContent = `+${gameState.equipment.sword.attackBonus}`;
-            document.getElementById('currentArmor').textContent = gameState.equipment.armor.name;
-            document.getElementById('armorBonus').textContent = `+${gameState.equipment.armor.defenseBonus}`;
-            document.getElementById('currentBoots').textContent = gameState.equipment.boots.name;
-            document.getElementById('bootsBonus').textContent = `+${gameState.equipment.boots.dodgeBonus}%`;
-            document.getElementById('currentCloak').textContent = gameState.equipment.cloak.name;
-            document.getElementById('cloakBonus').textContent = `+${gameState.equipment.cloak.healthBonus}`;
-            
-            // 更新购买按钮状态
-            buyBombBtn.disabled = gameState.gold < 20;
-            buyPotionBtn.disabled = gameState.gold < 25;
-        }
-
-        // 更新怪物UI
-        function updateMonsterUI() {
-            if (!gameState.currentMonster) return;
-            
-            document.getElementById('monsterName').textContent = gameState.currentMonster.name;
-            document.getElementById('monsterHealth').textContent = gameState.currentMonster.health;
-            document.getElementById('monsterAttack').textContent = gameState.currentMonster.attack;
-            document.getElementById('monstersLeft').textContent = gameState.totalMonsters - gameState.monstersDefeated;
-        }
-
-        // 生成商店物品
-        function generateShopItems() {
-            const shopContainer = document.querySelector('.left-panel .shop-items');
-            shopContainer.innerHTML = '';
-            
-            // 过滤出比当前装备更好的物品
-            const availableItems = gameState.shopItems.filter(item => {
-                switch(item.type) {
-                    case "sword": return item.attackBonus > gameState.equipment.sword.attackBonus;
-                    case "armor": return item.defenseBonus > gameState.equipment.armor.defenseBonus;
-                    case "boots": return item.dodgeBonus > gameState.equipment.boots.dodgeBonus;
-                    case "cloak": return item.healthBonus > gameState.equipment.cloak.healthBonus;
-                    default: return true;
-                }
+            // 触摸开始
+            joystickContainer.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isTouching = true;
+                const rect = joystickContainer.getBoundingClientRect();
+                gameState.joystick.baseX = rect.left + rect.width / 2;
+                gameState.joystick.baseY = rect.top + rect.height / 2;
+                updateJoystick(e.touches[0]);
             });
             
-            // 随机选择4个物品显示
-            const displayItems = [];
-            const itemCount = Math.min(4, availableItems.length);
+            // 触摸移动
+            document.addEventListener('touchmove', (e) => {
+                if (!isTouching) return;
+                e.preventDefault();
+                updateJoystick(e.touches[0]);
+            });
             
-            // 确保每种类型至少有一个（如果有的话）
-            const types = ["sword", "armor", "boots", "cloak"];
-            for (const type of types) {
-                const typeItems = availableItems.filter(item => item.type === type);
-                if (typeItems.length > 0 && displayItems.length < itemCount) {
-                    const randomItem = typeItems[Math.floor(Math.random() * typeItems.length)];
-                    if (!displayItems.includes(randomItem)) {
-                        displayItems.push(randomItem);
+            // 触摸结束
+            document.addEventListener('touchend', (e) => {
+                if (!isTouching) return;
+                isTouching = false;
+                resetJoystick();
+            });
+            
+            // 鼠标支持（开发测试用）
+            joystickContainer.addEventListener('mousedown', (e) => {
+                isTouching = true;
+                gameState.joystick.baseX = joystickContainer.offsetLeft + joystickContainer.offsetWidth / 2;
+                gameState.joystick.baseY = joystickContainer.offsetTop + joystickContainer.offsetHeight / 2;
+                updateJoystick(e);
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+            
+            function onMouseMove(e) {
+                if (!isTouching) return;
+                updateJoystick(e);
+            }
+            
+            function onMouseUp() {
+                isTouching = false;
+                resetJoystick();
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+        }
+        
+        function updateJoystick(touch) {
+            const touchX = touch.clientX;
+            const touchY = touch.clientY;
+            
+            let deltaX = touchX - gameState.joystick.baseX;
+            let deltaY = touchY - gameState.joystick.baseY;
+            
+            // 限制摇杆移动范围
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            if (distance > gameState.joystick.maxDistance) {
+                deltaX = (deltaX / distance) * gameState.joystick.maxDistance;
+                deltaY = (deltaY / distance) * gameState.joystick.maxDistance;
+            }
+            
+            // 更新摇杆手柄位置
+            joystickHandle.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+            
+            // 更新游戏控制状态
+            gameState.joystick.active = true;
+            gameState.joystick.x = deltaX / gameState.joystick.maxDistance; // 标准化到-1到1
+            gameState.joystick.y = deltaY / gameState.joystick.maxDistance;
+            
+            // 设置键盘状态（兼容原有逻辑）
+            gameState.keys.left = gameState.joystick.x < -0.3;
+            gameState.keys.right = gameState.joystick.x > 0.3;
+        }
+        
+        function resetJoystick() {
+            joystickHandle.style.transform = 'translate(-50%, -50%)';
+            gameState.joystick.active = false;
+            gameState.joystick.x = 0;
+            gameState.joystick.y = 0;
+            gameState.keys.left = false;
+            gameState.keys.right = false;
+        }
+
+        // ==================== 动作按钮实现 ====================
+        function initActionButtons() {
+            // 跳跃按钮
+            jumpBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys.up = true;
+                jumpBtn.style.transform = 'translateY(4px)';
+                jumpBtn.style.boxShadow = '0 2px 0 rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.4)';
+            });
+            
+            jumpBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys.up = false;
+                jumpBtn.style.transform = 'translateY(0)';
+                jumpBtn.style.boxShadow = '0 6px 0 rgba(0, 0, 0, 0.4), 0 8px 15px rgba(0, 0, 0, 0.4)';
+            });
+            
+            // 攻击按钮
+            attackBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.keys.attack = true;
+                attackBtn.style.transform = 'translateY(4px)';
+                attackBtn.style.boxShadow = '0 2px 0 rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.4)';
+            });
+            
+            attackBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                gameState.keys.attack = false;
+                attackBtn.style.transform = 'translateY(0)';
+                attackBtn.style.boxShadow = '0 6px 0 rgba(0, 0, 0, 0.4), 0 8px 15px rgba(0, 0, 0, 0.4)';
+            });
+            
+            // 炸弹按钮
+            bombBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                useBomb();
+                bombBtn.style.transform = 'translateY(4px)';
+                bombBtn.style.boxShadow = '0 2px 0 rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.4)';
+            });
+            
+            bombBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                bombBtn.style.transform = 'translateY(0)';
+                bombBtn.style.boxShadow = '0 6px 0 rgba(0, 0, 0, 0.4), 0 8px 15px rgba(0, 0, 0, 0.4)';
+            });
+        }
+
+        // ==================== 游戏核心逻辑 ====================
+        function startGame() {
+            // 重置游戏状态
+            gameState.player = {
+                x: 300,
+                y: 300,
+                width: 60,
+                height: 80,
+                velocityX: 0,
+                velocityY: 0,
+                isOnGround: false,
+                facingRight: true,
+                isAttacking: false,
+                attackTimer: 0,
+                health: 100,
+                maxHealth: 100,
+                bombs: 3,
+                score: 0,
+                state: 'idle',
+                frame: 0,
+                frameTimer: 0
+            };
+            
+            gameState.camera = {x: 0, y: 0};
+            gameState.gameRunning = true;
+            gameState.gameOver = false;
+            
+            // 重置怪物
+            gameState.monsters = [
+                {x: 500, y: 370, width: 50, height: 60, type: 'strawberry', health: 30, speed: 1.5},
+                {x: 800, y: 330, width: 60, height: 70, type: 'pineapple', health: 50, speed: 1},
+                {x: 1050, y: 170, width: 55, height: 65, type: 'grape', health: 40, speed: 2},
+                {x: 1350, y: 150, width: 70, height: 80, type: 'watermelon', health: 80, speed: 0.8}
+            ];
+            
+            // 隐藏界面
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            
+            // 更新HUD
+            updateHUD();
+        }
+        
+        function gameLoop() {
+            if (gameState.gameRunning) {
+                update();
+                render();
+            }
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function update() {
+            const player = gameState.player;
+            
+            // 1. 处理玩家输入
+            let moveDirection = 0;
+            if (gameState.keys.left) moveDirection -= 1;
+            if (gameState.keys.right) moveDirection += 1;
+            
+            player.velocityX = moveDirection * config.playerSpeed;
+            
+            // 设置玩家状态
+            if (moveDirection !== 0) {
+                player.facingRight = moveDirection > 0;
+                if (player.isOnGround) {
+                    player.state = 'running';
+                }
+            } else if (player.isOnGround) {
+                player.state = 'idle';
+            }
+            
+            // 跳跃
+            if (gameState.keys.up && player.isOnGround) {
+                player.velocityY = config.jumpForce;
+                player.isOnGround = false;
+                player.state = 'jumping';
+                createParticles(player.x + player.width/2, player.y + player.height, 5, '#FFD700');
+            }
+            
+            // 攻击
+            if (gameState.keys.attack && player.attackTimer <= 0) {
+                player.isAttacking = true;
+                player.attackTimer = 15; // 攻击持续时间
+                player.state = 'attacking';
+                performAttack();
+            }
+            
+            // 更新攻击计时器
+            if (player.attackTimer > 0) {
+                player.attackTimer--;
+                if (player.attackTimer <= 0) {
+                    player.isAttacking = false;
+                }
+            }
+            
+            // 2. 应用物理
+            player.velocityY += config.gravity;
+            player.x += player.velocityX;
+            player.y += player.velocityY;
+            
+            // 3. 碰撞检测（与平台）
+            player.isOnGround = false;
+            for (const platform of gameState.platforms) {
+                if (player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y < platform.y + platform.height &&
+                    player.y + player.height > platform.y) {
+                    
+                    // 从上方落地
+                    if (player.velocityY > 0 && player.y + player.height - player.velocityY <= platform.y) {
+                        player.y = platform.y - player.height;
+                        player.velocityY = 0;
+                        player.isOnGround = true;
+                    }
+                    // 碰到头顶
+                    else if (player.velocityY < 0) {
+                        player.y = platform.y + platform.height;
+                        player.velocityY = 0;
+                    }
+                    // 左右碰撞
+                    else if (player.velocityX !== 0) {
+                        if (player.x < platform.x + platform.width && player.x + player.width > platform.x + platform.width) {
+                            player.x = platform.x + platform.width;
+                        } else {
+                            player.x = platform.x - player.width;
+                        }
+                        player.velocityX = 0;
                     }
                 }
             }
             
-            // 如果还不够，随机添加其他物品
-            while (displayItems.length < itemCount && availableItems.length > 0) {
-                const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
-                if (!displayItems.includes(randomItem)) {
-                    displayItems.push(randomItem);
+            // 边界检测
+            if (player.y > canvas.height) {
+                player.health = 0;
+            }
+            
+            if (player.health <= 0) {
+                endGame(false);
+            }
+            
+            // 4. 更新怪物
+            for (let i = gameState.monsters.length - 1; i >= 0; i--) {
+                const monster = gameState.monsters[i];
+                
+                // 简单AI：来回移动
+                monster.x += monster.speed;
+                
+                // 平台边界检测
+                let onPlatform = false;
+                for (const platform of gameState.platforms) {
+                    if (monster.x >= platform.x && monster.x + monster.width <= platform.x + platform.width &&
+                        Math.abs(monster.y + monster.height - platform.y) < 5) {
+                        onPlatform = true;
+                        break;
+                    }
+                }
+                
+                // 如果不在平台上或到达边缘，转向
+                if (!onPlatform || monster.x <= 0 || monster.x + monster.width >= config.worldWidth) {
+                    monster.speed *= -1;
+                }
+                
+                // 怪物与玩家碰撞
+                if (!player.isAttacking && 
+                    player.x < monster.x + monster.width &&
+                    player.x + player.width > monster.x &&
+                    player.y < monster.y + monster.height &&
+                    player.y + player.height > monster.y) {
+                    
+                    player.health -= 10;
+                    updateHUD();
+                    // 击退效果
+                    player.velocityX = monster.x > player.x ? -10 : 10;
+                    player.velocityY = -8;
+                }
+                
+                // 怪物死亡
+                if (monster.health <= 0) {
+                    createParticles(monster.x + monster.width/2, monster.y + monster.height/2, 15, monster.type === 'strawberry' ? '#FF6B6B' : '#4CAF50');
+                    gameState.player.score += 100;
+                    gameState.monsters.splice(i, 1);
+                    updateHUD();
                 }
             }
             
-            // 生成商店物品HTML
-            displayItems.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'shop-item';
+            // 5. 更新粒子
+            for (let i = gameState.particles.length - 1; i >= 0; i--) {
+                const particle = gameState.particles[i];
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vy += 0.2; // 重力
+                particle.life--;
                 
-                let statsText = '';
-                switch(item.type) {
-                    case "sword": statsText = `攻击力 +${item.attackBonus}`; break;
-                    case "armor": statsText = `防御力 +${item.defenseBonus}`; break;
-                    case "boots": statsText = `闪避率 +${item.dodgeBonus}%`; break;
-                    case "cloak": statsText = `生命值 +${item.healthBonus}`; break;
+                if (particle.life <= 0) {
+                    gameState.particles.splice(i, 1);
                 }
-                
-                itemElement.innerHTML = `
-                    <div class="item-name">${item.name}</div>
-                    <div class="item-stats">${statsText}</div>
-                    <div class="item-price">价格: ${item.price} 金币</div>
-                    <button class="buy-btn" data-type="${item.type}" data-name="${item.name}" data-bonus="${item.type === 'sword' ? item.attackBonus : item.type === 'armor' ? item.defenseBonus : item.type === 'boots' ? item.dodgeBonus : item.healthBonus}" data-price="${item.price}">购买</button>
-                `;
-                
-                shopContainer.appendChild(itemElement);
-                
-                // 添加购买事件监听器
-                const buyBtn = itemElement.querySelector('.buy-btn');
-                buyBtn.addEventListener('click', () => buyEquipment(item));
-            });
-        }
-
-        // 添加战斗日志条目
-        function addLogEntry(text, type) {
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry log-${type}`;
-            logEntry.textContent = `[${new Date().toLocaleTimeString().slice(0,5)}] ${text}`;
-            
-            const logContainer = document.querySelector('.log-entries');
-            logContainer.appendChild(logEntry);
-            
-            // 限制日志数量
-            while (logContainer.children.length > 10) {
-                logContainer.removeChild(logContainer.firstChild);
             }
             
-            // 自动滚动到底部
-            logContainer.scrollTop = logContainer.scrollHeight;
+            // 6. 更新相机（跟随玩家）
+            const targetCameraX = player.x - canvas.width / 3;
+            gameState.camera.x += (targetCameraX - gameState.camera.x) * config.cameraSmooth;
             
-            // 添加到战斗日志数组
-            combatLog.push({ text, type, time: new Date() });
+            // 限制相机范围
+            gameState.camera.x = Math.max(0, Math.min(gameState.camera.x, config.worldWidth - canvas.width));
+            
+            // 7. 检查游戏胜利
+            if (gameState.monsters.length === 0) {
+                endGame(true);
+            }
+        }
+        
+        function performAttack() {
+            const player = gameState.player;
+            const attackRange = 80;
+            const attackWidth = 40;
+            
+            const attackX = player.facingRight ? player.x + player.width : player.x - attackWidth;
+            const attackY = player.y + player.height / 3;
+            
+            // 检测攻击命中的怪物
+            for (const monster of gameState.monsters) {
+                if (attackX < monster.x + monster.width &&
+                    attackX + attackWidth > monster.x &&
+                    attackY < monster.y + monster.height &&
+                    attackY + attackWidth > monster.y) {
+                    
+                    monster.health -= 25;
+                    createParticles(monster.x + monster.width/2, monster.y + monster.height/2, 8, '#FFD700');
+                    
+                    // 击退效果
+                    monster.x += player.facingRight ? 20 : -20;
+                }
+            }
+            
+            // 攻击特效粒子
+            for (let i = 0; i < 5; i++) {
+                gameState.particles.push({
+                    x: player.facingRight ? player.x + player.width : player.x,
+                    y: player.y + player.height / 2,
+                    vx: (player.facingRight ? 5 : -5) + (Math.random() * 4 - 2),
+                    vy: Math.random() * 4 - 2,
+                    size: Math.random() * 6 + 3,
+                    color: '#FFD700',
+                    life: 20
+                });
+            }
+        }
+        
+        function useBomb() {
+            if (gameState.player.bombs <= 0) return;
+            
+            gameState.player.bombs--;
+            updateHUD();
+            
+            const player = gameState.player;
+            const bombRadius = 100;
+            
+            // 炸弹特效
+            for (let i = 0; i < 30; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 8 + 2;
+                gameState.particles.push({
+                    x: player.x + player.width / 2,
+                    y: player.y + player.height / 2,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: Math.random() * 8 + 4,
+                    color: '#FF9800',
+                    life: 40
+                });
+            }
+            
+            // 伤害范围内的怪物
+            for (const monster of gameState.monsters) {
+                const dx = (monster.x + monster.width/2) - (player.x + player.width/2);
+                const dy = (monster.y + monster.height/2) - (player.y + player.height/2);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < bombRadius) {
+                    monster.health = 0;
+                    gameState.player.score += 150;
+                }
+            }
+            
+            updateHUD();
+        }
+        
+        function createParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                gameState.particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.random() * 8 - 4,
+                    vy: Math.random() * -6 - 2,
+                    size: Math.random() * 6 + 2,
+                    color: color,
+                    life: Math.random() * 30 + 20
+                });
+            }
+        }
+        
+        function endGame(victory) {
+            gameState.gameRunning = false;
+            gameState.gameOver = true;
+            
+            finalScore.textContent = gameState.player.score;
+            
+            if (victory) {
+                gameOverScreen.querySelector('h2').textContent = '胜利！';
+                gameOverScreen.querySelector('p').innerHTML = `你击败了所有怪物！<br>你的得分：<span id="finalScore">${gameState.player.score}</span>`;
+            }
+            
+            gameOverScreen.style.display = 'flex';
+        }
+        
+        function updateHUD() {
+            healthValue.textContent = gameState.player.health;
+            scoreValue.textContent = gameState.player.score;
+            bombValue.textContent = gameState.player.bombs;
         }
 
-        // 动画循环
-        function animate() {
+        // ==================== 渲染函数 ====================
+        function render() {
+            const ctx = canvas.getContext('2d');
+            
             // 清空画布
-            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // 绘制背景（森林和河流）
+            // 保存当前画布状态
+            ctx.save();
+            
+            // 应用相机变换
+            ctx.translate(-gameState.camera.x, -gameState.camera.y);
+            
+            // 1. 绘制背景
             drawBackground();
             
-            // 绘制苹果骑士
-            drawKnight();
-            
-            // 绘制怪物
-            if (gameState.currentMonster && gameState.inCombat) {
-                drawMonster();
+            // 2. 绘制平台
+            ctx.fillStyle = '#8B4513';
+            for (const platform of gameState.platforms) {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                
+                // 平台顶部纹理
+                ctx.fillStyle = '#A0522D';
+                ctx.fillRect(platform.x, platform.y, platform.width, 5);
+                ctx.fillStyle = '#8B4513';
             }
             
-            // 绘制生命条
-            drawHealthBars();
+            // 3. 绘制怪物
+            for (const monster of gameState.monsters) {
+                drawMonster(monster);
+            }
             
-            // 绘制关卡信息
-            drawLevelInfo();
+            // 4. 绘制玩家（苹果骑士）
+            drawPlayer();
             
-            // 继续动画循环
-            animationId = requestAnimationFrame(animate);
+            // 5. 绘制粒子
+            for (const particle of gameState.particles) {
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 恢复画布状态
+            ctx.restore();
+            
+            // 6. 绘制攻击范围（调试用，可选）
+            if (gameState.player.isAttacking) {
+                const player = gameState.player;
+                const attackRange = 80;
+                const attackWidth = 40;
+                const attackX = player.facingRight ? player.x + player.width : player.x - attackWidth;
+                const attackY = player.y + player.height / 3;
+                
+                ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                ctx.fillRect(attackX - gameState.camera.x, attackY, attackWidth, attackWidth);
+            }
         }
-
-        // 绘制背景
+        
         function drawBackground() {
-            // 天空
-            const gradient = ctx.createLinearGradient(0, 0, 0, gameCanvas.height);
+            const ctx = canvas.getContext('2d');
+            
+            // 天空渐变
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, '#87CEEB');
             gradient.addColorStop(1, '#98FB98');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+            ctx.fillRect(0, 0, config.worldWidth, canvas.height);
             
             // 远处的山
-            ctx.fillStyle = '#2E8B57';
-            ctx.beginPath();
-            ctx.moveTo(0, 300);
-            ctx.bezierCurveTo(100, 250, 200, 280, 300, 300);
-            ctx.bezierCurveTo(400, 320, 500, 270, 600, 300);
-            ctx.bezierCurveTo(700, 330, 800, 280, 800, 300);
-            ctx.lineTo(800, 500);
-            ctx.lineTo(0, 500);
-            ctx.closePath();
-            ctx.fill();
-            
-            // 河流
-            ctx.fillStyle = '#4682B4';
-            ctx.beginPath();
-            ctx.moveTo(0, 450);
-            ctx.bezierCurveTo(200, 430, 400, 470, 600, 440);
-            ctx.bezierCurveTo(800, 410, 800, 500, 800, 500);
-            ctx.lineTo(800, 500);
-            ctx.lineTo(0, 500);
-            ctx.closePath();
-            ctx.fill();
-            
-            // 树木
-            drawTree(150, 320, 30, 80);
-            drawTree(300, 310, 25, 70);
-            drawTree(500, 330, 35, 90);
-            drawTree(700, 320, 28, 75);
+            for (let i = 0; i < 5; i++) {
+                const x = (i * 400) % config.worldWidth;
+                const height = 100 + Math.sin(i) * 30;
+                ctx.fillStyle = '#2E8B57';
+                ctx.beginPath();
+                ctx.moveTo(x, canvas.height - 100);
+                ctx.bezierCurveTo(x + 100, canvas.height - 100 - height, 
+                                x + 200, canvas.height - 100 - height/2, 
+                                x + 300, canvas.height - 100);
+                ctx.closePath();
+                ctx.fill();
+            }
             
             // 云朵
-            drawCloud(100, 80, 40);
-            drawCloud(300, 60, 50);
-            drawCloud(600, 70, 45);
-        }
-
-        // 绘制树木
-        function drawTree(x, y, width, height) {
-            // 树干
-            ctx.fillStyle = '#8B4513';
-            ctx.fillRect(x - width/6, y, width/3, height);
-            
-            // 树冠
-            ctx.fillStyle = '#228B22';
-            ctx.beginPath();
-            ctx.arc(x, y - height/4, width/2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 苹果
-            ctx.fillStyle = '#FF6B6B';
-            ctx.beginPath();
-            ctx.arc(x - width/4, y - height/4, width/8, 0, Math.PI * 2);
-            ctx.arc(x + width/4, y - height/4, width/8, 0, Math.PI * 2);
-            ctx.arc(x, y - height/2, width/8, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // 绘制云朵
-        function drawCloud(x, y, size) {
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.arc(x + size * 0.8, y - size * 0.2, size * 0.7, 0, Math.PI * 2);
-            ctx.arc(x + size * 0.8, y + size * 0.2, size * 0.7, 0, Math.PI * 2);
-            ctx.arc(x - size * 0.8, y, size * 0.7, 0, Math.PI * 2);
-            ctx.fill();
+            for (let i = 0; i < 8; i++) {
+                const x = (i * 350 + gameState.camera.x * 0.3) % config.worldWidth;
+                const y = 80 + Math.sin(i) * 30;
+                const size = 40;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.arc(x + size * 0.8, y - size * 0.2, size * 0.7, 0, Math.PI * 2);
+                ctx.arc(x + size * 0.8, y + size * 0.2, size * 0.7, 0, Math.PI * 2);
+                ctx.arc(x - size * 0.8, y, size * 0.7, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
-
-        // 绘制苹果骑士
-        function drawKnight() {
-            const knightSize = 60;
+        
+        function drawPlayer() {
+            const player = gameState.player;
+            const ctx = canvas.getContext('2d');
+            
+            // 保存画布状态
+            ctx.save();
+            
+            // 设置绘制原点为玩家中心
+            ctx.translate(player.x + player.width/2, player.y + player.height/2);
+            
+            // 如果面朝左，水平翻转
+            if (!player.facingRight) {
+                ctx.scale(-1, 1);
+            }
+            
+            // ===== 绘制苹果骑士 =====
             
             // 身体（苹果形状）
             ctx.fillStyle = '#FF6B6B';
             ctx.beginPath();
-            ctx.ellipse(knightX, knightY, knightSize/2, knightSize/1.5, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, -10, player.width/2.5, player.height/3, 0, 0, Math.PI * 2);
             ctx.fill();
             
             // 苹果茎
             ctx.fillStyle = '#8B4513';
-            ctx.fillRect(knightX - 3, knightY - knightSize/1.5, 6, 15);
+            ctx.fillRect(-2, -player.height/3 + 5, 4, 12);
             
             // 叶子
             ctx.fillStyle = '#228B22';
             ctx.beginPath();
-            ctx.ellipse(knightX + 5, knightY - knightSize/1.5 + 5, 8, 5, Math.PI/4, 0, Math.PI * 2);
+            ctx.ellipse(5, -player.height/3 + 10, 6, 4, Math.PI/4, 0, Math.PI * 2);
             ctx.fill();
             
             // 眼睛
             ctx.fillStyle = 'white';
             ctx.beginPath();
-            ctx.arc(knightX - 10, knightY - 10, 6, 0, Math.PI * 2);
-            ctx.arc(knightX + 10, knightY - 10, 6, 0, Math.PI * 2);
+            ctx.arc(-10, -20, 6, 0, Math.PI * 2);
+            ctx.arc(10, -20, 6, 0, Math.PI * 2);
             ctx.fill();
             
-            // 瞳孔
+            // 瞳孔（根据移动方向有表情）
             ctx.fillStyle = '#333';
             ctx.beginPath();
-            ctx.arc(knightX - 10, knightY - 10, 3, 0, Math.PI * 2);
-            ctx.arc(knightX + 10, knightY - 10, 3, 0, Math.PI * 2);
+            if (player.state === 'running') {
+                // 跑步时眼睛更专注
+                ctx.arc(-8, -20, 3, 0, Math.PI * 2);
+                ctx.arc(8, -20, 3, 0, Math.PI * 2);
+            } else {
+                ctx.arc(-10, -20, 3, 0, Math.PI * 2);
+                ctx.arc(10, -20, 3, 0, Math.PI * 2);
+            }
             ctx.fill();
             
-            // 嘴巴
+            // 嘴巴（不同状态不同表情）
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.arc(knightX, knightY + 5, 8, 0.2 * Math.PI, 0.8 * Math.PI);
+            
+            if (player.isAttacking) {
+                // 攻击时张嘴
+                ctx.arc(0, -10, 8, 0.1 * Math.PI, 0.9 * Math.PI);
+            } else if (player.state === 'jumping') {
+                // 跳跃时微笑
+                ctx.arc(0, -8, 8, 0.3 * Math.PI, 0.7 * Math.PI);
+            } else {
+                // 平常表情
+                ctx.arc(0, -10, 8, 0.2 * Math.PI, 0.8 * Math.PI);
+            }
             ctx.stroke();
             
-            // 剑
-            ctx.fillStyle = '#C0C0C0';
-            ctx.fillRect(knightX + knightSize/2, knightY - 5, 40, 5);
-            ctx.fillRect(knightX + knightSize/2 + 40, knightY - 15, 5, 20);
+            // 披风
+            ctx.fillStyle = '#4A148C';
+            ctx.beginPath();
+            ctx.moveTo(-player.width/3, 0);
+            ctx.bezierCurveTo(-player.width/2, 10, 
+                            0, player.height/3, 
+                            player.width/3, 0);
+            ctx.bezierCurveTo(0, player.height/4, 
+                            -player.width/4, 5, 
+                            -player.width/3, 0);
+            ctx.fill();
             
-            // 斗篷
-            if (gameState.equipment.cloak.name !== "破斗篷") {
-                const cloakColor = gameState.equipment.cloak.name === "神圣斗篷" ? '#FFD700' : 
-                                 gameState.equipment.cloak.name === "魔法斗篷" ? '#9B5DE5' : '#8B4513';
+            // 剑（攻击时绘制）
+            if (player.isAttacking) {
+                ctx.fillStyle = '#C0C0C0';
+                ctx.fillRect(player.width/4, -15, 40, 6);
+                ctx.fillRect(player.width/4 + 40, -25, 6, 20);
                 
-                ctx.fillStyle = cloakColor;
-                ctx.beginPath();
-                ctx.moveTo(knightX, knightY + knightSize/2);
-                ctx.bezierCurveTo(knightX - 30, knightY + knightSize/2 + 20, 
-                                 knightX - 20, knightY + knightSize/2 + 50, 
-                                 knightX, knightY + knightSize/2 + 40);
-                ctx.bezierCurveTo(knightX + 20, knightY + knightSize/2 + 50, 
-                                 knightX + 30, knightY + knightSize/2 + 20, 
-                                 knightX, knightY + knightSize/2);
-                ctx.fill();
+                // 剑光特效
+                ctx.fillStyle = 'rgba(255, 255, 200, 0.7)';
+                ctx.fillRect(player.width/4 + 45, -30, 10, 30);
             }
+            
+            // 恢复画布状态
+            ctx.restore();
         }
-
-        // 绘制怪物
-        function drawMonster() {
-            if (!gameState.currentMonster) return;
+        
+        function drawMonster(monster) {
+            const ctx = canvas.getContext('2d');
             
-            const monsterSize = 70;
-            const monsterColor = gameState.currentMonster.color;
+            ctx.save();
+            ctx.translate(monster.x + monster.width/2, monster.y + monster.height/2);
             
-            // 根据怪物类型绘制不同形状
-            if (gameState.currentMonster.name.includes("草莓")) {
+            let mainColor, detailColor;
+            
+            // 根据怪物类型设置颜色
+            switch(monster.type) {
+                case 'strawberry':
+                    mainColor = '#FF6B6B';
+                    detailColor = '#8B0000';
+                    break;
+                case 'pineapple':
+                    mainColor = '#FFD700';
+                    detailColor = '#8B4513';
+                    break;
+                case 'grape':
+                    mainColor = '#9B5DE5';
+                    detailColor = '#4B0082';
+                    break;
+                case 'watermelon':
+                    mainColor = '#06D6A0';
+                    detailColor = '#028090';
+                    break;
+                default:
+                    mainColor = '#FF6B6B';
+                    detailColor = '#8B0000';
+            }
+            
+            // 怪物身体
+            ctx.fillStyle = mainColor;
+            ctx.beginPath();
+            
+            if (monster.type === 'strawberry') {
                 // 草莓形状
-                ctx.fillStyle = monsterColor;
-                ctx.beginPath();
-                ctx.ellipse(monsterX, monsterY, monsterSize/2, monsterSize/1.8, 0, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.ellipse(0, 0, monster.width/2, monster.height/2, 0, 0, Math.PI * 2);
                 
                 // 草莓籽
-                ctx.fillStyle = '#333';
-                for (let i = 0; i < 15; i++) {
-                    const angle = (i / 15) * Math.PI * 2;
-                    const x = monsterX + Math.cos(angle) * monsterSize/3;
-                    const y = monsterY + Math.sin(angle) * monsterSize/3;
+                ctx.fill();
+                ctx.fillStyle = detailColor;
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i / 12) * Math.PI * 2;
+                    const x = Math.cos(angle) * monster.width/3;
+                    const y = Math.sin(angle) * monster.height/3;
                     ctx.beginPath();
                     ctx.arc(x, y, 2, 0, Math.PI * 2);
                     ctx.fill();
                 }
-                
-                // 狰狞的眼睛
-                ctx.fillStyle = 'white';
-                ctx.beginPath();
-                ctx.arc(monsterX - 15, monsterY - 10, 8, 0, Math.PI * 2);
-                ctx.arc(monsterX + 15, monsterY - 10, 8, 0, Math.PI * 2);
+            } else if (monster.type === 'pineapple') {
+                // 菠萝形状
+                ctx.rect(-monster.width/2, -monster.height/2, monster.width, monster.height);
                 ctx.fill();
                 
-                ctx.fillStyle = 'red';
-                ctx.beginPath();
-                ctx.arc(monsterX - 15, monsterY - 10, 4, 0, Math.PI * 2);
-                ctx.arc(monsterX + 15, monsterY - 10, 4, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // 尖牙
-                ctx.fillStyle = 'white';
-                ctx.beginPath();
-                ctx.moveTo(monsterX - 10, monsterY + 10);
-                ctx.lineTo(monsterX - 5, monsterY + 15);
-                ctx.lineTo(monsterX, monsterY + 10);
-                ctx.lineTo(monsterX + 5, monsterY + 15);
-                ctx.lineTo(monsterX + 10, monsterY + 10);
-                ctx.fill();
-                
-            } else if (gameState.currentMonster.name.includes("香蕉")) {
-                // 香蕉形状
-                ctx.fillStyle = monsterColor;
-                ctx.beginPath();
-                ctx.moveTo(monsterX - monsterSize/2, monsterY);
-                ctx.bezierCurveTo(monsterX - monsterSize/3, monsterY - monsterSize/2,
-                                 monsterX + monsterSize/3, monsterY - monsterSize/2,
-                                 monsterX + monsterSize/2, monsterY);
-                ctx.bezierCurveTo(monsterX + monsterSize/3, monsterY + monsterSize/2,
-                                 monsterX - monsterSize/3, monsterY + monsterSize/2,
-                                 monsterX - monsterSize/2, monsterY);
-                ctx.closePath();
-                ctx.fill();
-                
-                // 腐烂斑点
-                ctx.fillStyle = '#8B4513';
-                for (let i = 0; i < 8; i++) {
-                    const x = monsterX - monsterSize/3 + (i * monsterSize/8);
-                    const y = monsterY + (Math.sin(i) * 10);
+                // 菠萝纹理
+                ctx.strokeStyle = detailColor;
+                ctx.lineWidth = 2;
+                for (let i = -monster.width/2; i <= monster.width/2; i += 15) {
                     ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.moveTo(i, -monster.height/2);
+                    ctx.lineTo(i, monster.height/2);
+                    ctx.stroke();
                 }
-                
-                // 眼睛
-                drawAngryEyes(monsterX, monsterY);
-                
+                for (let i = -monster.height/2; i <= monster.height/2; i += 15) {
+                    ctx.beginPath();
+                    ctx.moveTo(-monster.width/2, i);
+                    ctx.lineTo(monster.width/2, i);
+                    ctx.stroke();
+                }
             } else {
-                // 默认圆形怪物
-                ctx.fillStyle = monsterColor;
-                ctx.beginPath();
-                ctx.arc(monsterX, monsterY, monsterSize/2, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // 狰狞的眼睛
-                drawAngryEyes(monsterX, monsterY);
-                
-                // 尖牙
-                ctx.fillStyle = 'white';
-                ctx.beginPath();
-                ctx.moveTo(monsterX - 15, monsterY + 10);
-                ctx.lineTo(monsterX - 10, monsterY + 20);
-                ctx.lineTo(monsterX - 5, monsterY + 10);
-                ctx.lineTo(monsterX, monsterY + 20);
-                ctx.lineTo(monsterX + 5, monsterY + 10);
-                ctx.lineTo(monsterX + 10, monsterY + 20);
-                ctx.lineTo(monsterX + 15, monsterY + 10);
+                // 其他怪物圆形
+                ctx.arc(0, 0, monster.width/2, 0, Math.PI * 2);
                 ctx.fill();
             }
             
-            // 绘制怪物名称
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(gameState.currentMonster.name, monsterX, monsterY - monsterSize/2 - 10);
-        }
-
-        // 绘制愤怒的眼睛
-        function drawAngryEyes(x, y) {
-            // 左眼
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 3;
+            // 怪物眼睛
+            ctx.fillStyle = 'white';
             ctx.beginPath();
-            ctx.moveTo(x - 20, y - 5);
-            ctx.lineTo(x - 10, y - 15);
-            ctx.stroke();
+            ctx.arc(-10, -8, 6, 0, Math.PI * 2);
+            ctx.arc(10, -8, 6, 0, Math.PI * 2);
+            ctx.fill();
             
-            ctx.beginPath();
-            ctx.moveTo(x - 10, y - 15);
-            ctx.lineTo(x, y - 10);
-            ctx.stroke();
-            
-            // 右眼
-            ctx.beginPath();
-            ctx.moveTo(x + 20, y - 5);
-            ctx.lineTo(x + 10, y - 15);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.moveTo(x + 10, y - 15);
-            ctx.lineTo(x, y - 10);
-            ctx.stroke();
-            
-            // 瞳孔
             ctx.fillStyle = 'red';
             ctx.beginPath();
-            ctx.arc(x - 10, y - 15, 3, 0, Math.PI * 2);
-            ctx.arc(x + 10, y - 15, 3, 0, Math.PI * 2);
+            ctx.arc(-8, -8, 3, 0, Math.PI * 2);
+            ctx.arc(8, -8, 3, 0, Math.PI * 2);
             ctx.fill();
-        }
-
-        // 绘制生命条
-        function drawHealthBars() {
-            // 玩家生命条
-            const playerHealthWidth = 150;
-            const playerHealthPercent = gameState.health / gameState.maxHealth;
             
-            // 生命条背景
-            ctx.fillStyle = '#333';
-            ctx.fillRect(20, 20, playerHealthWidth, 20);
-            
-            // 生命条
-            ctx.fillStyle = playerHealthPercent > 0.5 ? '#4CAF50' : 
-                           playerHealthPercent > 0.2 ? '#FF9800' : '#F44336';
-            ctx.fillRect(20, 20, playerHealthWidth * playerHealthPercent, 20);
-            
-            // 生命条边框
-            ctx.strokeStyle = '#000';
+            // 怪物嘴巴
+            ctx.strokeStyle = '#333';
             ctx.lineWidth = 2;
-            ctx.strokeRect(20, 20, playerHealthWidth, 20);
+            ctx.beginPath();
+            ctx.arc(0, 5, 10, 0.2 * Math.PI, 0.8 * Math.PI);
+            ctx.stroke();
             
-            // 生命值文本
-            ctx.fillStyle = '#FFF';
-            ctx.font = 'bold 14px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(`生命值: ${gameState.health}/${gameState.maxHealth}`, 20 + playerHealthWidth/2, 35);
+            // 尖牙
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.moveTo(-5, 10);
+            ctx.lineTo(-2, 15);
+            ctx.lineTo(1, 10);
+            ctx.lineTo(4, 15);
+            ctx.lineTo(7, 10);
+            ctx.fill();
             
-            // 怪物生命条
-            if (gameState.currentMonster && gameState.inCombat) {
-                const monsterHealthWidth = 150;
-                const monsterHealthPercent = gameState.currentMonster.health / gameState.currentMonster.maxHealth;
-                
-                // 生命条背景
-                ctx.fillStyle = '#333';
-                ctx.fillRect(gameCanvas.width - monsterHealthWidth - 20, 20, monsterHealthWidth, 20);
-                
-                // 生命条
-                ctx.fillStyle = monsterHealthPercent > 0.5 ? '#FF6B6B' : 
-                               monsterHealthPercent > 0.2 ? '#FF9966' : '#FF3333';
-                ctx.fillRect(gameCanvas.width - monsterHealthWidth - 20, 20, monsterHealthWidth * monsterHealthPercent, 20);
-                
-                // 生命条边框
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(gameCanvas.width - monsterHealthWidth - 20, 20, monsterHealthWidth, 20);
-                
-                // 生命值文本
-                ctx.fillStyle = '#FFF';
-                ctx.font = 'bold 14px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(`${gameState.currentMonster.name}: ${gameState.currentMonster.health}/${gameState.currentMonster.maxHealth}`, 
-                            gameCanvas.width - monsterHealthWidth/2 - 20, 35);
-            }
+            ctx.restore();
+        }
+        
+        function resizeCanvas() {
+            const container = document.getElementById('gameContainer');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
         }
 
-        // 绘制关卡信息
-        function drawLevelInfo() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            ctx.fillRect(gameCanvas.width/2 - 100, 50, 200, 60);
-            
-            ctx.fillStyle = '#FFD700';
-            ctx.font = 'bold 20px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(`第 ${gameState.level} 关`, gameCanvas.width/2, 80);
-            
-            ctx.fillStyle = '#FFF';
-            ctx.font = '16px Arial';
-            ctx.fillText(`已击败: ${gameState.monstersDefeated}/${gameState.totalMonsters}`, gameCanvas.width/2, 105);
-        }
-
-        // 事件监听器
-        startGameBtn.addEventListener('click', initGame);
-        restartGameBtn.addEventListener('click', initGame);
-        newGameBtn.addEventListener('click', initGame);
-        
-        attackBtn.addEventListener('click', playerAttack);
-        
-        skillBtn.addEventListener('click', useBomb);
-        
-        nextLevelBtn.addEventListener('click', nextLevel);
-        
-        buyBombBtn.addEventListener('click', buyBomb);
-        
-        buyPotionBtn.addEventListener('click', buyPotion);
-        
-        // 治疗药剂使用（通过双击生命值显示）
-        document.getElementById('health').addEventListener('dblclick', usePotion);
-        
-        // 初始动画
-        animate();
-        
-        // 初始商店生成
-        generateShopItems();
-        
-        // 添加键盘控制
-        document.addEventListener('keydown', (e) => {
-            if (!gameState.gameActive) return;
-            
-            switch(e.key) {
-                case ' ':
-                case 'a':
-                    playerAttack();
-                    break;
-                case 'b':
-                    useBomb();
-                    break;
-                case 'n':
-                    if (!gameState.inCombat) nextLevel();
-                    break;
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                    // 快速购买商店物品
-                    const shopItems = document.querySelectorAll('.left-panel .shop-item');
-                    const index = parseInt(e.key) - 1;
-                    if (index < shopItems.length) {
-                        const buyBtn = shopItems[index].querySelector('.buy-btn');
-                        if (buyBtn && !buyBtn.disabled) buyBtn.click();
-                    }
-                    break;
-            }
-        });
-        
-        // 添加游戏说明提示
-        addLogEntry("提示: 按空格键或'A'键攻击，'B'键使用苹果炸弹，'N'键进入下一关，'1-4'键快速购买装备。", "neutral");
-        addLogEntry("提示: 双击生命值数字可以使用治疗药剂。", "neutral");
+        // ==================== 启动游戏 ====================
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
