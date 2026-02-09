@@ -2,700 +2,3210 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>苹果骑士：平台大冒险</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思维漂流岛 - 你的无限画布</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: manipulation; font-family: sans-serif; }
-        body { background: linear-gradient(#1a237e, #0d47a1); overflow: hidden; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        
-        #gameContainer { 
-            position: relative; 
-            width: 100%; 
-            max-width: 500px; 
-            height: 70vh; 
-            background: #87CEEB; 
-            border: 4px solid #FF9800; 
-            border-radius: 10px; 
-            overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        #gameCanvas { display: block; width: 100%; height: 100%; }
-        
-        /* 游戏HUD */
-        #hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; color: white; font-size: 1.2em; text-shadow: 2px 2px 0 #000; z-index: 100; }
-        
-        /* 虚拟按键 - 改为固定位置 */
-        #controls { 
-            position: absolute; 
-            bottom: 20px; 
-            width: 100%; 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 0 20px; 
-            pointer-events: none; 
-            z-index: 50;
+
+        :root {
+            --day-bg-start: #a8edea;
+            --day-bg-end: #fed6e3;
+            --night-bg-start: #0f2027;
+            --night-bg-end: #203a43;
+            --dawn-bg-start: #ffecd2;
+            --dawn-bg-end: #fcb69f;
+            --dusk-bg-start: #4b6cb7;
+            --dusk-bg-end: #182848;
         }
-        .btn-group {
+
+        body {
+            background: linear-gradient(135deg, var(--day-bg-start) 0%, var(--day-bg-end) 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow: hidden;
+            transition: background 1.5s ease;
+        }
+
+        body.night {
+            background: linear-gradient(135deg, var(--night-bg-start) 0%, var(--night-bg-end) 100%);
+        }
+
+        body.dawn {
+            background: linear-gradient(135deg, var(--dawn-bg-start) 0%, var(--dawn-bg-end) 100%);
+        }
+
+        body.dusk {
+            background: linear-gradient(135deg, var(--dusk-bg-start) 0%, var(--dusk-bg-end) 100%);
+        }
+
+        .container {
             display: flex;
-            gap: 15px;
-            pointer-events: auto;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
         }
-        .control-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
+
+        /* 粒子背景 */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            transition: color 0.5s;
+        }
+
+        body.night h1 {
+            color: #ecf0f1;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            transition: color 0.5s;
+        }
+
+        body.night .subtitle {
+            color: #bdc3c7;
+        }
+
+        .island-info {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin: 10px auto;
+            max-width: 900px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 10;
+        }
+
+        body.night .island-info {
+            background-color: rgba(30, 30, 40, 0.9);
+            color: #ecf0f1;
+        }
+
+        .island-info.editing {
+            background-color: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        body.night .island-info.editing {
+            background-color: rgba(40, 40, 50, 0.95);
+        }
+
+        .island-name-container {
+            flex: 1;
+        }
+
+        .island-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: background-color 0.2s, color 0.5s;
+        }
+
+        body.night .island-name {
+            color: #ecf0f1;
+        }
+
+        .island-name:hover {
+            background-color: rgba(168, 237, 234, 0.2);
+        }
+
+        body.night .island-name:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .island-name-input {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background: transparent;
             border: none;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            font-size: 1.8em;
+            border-bottom: 2px solid #a8edea;
+            width: 100%;
+            padding: 5px 10px;
+            outline: none;
+        }
+
+        body.night .island-name-input {
+            color: #ecf0f1;
+            border-bottom-color: #3498db;
+        }
+
+        .island-details {
+            text-align: right;
+        }
+
+        .island-seed {
+            font-family: monospace;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            transition: color 0.5s;
+        }
+
+        body.night .island-seed {
+            color: #bdc3c7;
+        }
+
+        .island-date {
+            color: #95a5a6;
+            font-size: 0.9rem;
+            transition: color 0.5s;
+        }
+
+        body.night .island-date {
+            color: #95a5a6;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .toolbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            width: 280px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            z-index: 10;
+            transition: all 0.5s;
+        }
+
+        body.night .toolbar {
+            background-color: rgba(30, 30, 40, 0.95);
+            color: #ecf0f1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .tool-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tool-section h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #a8edea;
+            padding-bottom: 8px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.5s, border-color 0.5s;
+        }
+
+        body.night .tool-section h3 {
+            color: #ecf0f1;
+            border-bottom-color: #3498db;
+        }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .tool {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.4);
-            transition: all 0.05s;
-            -webkit-tap-highlight-color: transparent;
+            background-color: white;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            font-size: 1.3rem;
+            color: #555;
+            position: relative;
         }
-        .control-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.4); }
-        #jumpBtn { background: linear-gradient(#4CAF50, #2E7D32); }
-        #attackBtn { background: linear-gradient(#f44336, #c62828); }
-        
-        /* 方向键 */
-        #dPad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
+
+        body.night .tool {
+            background-color: rgba(50, 50, 60, 0.9);
+            color: #ecf0f1;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .tool:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+
+        body.night .tool:hover {
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+        }
+
+        .tool.active {
+            background-color: #a8edea;
+            color: #2c3e50;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        body.night .tool.active {
+            background-color: #3498db;
+            color: #ecf0f1;
+        }
+
+        .tool-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .color-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .color {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .color:hover {
+            transform: scale(1.15);
+        }
+
+        .color.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px white, 0 0 0 5px #2c3e50;
+        }
+
+        body.night .color.active {
+            box-shadow: 0 0 0 3px rgba(30, 30, 40, 0.95), 0 0 0 5px #3498db;
+        }
+
+        .color-custom {
+            background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+        }
+
+        .brush-size {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .size-preview {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.5s;
+        }
+
+        body.night .size-preview {
+            background-color: #3498db;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #ddd, #a8edea);
+            outline: none;
+        }
+
+        body.night .slider {
+            background: linear-gradient(to right, #555, #3498db);
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #2c3e50;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        body.night .slider::-webkit-slider-thumb {
+            background: #3498db;
+        }
+
+        /* 天气和时间控制 */
+        .environment-controls {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: all 0.5s;
+        }
+
+        body.night .environment-controls {
+            background-color: rgba(30, 30, 40, 0.9);
+        }
+
+        .time-slider-container, .weather-controls, .audio-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .time-slider-container label, .weather-controls h4, .audio-controls h4 {
+            color: #2c3e50;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.5s;
+        }
+
+        body.night .time-slider-container label,
+        body.night .weather-controls h4,
+        body.night .audio-controls h4 {
+            color: #ecf0f1;
+        }
+
+        .time-slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #000428, #004e92, #f9d423, #ff4e50);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            border: 2px solid #2c3e50;
+        }
+
+        .weather-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .weather-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            background-color: #ecf0f1;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             gap: 5px;
-            pointer-events: auto;
+            font-size: 0.8rem;
+            color: #2c3e50;
         }
-        .dir-btn {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.8);
+
+        body.night .weather-btn {
+            background-color: rgba(50, 50, 60, 0.9);
+            color: #ecf0f1;
+        }
+
+        .weather-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .weather-btn.active {
+            background-color: #a8edea;
+            color: #2c3e50;
+        }
+
+        body.night .weather-btn.active {
+            background-color: #3498db;
+            color: #ecf0f1;
+        }
+
+        .audio-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        body.night .volume-slider {
+            background: #555;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2c3e50;
+            cursor: pointer;
+        }
+
+        body.night .volume-slider::-webkit-slider-thumb {
+            background: #3498db;
+        }
+
+        .mute-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #ecf0f1;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #2c3e50;
+        }
+
+        body.night .mute-btn {
+            background-color: rgba(50, 50, 60, 0.9);
+            color: #ecf0f1;
+        }
+
+        .mute-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .mute-btn.muted {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .canvas-container {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+            transition: background-color 0.5s;
+        }
+
+        body.night .canvas-container {
+            background-color: rgba(20, 20, 30, 0.8);
+        }
+
+        #islandCanvas {
+            display: block;
+            background-color: #e6f7ff;
+        }
+
+        /* 天气效果层 */
+        #weatherEffects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* 雨滴效果 */
+        .rain-drop {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, rgba(100, 150, 255, 0.7));
+            border-radius: 0 0 2px 2px;
+            animation: rain-fall linear infinite;
+        }
+
+        @keyframes rain-fall {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* 雪花效果 */
+        .snowflake {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: snow-fall linear infinite;
+        }
+
+        @keyframes snow-fall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 雾气效果 */
+        .fog-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3) 50%, transparent);
+            animation: fog-move 60s linear infinite;
+        }
+
+        @keyframes fog-move {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        #stickyContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .sticky-note {
+            position: absolute;
+            min-width: 150px;
+            min-height: 120px;
+            max-width: 300px;
+            max-height: 250px;
+            background-color: #fffacd;
+            border: 2px solid #f0e68c;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            pointer-events: auto;
+            overflow: hidden;
+            resize: both;
+            cursor: move;
+            z-index: 100;
+            transition: box-shadow 0.3s;
+        }
+
+        body.night .sticky-note {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4), 0 0 20px rgba(52, 152, 219, 0.2);
+        }
+
+        .sticky-header {
+            background-color: #f0e68c;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #5d5d5d;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: all 0.3s;
+        }
+
+        body.night .sticky-header {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        .sticky-close {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .sticky-close:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        body.night .sticky-close:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .sticky-content {
+            padding: 12px;
+            min-height: 80px;
+            outline: none;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            overflow-y: auto;
+            max-height: 180px;
+            background-color: #fffacd;
+            transition: background-color 0.3s;
+        }
+
+        body.night .sticky-content {
+            background-color: rgba(255, 250, 205, 0.9);
+            color: #2c3e50;
+        }
+
+        .sticky-note[data-color="yellow"] { background-color: #fffacd; border-color: #f0e68c; }
+        .sticky-note[data-color="blue"] { background-color: #e3f2fd; border-color: #bbdefb; }
+        .sticky-note[data-color="green"] { background-color: #e8f5e9; border-color: #c8e6c9; }
+        .sticky-note[data-color="pink"] { background-color: #fce4ec; border-color: #f8bbd9; }
+        .sticky-note[data-color="purple"] { background-color: #f3e5f5; border-color: #e1bee7; }
+
+        body.night .sticky-note[data-color="yellow"] .sticky-header { background-color: #b7950b; }
+        body.night .sticky-note[data-color="blue"] .sticky-header { background-color: #1a5276; }
+        body.night .sticky-note[data-color="green"] .sticky-header { background-color: #186a3b; }
+        body.night .sticky-note[data-color="pink"] .sticky-header { background-color: #a93226; }
+        body.night .sticky-note[data-color="purple"] .sticky-header { background-color: #6c3483; }
+
+        .sticky-note.resizing {
+            opacity: 0.9;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn {
+            padding: 12px 25px;
             border: none;
             border-radius: 10px;
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        body.night .btn {
+            background-color: #34495e;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .btn:hover {
+            background-color: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+        }
+
+        body.night .btn:hover {
+            background-color: #2c3e50;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.save {
+            background-color: #27ae60;
+        }
+
+        .btn.save:hover {
+            background-color: #219653;
+        }
+
+        .btn.new {
+            background-color: #3498db;
+        }
+
+        .btn.new:hover {
+            background-color: #2980b9;
+        }
+
+        .btn.history {
+            background-color: #9b59b6;
+        }
+
+        .btn.history:hover {
+            background-color: #8e44ad;
+        }
+
+        .btn.export {
+            background-color: #e67e22;
+        }
+
+        .btn.export:hover {
+            background-color: #d35400;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-style: italic;
+            min-height: 24px;
+            padding: 0 10px;
+            position: relative;
+            z-index: 10;
+            transition: color 0.5s;
+        }
+
+        body.night .status {
+            color: #bdc3c7;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #27ae60;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+        }
+
+        .notification.info {
+            background-color: #3498db;
+        }
+
+        /* 模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5em;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
         }
-        .dir-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
-        #upBtn { grid-column: 2; grid-row: 1; }
-        #leftBtn { grid-column: 1; grid-row: 2; }
-        #rightBtn { grid-column: 3; grid-row: 2; }
-        #downBtn { grid-column: 2; grid-row: 3; }
-        
-        /* 游戏界面 */
-        .screen { 
-            position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 200; 
-            text-align: center; 
-            padding: 20px; 
-            color: white;
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
-        .screen h2 { font-size: 2.5em; color: #FFD700; margin-bottom: 20px; }
-        .screen p { font-size: 1.2em; margin-bottom: 30px; max-width: 80%; }
-        .screen button {
-            background: linear-gradient(#FF6B6B, #C2185B);
-            color: white;
+
+        .modal {
+            background-color: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transform: translateY(30px);
+            transition: transform 0.4s;
+        }
+
+        body.night .modal {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.night .modal-header {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 100%);
+        }
+
+        .modal-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        body.night .modal-title {
+            color: #ecf0f1;
+        }
+
+        .modal-close {
+            background: none;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.5em;
-            border-radius: 50px;
+            font-size: 1.8rem;
+            color: #2c3e50;
             cursor: pointer;
-            box-shadow: 0 8px 0 #8B0000;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
         }
-        .screen button:active { transform: translateY(6px); box-shadow: 0 2px 0 #8B0000; }
-        #gameOverScreen, #victoryScreen { display: none; }
+
+        body.night .modal-close {
+            color: #ecf0f1;
+        }
+
+        .modal-close:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-content {
+            padding: 30px;
+            max-height: calc(90vh - 100px);
+            overflow-y: auto;
+        }
+
+        /* 历史画廊样式 */
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .history-island {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        body.night .history-island {
+            background-color: #34495e;
+        }
+
+        .history-island:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        body.night .history-island:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .history-island.active {
+            box-shadow: 0 0 0 3px #a8edea, 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        body.night .history-island.active {
+            box-shadow: 0 0 0 3px #3498db, 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .history-thumbnail {
+            width: 100%;
+            height: 140px;
+            background-color: #e6f7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 2rem;
+        }
+
+        body.night .history-thumbnail {
+            background-color: #2c3e50;
+            color: #bdc3c7;
+        }
+
+        .history-info {
+            padding: 15px;
+        }
+
+        .history-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        body.night .history-name {
+            color: #ecf0f1;
+        }
+
+        .history-date {
+            color: #95a5a6;
+            font-size: 0.85rem;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .history-btn {
+            padding: 5px 10px;
+            background-color: #ecf0f1;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.2s;
+            color: #2c3e50;
+        }
+
+        body.night .history-btn {
+            background-color: #4a6278;
+            color: #ecf0f1;
+        }
+
+        .history-btn:hover {
+            background-color: #d5dbdb;
+        }
+
+        body.night .history-btn:hover {
+            background-color: #5d6d7e;
+        }
+
+        .history-btn.delete {
+            color: #e74c3c;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+
+        .empty-history i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* 自定义颜色选择器 */
+        .custom-color-picker {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        #customColorInput {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 1200px) {
+            .history-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .toolbar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+            
+            .environment-controls {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .time-slider-container,
+            .weather-controls,
+            .audio-controls {
+                flex: 1;
+                min-width: 200px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .toolbar {
+                flex-direction: column;
+            }
+            
+            .tool-section {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .toolbar {
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .tool-section {
+                min-width: 150px;
+            }
+            
+            .island-info {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .island-details {
+                text-align: center;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                min-width: 140px;
+                padding: 10px 20px;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            .history-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .environment-controls {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .tool-section {
+                min-width: 120px;
+            }
+            
+            .tool {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .btn {
+                min-width: 120px;
+                font-size: 0.9rem;
+            }
+            
+            .modal {
+                width: 95%;
+            }
+            
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
+    <div class="container">
+        <!-- 粒子背景 -->
+        <canvas id="particles"></canvas>
         
-        <div id="hud">
-            <div>❤️ <span id="health">100</span></div>
-            <div>⭐ <span id="score">0</span></div>
-            <div>🏁 <span id="distance">0m</span></div>
-        </div>
+        <header>
+            <h1><i class="fas fa-island-tropical"></i> 思维漂流岛</h1>
+            <p class="subtitle">你的无限画布 - 每次访问都是一个新世界</p>
+        </header>
         
-        <!-- 开始界面 -->
-        <div id="startScreen" class="screen">
-            <h2>苹果骑士</h2>
-            <p>国王被囚禁在关卡终点！<br>穿越平台，击败怪物，抵达终点！<br><br><strong>操作：</strong><br>方向键移动，A键跳跃，B键攻击</p>
-            <button id="startBtn">开始冒险</button>
-        </div>
-        
-        <!-- 游戏结束界面 -->
-        <div id="gameOverScreen" class="screen">
-            <h2>游戏结束</h2>
-            <p>你已坠落深渊...</p>
-            <button id="retryBtn">重试关卡</button>
-        </div>
-        
-        <!-- 胜利界面 -->
-        <div id="victoryScreen" class="screen">
-            <h2>胜利！</h2>
-            <p>你成功抵达终点！<br>得分：<span id="finalScore">0</span></p>
-            <button id="nextLevelBtn">下一关</button>
-        </div>
-        
-        <!-- 虚拟控制 -->
-        <div id="controls">
-            <div id="dPad">
-                <button id="upBtn" class="dir-btn">⬆️</button>
-                <button id="leftBtn" class="dir-btn">⬅️</button>
-                <button id="rightBtn" class="dir-btn">➡️</button>
-                <button id="downBtn" class="dir-btn">⬇️</button>
+        <div class="island-info" id="islandInfo">
+            <div class="island-name-container">
+                <div class="island-name" id="islandNameDisplay">漂流岛 #<span id="islandId">1</span>: <span id="islandNameText">未命名岛屿</span></div>
+                <input type="text" class="island-name-input" id="islandNameInput" maxlength="30" style="display: none;">
             </div>
-            <div class="btn-group">
-                <button id="attackBtn" class="control-btn">⚔️</button>
-                <button id="jumpBtn" class="control-btn">⬆️</button>
+            <div class="island-details">
+                <div class="island-seed">种子: <span id="seedValue">loading...</span></div>
+                <div class="island-date" id="islandDate">今天</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="toolbar">
+                <div class="tool-section">
+                    <h3><i class="fas fa-pencil-alt"></i> 工具</h3>
+                    <div class="tools">
+                        <div class="tool active" data-tool="pencil" title="铅笔">
+                            <i class="fas fa-pencil-alt"></i>
+                        </div>
+                        <div class="tool" data-tool="brush" title="画笔">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <div class="tool" data-tool="eraser" title="橡皮">
+                            <i class="fas fa-eraser"></i>
+                        </div>
+                        <div class="tool" data-tool="sticky" title="添加便签">
+                            <i class="fas fa-sticky-note"></i>
+                            <div class="tool-badge" id="stickyCount">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-section">
+                    <h3><i class="fas fa-fill-drip"></i> 颜色</h3>
+                    <div class="color-picker">
+                        <div class="color active" style="background-color: #2c3e50;" data-color="#2c3e50"></div>
+                        <div class="color" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+                        <div class="color" style="background-color: #27ae60;" data-color="#27ae60"></div>
+                        <div class="color" style="background-color: #3498db;" data-color="#3498db"></div>
+                        <div class="color" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+                        <div class="color" style="background-color: #f39c12;" data-color="#f39c12"></div>
+                        <div class="color" style="background-color: #1abc9c;" data-color="#1abc9c"></div>
+                        <div class="color" style="background-color: #e67e22;" data-color="#e67e22"></div>
+                        <div class="color color-custom" title="自定义颜色">
+                            <input type="color" id="customColorInput" value="#2c3e50" style="display: none;">
+                            <i class="fas fa-sliders-h" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; mix-blend-mode: difference;"></i>
+                        </div>
+                    </div>
+                    <div class="custom-color-picker">
+                        <!-- 自定义颜色输入将通过JavaScript添加 -->
+                    </div>
+                </div>
+                
+                <div class="tool-section">
+                    <h3><i class="fas fa-expand-alt"></i> 画笔大小</h3>
+                    <div class="brush-size">
+                        <div class="size-preview" id="brushSizePreview">5</div>
+                        <input type="range" min="1" max="30" value="5" class="slider" id="brushSize">
+                    </div>
+                </div>
+                
+                <!-- 环境控制 -->
+                <div class="environment-controls">
+                    <div class="time-slider-container">
+                        <label for="timeOfDay">
+                            <i class="fas fa-clock"></i> 时间: <span id="timeLabel">白天</span>
+                        </label>
+                        <input type="range" min="0" max="23" value="12" class="time-slider" id="timeOfDay">
+                    </div>
+                    
+                    <div class="weather-controls">
+                        <h4><i class="fas fa-cloud-sun"></i> 天气</h4>
+                        <div class="weather-buttons">
+                            <button class="weather-btn active" data-weather="sunny" title="晴天">
+                                <i class="fas fa-sun"></i>
+                                <span>晴天</span>
+                            </button>
+                            <button class="weather-btn" data-weather="rainy" title="雨天">
+                                <i class="fas fa-cloud-rain"></i>
+                                <span>雨天</span>
+                            </button>
+                            <button class="weather-btn" data-weather="foggy" title="雾天">
+                                <i class="fas fa-smog"></i>
+                                <span>雾天</span>
+                            </button>
+                            <button class="weather-btn" data-weather="snowy" title="雪天">
+                                <i class="fas fa-snowflake"></i>
+                                <span>雪天</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="audio-controls">
+                        <h4><i class="fas fa-volume-up"></i> 音效</h4>
+                        <div class="volume-control">
+                            <button class="mute-btn" id="muteBtn" title="静音">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="islandCanvas"></canvas>
+                <!-- 天气效果层 -->
+                <div id="weatherEffects"></div>
+                <!-- 便签容器 -->
+                <div id="stickyContainer"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn save" id="saveBtn">
+                <i class="fas fa-save"></i> 保存岛屿
+            </button>
+            <button class="btn new" id="newIslandBtn">
+                <i class="fas fa-plus"></i> 新岛屿
+            </button>
+            <button class="btn history" id="historyBtn">
+                <i class="fas fa-history"></i> 历史岛屿 (<span id="historyCount">0</span>)
+            </button>
+            <button class="btn export" id="exportBtn">
+                <i class="fas fa-download"></i> 导出图片
+            </button>
+        </div>
+        
+        <div class="status" id="status">
+            准备好开始你的漂流创作了吗？
+        </div>
+    </div>
+    
+    <!-- 历史画廊模态框 -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-history"></i> 历史岛屿画廊</div>
+                <button class="modal-close" id="closeHistoryModal">&times;</button>
+            </div>
+            <div class="modal-content">
+                <p>这里保存了你所有的漂流岛。点击缩略图可以加载岛屿。</p>
+                <div class="history-grid" id="historyGrid">
+                    <!-- 历史岛屿将通过JavaScript动态添加 -->
+                </div>
+                <div class="empty-history" id="emptyHistory" style="display: none;">
+                    <i class="fas fa-island-tropical"></i>
+                    <h3>暂无历史岛屿</h3>
+                    <p>创建并保存你的第一个岛屿吧！</p>
+                </div>
             </div>
         </div>
     </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <div class="notification-text">内容已自动保存！</div>
+    </div>
 
     <script>
-// ==================== 游戏核心配置 ====================
-const CONFIG = {
-    GRAVITY: 0.5,
-    PLAYER_SPEED: 5,
-    JUMP_FORCE: -11,
-    CAMERA_SMOOTH: 0.1,
-    WORLD_WIDTH: 3000
-};
-
-// ==================== 游戏状态 ====================
-const GameState = {
-    player: {
-        x: 100, y: 300,
-        vx: 0, vy: 0,
-        width: 40, height: 60,
-        isOnGround: false,
-        facingRight: true,
-        health: 100,
-        score: 0,
-        // 动作状态
-        isAttacking: false,
-        attackTimer: 0,
-        isJumping: false,
-        // 无敌帧
-        invincible: 0,
-        blink: 0
-    },
-    camera: { x: 0, y: 0 },
-    level: 1,
-    keys: { left: false, right: false, up: false, attack: false },
-    platforms: [],
-    monsters: [],
-    coins: [],
-    goal: { x: 2800, y: 200, width: 60, height: 80 },
-    gameActive: false,
-    gameOver: false,
-    victory: false
-};
-
-// ==================== 初始化关卡 ====================
-function initLevel(level) {
-    // 重置玩家
-    GameState.player = {
-        x: 100, y: 300,
-        vx: 0, vy: 0,
-        width: 40, height: 60,
-        isOnGround: false,
-        facingRight: true,
-        health: 100,
-        score: 0,
-        isAttacking: false,
-        attackTimer: 0,
-        isJumping: false,
-        invincible: 0,
-        blink: 0
-    };
-    
-    GameState.platforms = [
-        // 地面
-        {x: 0, y: 450, width: 800, height: 50, color: '#8B4513'},
-        // 平台序列 - 构成一条通往终点的路径
-        {x: 300, y: 380, width: 100, height: 20, color: '#A0522D'},
-        {x: 500, y: 330, width: 120, height: 20, color: '#A0522D'},
-        {x: 700, y: 280, width: 100, height: 20, color: '#A0522D'},
-        {x: 900, y: 230, width: 150, height: 20, color: '#A0522D'},
-        {x: 1150, y: 180, width: 100, height: 20, color: '#A0522D'},
-        {x: 1350, y: 250, width: 200, height: 20, color: '#A0522D'},
-        {x: 1650, y: 200, width: 100, height: 20, color: '#A0522D'},
-        {x: 1850, y: 150, width: 150, height: 20, color: '#A0522D'},
-        {x: 2100, y: 220, width: 200, height: 20, color: '#A0522D'},
-        {x: 2400, y: 180, width: 100, height: 20, color: '#A0522D'},
-        {x: 2600, y: 130, width: 200, height: 20, color: '#A0522D'},
-        // 终点平台
-        {x: 2750, y: 100, width: 150, height: 30, color: '#FFD700'}
-    ];
-    
-    // 根据关卡增加难度
-    const monsterCount = 3 + level;
-    GameState.monsters = [];
-    for (let i = 0; i < monsterCount; i++) {
-        const platformIndex = Math.floor(Math.random() * (GameState.platforms.length - 5)) + 2;
-        const plat = GameState.platforms[platformIndex];
-        GameState.monsters.push({
-            x: plat.x + 20,
-            y: plat.y - 50,
-            width: 40 + level * 5,
-            height: 50 + level * 5,
-            vx: (Math.random() > 0.5 ? 1 : -1) * (0.5 + level * 0.2),
-            health: 20 + level * 10,
-            type: ['strawberry', 'pineapple', 'grape'][i % 3],
-            color: ['#FF6B6B', '#FFD700', '#9B5DE5'][i % 3]
-        });
-    }
-    
-    // 金币
-    GameState.coins = [];
-    for (let i = 0; i < 20; i++) {
-        const platIndex = Math.floor(Math.random() * (GameState.platforms.length - 2)) + 1;
-        const plat = GameState.platforms[platIndex];
-        GameState.coins.push({
-            x: plat.x + Math.random() * (plat.width - 20),
-            y: plat.y - 30,
-            width: 15, height: 15,
-            collected: false
-        });
-    }
-    
-    GameState.goal = { x: 2800, y: 200, width: 60, height: 80 };
-    GameState.camera = { x: 0, y: 0 };
-    GameState.gameActive = true;
-    GameState.gameOver = false;
-    GameState.victory = false;
-}
-
-// ==================== 核心游戏循环 ====================
-function update() {
-    const p = GameState.player;
-    
-    // 1. 处理输入
-    p.vx = 0;
-    if (GameState.keys.left) { p.vx = -CONFIG.PLAYER_SPEED; p.facingRight = false; }
-    if (GameState.keys.right) { p.vx = CONFIG.PLAYER_SPEED; p.facingRight = true; }
-    
-    // 跳跃（按下时触发，允许小跳）
-    if (GameState.keys.up && p.isOnGround) {
-        p.vy = CONFIG.JUMP_FORCE;
-        p.isOnGround = false;
-        p.isJumping = true;
-    }
-    // 松键时取消跳跃（实现小跳）
-    if (!GameState.keys.up && p.vy < -5) {
-        p.vy = -5;
-    }
-    
-    // 攻击
-    if (GameState.keys.attack && p.attackTimer <= 0) {
-        p.isAttacking = true;
-        p.attackTimer = 15;
-    }
-    
-    // 2. 应用物理
-    p.vy += CONFIG.GRAVITY;
-    p.x += p.vx;
-    p.y += p.vy;
-    
-    // 3. 平台碰撞
-    p.isOnGround = false;
-    for (const plat of GameState.platforms) {
-        if (p.x < plat.x + plat.width &&
-            p.x + p.width > plat.x &&
-            p.y < plat.y + plat.height &&
-            p.y + p.height > plat.y) {
+        // 岛屿生成和绘画系统 - 第三阶段：氛围增强版
+        class DriftingIsland {
+            constructor() {
+                // 核心绘图属性
+                this.canvas = document.getElementById('islandCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.currentTool = 'pencil';
+                this.currentColor = '#2c3e50';
+                this.brushSize = 5;
+                this.isDrawing = false;
+                this.lastX = 0;
+                this.lastY = 0;
+                
+                // 岛屿属性
+                this.islandSeed = this.generateSeed();
+                this.islandId = 1;
+                this.islandName = '未命名岛屿';
+                this.drawingHistory = [];
+                
+                // 便签系统
+                this.stickies = [];
+                this.stickyCount = 0;
+                
+                // 用户界面状态
+                this.isEditingName = false;
+                this.historyIslands = [];
+                this.customColors = [];
+                
+                // 新增：环境系统属性
+                this.currentTime = 12; // 0-23小时
+                this.currentWeather = 'sunny'; // sunny, rainy, foggy, snowy
+                this.isMuted = false;
+                this.volume = 50;
+                
+                // 新增：音频元素
+                this.audioElements = {
+                    bgOcean: null,
+                    bgBirds: null,
+                    bgWind: null,
+                    rain: null,
+                    draw: null
+                };
+                
+                // 新增：粒子系统
+                this.particles = [];
+                this.particleCanvas = document.getElementById('particles');
+                this.particleCtx = this.particleCanvas.getContext('2d');
+                
+                // 初始化
+                this.init();
+            }
             
-            // 落地
-            if (p.vy > 0 && p.y + p.height - p.vy <= plat.y) {
-                p.y = plat.y - p.height;
-                p.vy = 0;
-                p.isOnGround = true;
-                p.isJumping = false;
+            // 生成随机种子
+            generateSeed() {
+                return Math.random().toString(36).substring(2, 10);
             }
-            // 顶头
-            else if (p.vy < 0) {
-                p.y = plat.y + plat.height;
-                p.vy = 0;
+            
+            // 初始化
+            init() {
+                this.setupCanvas();
+                this.setupParticleCanvas();
+                this.generateIsland();
+                this.setupEventListeners();
+                this.loadFromStorage();
+                this.initAudioSystem();
+                this.updateEnvironment();
+                this.updateUI();
+                this.loadHistory();
+                
+                // 开始动画循环
+                this.animate();
             }
-            // 侧碰
-            else if (p.vx !== 0) {
-                p.x = p.vx > 0 ? plat.x - p.width : plat.x + plat.width;
-                p.vx = 0;
+            
+            // 设置画布大小
+            setupCanvas() {
+                const container = document.querySelector('.canvas-container');
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+            }
+            
+            // 设置粒子画布
+            setupParticleCanvas() {
+                this.particleCanvas.width = window.innerWidth;
+                this.particleCanvas.height = window.innerHeight;
+                
+                // 窗口大小调整时更新
+                window.addEventListener('resize', () => {
+                    this.particleCanvas.width = window.innerWidth;
+                    this.particleCanvas.height = window.innerHeight;
+                });
+            }
+            
+            // 生成岛屿轮廓
+            generateIsland() {
+                const ctx = this.ctx;
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                
+                // 清除画布
+                ctx.clearRect(0, 0, width, height);
+                
+                // 根据时间设置天空颜色
+                let skyColor1, skyColor2;
+                if (this.currentTime >= 6 && this.currentTime < 18) {
+                    // 白天
+                    if (this.currentTime < 10) {
+                        // 早晨
+                        skyColor1 = '#ffecd2';
+                        skyColor2 = '#fcb69f';
+                    } else if (this.currentTime < 16) {
+                        // 正午
+                        skyColor1 = '#a8edea';
+                        skyColor2 = '#fed6e3';
+                    } else {
+                        // 傍晚
+                        skyColor1 = '#4b6cb7';
+                        skyColor2 = '#182848';
+                    }
+                } else {
+                    // 夜晚
+                    skyColor1 = '#0f2027';
+                    skyColor2 = '#203a43';
+                }
+                
+                // 绘制天空背景
+                const skyGradient = ctx.createLinearGradient(0, 0, 0, height);
+                skyGradient.addColorStop(0, skyColor1);
+                skyGradient.addColorStop(1, skyColor2);
+                ctx.fillStyle = skyGradient;
+                ctx.fillRect(0, 0, width, height);
+                
+                // 根据时间添加太阳/月亮
+                const centerX = width / 2;
+                const centerY = height / 2;
+                
+                if (this.currentTime >= 6 && this.currentTime < 18) {
+                    // 太阳
+                    const sunX = (this.currentTime - 6) / 12 * width;
+                    const sunY = Math.sin((this.currentTime - 6) / 12 * Math.PI) * (height * 0.3) + 50;
+                    
+                    // 太阳光晕
+                    const sunGradient = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 60);
+                    sunGradient.addColorStop(0, 'rgba(255, 255, 200, 0.8)');
+                    sunGradient.addColorStop(1, 'rgba(255, 255, 200, 0)');
+                    
+                    ctx.fillStyle = sunGradient;
+                    ctx.beginPath();
+                    ctx.arc(sunX, sunY, 60, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 太阳
+                    ctx.fillStyle = '#FFD700';
+                    ctx.beginPath();
+                    ctx.arc(sunX, sunY, 25, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // 月亮
+                    const moonX = ((this.currentTime + 6) % 24) / 24 * width;
+                    const moonY = Math.sin(((this.currentTime + 6) % 24) / 24 * Math.PI) * (height * 0.3) + 50;
+                    
+                    // 月亮
+                    ctx.fillStyle = '#F0F0F0';
+                    ctx.beginPath();
+                    ctx.arc(moonX, moonY, 20, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 月亮阴影
+                    ctx.fillStyle = '#E0E0E0';
+                    ctx.beginPath();
+                    ctx.arc(moonX - 5, moonY - 5, 15, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // 绘制海洋
+                let oceanColor1, oceanColor2;
+                if (this.currentTime >= 6 && this.currentTime < 18) {
+                    oceanColor1 = '#4a9fe4';
+                    oceanColor2 = '#2c5aa0';
+                } else {
+                    oceanColor1 = '#1a3a5f';
+                    oceanColor2 = '#0a1a2f';
+                }
+                
+                const oceanGradient = ctx.createLinearGradient(0, height * 0.6, 0, height);
+                oceanGradient.addColorStop(0, oceanColor1);
+                oceanGradient.addColorStop(1, oceanColor2);
+                ctx.fillStyle = oceanGradient;
+                ctx.fillRect(0, height * 0.6, width, height * 0.4);
+                
+                // 使用种子生成随机但可重现的岛屿
+                const seed = this.islandSeed;
+                const islandRadius = Math.min(width, height) * 0.35;
+                
+                // 创建岛屿路径
+                ctx.beginPath();
+                
+                // 使用噪声生成自然的海岸线
+                const points = 50;
+                for (let i = 0; i <= points; i++) {
+                    const angle = (i / points) * Math.PI * 2;
+                    
+                    // 基于种子生成伪随机噪声
+                    const noise = this.getNoiseValue(seed, i);
+                    const radius = islandRadius * (0.8 + noise * 0.4);
+                    
+                    const x = centerX + Math.cos(angle) * radius;
+                    const y = centerY + Math.sin(angle) * radius;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                
+                ctx.closePath();
+                
+                // 根据时间调整岛屿颜色
+                let islandColor1, islandColor2;
+                if (this.currentTime >= 6 && this.currentTime < 18) {
+                    islandColor1 = '#f5e6b3';
+                    islandColor2 = '#d4b483';
+                } else {
+                    islandColor1 = '#a09070';
+                    islandColor2 = '#705840';
+                }
+                
+                // 填充岛屿
+                const islandGradient = ctx.createRadialGradient(
+                    centerX, centerY, 0,
+                    centerX, centerY, islandRadius
+                );
+                islandGradient.addColorStop(0, islandColor1);
+                islandGradient.addColorStop(1, islandColor2);
+                ctx.fillStyle = islandGradient;
+                ctx.fill();
+                
+                // 添加岛屿内部细节
+                this.addIslandDetails(centerX, centerY, islandRadius, seed);
+                
+                // 保存初始岛屿状态
+                this.saveDrawingState();
+            }
+            
+            // 生成基于种子的伪随机值
+            getNoiseValue(seed, index) {
+                let hash = 0;
+                for (let i = 0; i < seed.length; i++) {
+                    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return Math.abs(Math.sin(hash + index * 0.1)) % 1;
+            }
+            
+            // 添加岛屿细节（树木、山丘等）
+            addIslandDetails(centerX, centerY, radius, seed) {
+                const ctx = this.ctx;
+                
+                // 根据时间调整细节颜色
+                let treeColor, hillColor1, hillColor2;
+                if (this.currentTime >= 6 && this.currentTime < 18) {
+                    treeColor = '#27ae60';
+                    hillColor1 = '#c9b28a';
+                    hillColor2 = '#a89068';
+                } else {
+                    treeColor = '#1e6b3a';
+                    hillColor1 = '#8a7a60';
+                    hillColor2 = '#6a5a40';
+                }
+                
+                // 添加一些随机树木
+                const treeCount = 15 + Math.floor(this.getNoiseValue(seed, 100) * 10);
+                for (let i = 0; i < treeCount; i++) {
+                    const angle = this.getNoiseValue(seed, i) * Math.PI * 2;
+                    const dist = this.getNoiseValue(seed, i + 100) * radius * 0.7;
+                    
+                    const x = centerX + Math.cos(angle) * dist;
+                    const y = centerY + Math.sin(angle) * dist;
+                    
+                    // 绘制树冠
+                    ctx.fillStyle = treeColor;
+                    ctx.beginPath();
+                    ctx.arc(x, y - 8, 6 + this.getNoiseValue(seed, i + 200) * 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 树干
+                    ctx.fillStyle = '#8b4513';
+                    ctx.fillRect(x - 2, y - 2, 4, 10);
+                }
+                
+                // 添加一些山丘
+                const hillCount = 3 + Math.floor(this.getNoiseValue(seed, 300) * 3);
+                for (let i = 0; i < hillCount; i++) {
+                    const angle = this.getNoiseValue(seed, i + 400) * Math.PI * 2;
+                    const dist = this.getNoiseValue(seed, i + 500) * radius * 0.5;
+                    
+                    const x = centerX + Math.cos(angle) * dist;
+                    const y = centerY + Math.sin(angle) * dist;
+                    const hillRadius = 15 + this.getNoiseValue(seed, i + 600) * 20;
+                    
+                    // 绘制山丘
+                    const hillGradient = ctx.createRadialGradient(
+                        x, y, 0,
+                        x, y, hillRadius
+                    );
+                    hillGradient.addColorStop(0, hillColor1);
+                    hillGradient.addColorStop(1, hillColor2);
+                    
+                    ctx.fillStyle = hillGradient;
+                    ctx.beginPath();
+                    ctx.arc(x, y, hillRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // 初始化音频系统
+            initAudioSystem() {
+                // 创建音频元素
+                this.audioElements.bgOcean = new Audio();
+                this.audioElements.bgOcean.src = 'https://assets.mixkit.co/sfx/preview/mixkit-ocean-waves-coming-to-shore-1255.mp3';
+                this.audioElements.bgOcean.loop = true;
+                this.audioElements.bgOcean.volume = this.volume / 100 * 0.3;
+                
+                this.audioElements.bgBirds = new Audio();
+                this.audioElements.bgBirds.src = 'https://assets.mixkit.co/sfx/preview/mixkit-forest-birds-ambience-1207.mp3';
+                this.audioElements.bgBirds.loop = true;
+                this.audioElements.bgBirds.volume = this.volume / 100 * 0.2;
+                
+                this.audioElements.bgWind = new Audio();
+                this.audioElements.bgWind.src = 'https://assets.mixkit.co/sfx/preview/mixkit-wind-in-the-trees-1245.mp3';
+                this.audioElements.bgWind.loop = true;
+                this.audioElements.bgWind.volume = this.volume / 100 * 0.1;
+                
+                this.audioElements.rain = new Audio();
+                this.audioElements.rain.src = 'https://assets.mixkit.co/sfx/preview/mixkit-rain-loop-1245.mp3';
+                this.audioElements.rain.loop = true;
+                this.audioElements.rain.volume = this.volume / 100 * 0.4;
+                
+                this.audioElements.draw = new Audio();
+                this.audioElements.draw.src = 'https://assets.mixkit.co/sfx/preview/mixkit-pen-scribble-on-paper-2209.mp3';
+                this.audioElements.draw.volume = this.volume / 100 * 0.5;
+                
+                // 尝试播放背景音（需要用户交互）
+                document.addEventListener('click', () => {
+                    this.playBackgroundAudio();
+                }, { once: true });
+            }
+            
+            // 播放背景音频
+            playBackgroundAudio() {
+                if (this.isMuted) return;
+                
+                this.audioElements.bgOcean.play().catch(e => console.log("音频播放失败:", e));
+                this.audioElements.bgWind.play().catch(e => console.log("音频播放失败:", e));
+                
+                // 根据时间播放鸟鸣（仅在白天）
+                if (this.currentTime >= 6 && this.currentTime < 18) {
+                    this.audioElements.bgBirds.play().catch(e => console.log("音频播放失败:", e));
+                }
+                
+                // 根据天气播放雨声
+                if (this.currentWeather === 'rainy') {
+                    this.audioElements.rain.play().catch(e => console.log("音频播放失败:", e));
+                }
+            }
+            
+            // 更新音频播放
+            updateAudio() {
+                const volume = this.isMuted ? 0 : this.volume / 100;
+                
+                // 更新所有音频元素的音量
+                this.audioElements.bgOcean.volume = volume * 0.3;
+                this.audioElements.bgBirds.volume = volume * 0.2;
+                this.audioElements.bgWind.volume = volume * 0.1;
+                this.audioElements.rain.volume = volume * 0.4;
+                this.audioElements.draw.volume = volume * 0.5;
+                
+                // 根据时间控制鸟鸣
+                if (this.currentTime >= 6 && this.currentTime < 18) {
+                    if (!this.isMuted) {
+                        this.audioElements.bgBirds.play().catch(e => {});
+                    }
+                } else {
+                    this.audioElements.bgBirds.pause();
+                }
+                
+                // 根据天气控制雨声
+                if (this.currentWeather === 'rainy' && !this.isMuted) {
+                    this.audioElements.rain.play().catch(e => {});
+                } else {
+                    this.audioElements.rain.pause();
+                }
+            }
+            
+            // 播放绘图音效
+            playDrawSound() {
+                if (this.isMuted) return;
+                
+                this.audioElements.draw.currentTime = 0;
+                this.audioElements.draw.play().catch(e => {});
+            }
+            
+            // 动画循环
+            animate() {
+                // 更新粒子系统
+                this.updateParticles();
+                
+                // 更新天气效果
+                this.updateWeatherEffects();
+                
+                // 继续动画循环
+                requestAnimationFrame(() => this.animate());
+            }
+            
+            // 更新粒子系统
+            updateParticles() {
+                const ctx = this.particleCtx;
+                const width = this.particleCanvas.width;
+                const height = this.particleCanvas.height;
+                
+                // 清除画布
+                ctx.clearRect(0, 0, width, height);
+                
+                // 根据时间和天气生成不同的粒子
+                if (this.currentTime < 6 || this.currentTime >= 18) {
+                    // 夜晚：显示星星
+                    this.drawStars(ctx, width, height);
+                } else if (this.currentTime < 8 || this.currentTime >= 17) {
+                    // 黎明/黄昏：显示少量星星
+                    this.drawStars(ctx, width, height, 0.3);
+                }
+                
+                // 根据天气添加特殊粒子
+                if (this.currentWeather === 'rainy') {
+                    this.drawRain(ctx, width, height);
+                } else if (this.currentWeather === 'snowy') {
+                    this.drawSnow(ctx, width, height);
+                } else if (this.currentWeather === 'foggy') {
+                    this.drawFog(ctx, width, height);
+                }
+                
+                // 白天晴天时添加一些飞鸟（偶尔）
+                if (this.currentTime >= 6 && this.currentTime < 18 && 
+                    this.currentWeather === 'sunny' && Math.random() < 0.01) {
+                    this.addBird();
+                }
+                
+                // 更新和绘制粒子
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const particle = this.particles[i];
+                    
+                    // 更新位置
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    // 应用重力（如果需要）
+                    if (particle.gravity) {
+                        particle.vy += 0.05;
+                    }
+                    
+                    // 生命周期
+                    particle.life--;
+                    
+                    // 移除死亡的粒子
+                    if (particle.life <= 0 || 
+                        particle.x < -10 || particle.x > width + 10 || 
+                        particle.y < -10 || particle.y > height + 10) {
+                        this.particles.splice(i, 1);
+                        continue;
+                    }
+                    
+                    // 绘制粒子
+                    ctx.globalAlpha = particle.life / particle.maxLife;
+                    ctx.fillStyle = particle.color;
+                    
+                    if (particle.type === 'bird') {
+                        // 绘制简单的小鸟
+                        ctx.beginPath();
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(particle.x - 10, particle.y - 5);
+                        ctx.lineTo(particle.x - 20, particle.y);
+                        ctx.lineTo(particle.x - 10, particle.y + 5);
+                        ctx.closePath();
+                        ctx.fill();
+                    } else {
+                        // 绘制圆形粒子
+                        ctx.beginPath();
+                        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                
+                ctx.globalAlpha = 1.0;
+            }
+            
+            // 绘制星星
+            drawStars(ctx, width, height, density = 1.0) {
+                // 确保有足够的星星
+                const targetStarCount = Math.floor(width * height / 5000 * density);
+                
+                while (this.particles.filter(p => p.type === 'star').length < targetStarCount) {
+                    this.particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height * 0.7, // 只在天空区域
+                        size: Math.random() * 1.5 + 0.5,
+                        color: '#FFFFFF',
+                        vx: 0,
+                        vy: 0,
+                        life: 10000,
+                        maxLife: 10000,
+                        type: 'star',
+                        twinkle: Math.random() * 100
+                    });
+                }
+                
+                // 绘制星星（不闪烁效果，保持简单）
+                const stars = this.particles.filter(p => p.type === 'star');
+                for (const star of stars) {
+                    // 简单的闪烁效果
+                    const alpha = 0.5 + 0.5 * Math.sin(Date.now() / 1000 + star.twinkle);
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = star.color;
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1.0;
+            }
+            
+            // 绘制雨滴
+            drawRain(ctx, width, height) {
+                // 添加新雨滴
+                if (Math.random() < 0.3) {
+                    for (let i = 0; i < 3; i++) {
+                        this.particles.push({
+                            x: Math.random() * width,
+                            y: -10,
+                            size: Math.random() * 1.5 + 0.5,
+                            color: 'rgba(100, 150, 255, 0.7)',
+                            vx: Math.random() * 2 - 1,
+                            vy: Math.random() * 10 + 10,
+                            life: 100,
+                            maxLife: 100,
+                            type: 'rain',
+                            gravity: false
+                        });
+                    }
+                }
+            }
+            
+            // 绘制雪花
+            drawSnow(ctx, width, height) {
+                // 添加新雪花
+                if (Math.random() < 0.2) {
+                    this.particles.push({
+                        x: Math.random() * width,
+                        y: -10,
+                        size: Math.random() * 3 + 2,
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        vx: Math.random() * 2 - 1,
+                        vy: Math.random() * 1 + 0.5,
+                        life: 300,
+                        maxLife: 300,
+                        type: 'snow',
+                        gravity: false
+                    });
+                }
+            }
+            
+            // 绘制雾气
+            drawFog(ctx, width, height) {
+                // 雾气效果使用半透明矩形层
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.fillRect(0, height * 0.3, width, height * 0.4);
+            }
+            
+            // 添加飞鸟
+            addBird() {
+                const width = this.particleCanvas.width;
+                const height = this.particleCanvas.height;
+                
+                this.particles.push({
+                    x: -20,
+                    y: Math.random() * height * 0.3 + 50,
+                    size: 3,
+                    color: '#333333',
+                    vx: Math.random() * 3 + 2,
+                    vy: Math.sin(Date.now() / 1000) * 0.5,
+                    life: 500,
+                    maxLife: 500,
+                    type: 'bird',
+                    gravity: false
+                });
+            }
+            
+            // 更新天气效果（DOM元素）
+            updateWeatherEffects() {
+                const weatherContainer = document.getElementById('weatherEffects');
+                
+                // 清除现有效果
+                weatherContainer.innerHTML = '';
+                
+                // 根据天气添加效果
+                if (this.currentWeather === 'rainy') {
+                    // 添加雨滴效果
+                    for (let i = 0; i < 50; i++) {
+                        const drop = document.createElement('div');
+                        drop.className = 'rain-drop';
+                        drop.style.left = `${Math.random() * 100}%`;
+                        drop.style.animationDuration = `${Math.random() * 0.5 + 0.5}s`;
+                        drop.style.animationDelay = `${Math.random() * 2}s`;
+                        weatherContainer.appendChild(drop);
+                    }
+                } else if (this.currentWeather === 'snowy') {
+                    // 添加雪花效果
+                    for (let i = 0; i < 30; i++) {
+                        const flake = document.createElement('div');
+                        flake.className = 'snowflake';
+                        flake.style.left = `${Math.random() * 100}%`;
+                        flake.style.width = `${Math.random() * 5 + 3}px`;
+                        flake.style.height = flake.style.width;
+                        flake.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                        flake.style.animationDelay = `${Math.random() * 5}s`;
+                        weatherContainer.appendChild(flake);
+                    }
+                } else if (this.currentWeather === 'foggy') {
+                    // 添加雾气效果
+                    const fog = document.createElement('div');
+                    fog.className = 'fog-layer';
+                    weatherContainer.appendChild(fog);
+                }
+            }
+            
+            // 更新环境（时间和天气）
+            updateEnvironment() {
+                // 更新页面类以应用CSS样式
+                document.body.className = '';
+                
+                if (this.currentTime >= 5 && this.currentTime < 8) {
+                    document.body.classList.add('dawn');
+                } else if (this.currentTime >= 8 && this.currentTime < 17) {
+                    document.body.classList.add('day');
+                } else if (this.currentTime >= 17 && this.currentTime < 20) {
+                    document.body.classList.add('dusk');
+                } else {
+                    document.body.classList.add('night');
+                }
+                
+                // 更新时间标签
+                let timeLabel = '';
+                if (this.currentTime >= 5 && this.currentTime < 12) {
+                    timeLabel = '早晨';
+                } else if (this.currentTime >= 12 && this.currentTime < 14) {
+                    timeLabel = '中午';
+                } else if (this.currentTime >= 14 && this.currentTime < 18) {
+                    timeLabel = '下午';
+                } else if (this.currentTime >= 18 && this.currentTime < 21) {
+                    timeLabel = '傍晚';
+                } else {
+                    timeLabel = '夜晚';
+                }
+                
+                document.getElementById('timeLabel').textContent = timeLabel;
+                
+                // 重绘岛屿以反映时间变化
+                this.redrawCanvas();
+                
+                // 更新音频
+                this.updateAudio();
+            }
+            
+            // 设置事件监听器
+            setupEventListeners() {
+                // 画布绘图事件
+                this.canvas.addEventListener('mousedown', this.startDrawing.bind(this));
+                this.canvas.addEventListener('mousemove', this.draw.bind(this));
+                this.canvas.addEventListener('mouseup', this.stopDrawing.bind(this));
+                this.canvas.addEventListener('mouseout', this.stopDrawing.bind(this));
+                
+                // 触摸设备支持
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousedown', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    this.canvas.dispatchEvent(mouseEvent);
+                });
+                
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousemove', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    this.canvas.dispatchEvent(mouseEvent);
+                });
+                
+                this.canvas.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    const mouseEvent = new MouseEvent('mouseup');
+                    this.canvas.dispatchEvent(mouseEvent);
+                });
+                
+                // 工具选择
+                document.querySelectorAll('.tool').forEach(tool => {
+                    tool.addEventListener('click', () => {
+                        const toolType = tool.getAttribute('data-tool');
+                        
+                        if (toolType === 'sticky') {
+                            this.addStickyNote();
+                        } else {
+                            document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
+                            tool.classList.add('active');
+                            this.currentTool = toolType;
+                            this.updateStatus(`切换到: ${tool.getAttribute('title')}`);
+                        }
+                    });
+                });
+                
+                // 颜色选择
+                document.querySelectorAll('.color:not(.color-custom)').forEach(color => {
+                    color.addEventListener('click', () => {
+                        document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
+                        color.classList.add('active');
+                        this.currentColor = color.getAttribute('data-color');
+                        this.updateStatus(`颜色: ${this.currentColor}`);
+                    });
+                });
+                
+                // 自定义颜色选择器
+                const customColorBtn = document.querySelector('.color-custom');
+                const customColorInput = document.getElementById('customColorInput');
+                
+                customColorBtn.addEventListener('click', () => {
+                    customColorInput.click();
+                });
+                
+                customColorInput.addEventListener('input', (e) => {
+                    this.currentColor = e.target.value;
+                    document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
+                    
+                    // 检查是否已存在该自定义颜色
+                    let existingColor = document.querySelector(`.color[data-color="${this.currentColor}"]`);
+                    if (!existingColor) {
+                        // 添加新的自定义颜色
+                        this.addCustomColor(this.currentColor);
+                    } else {
+                        existingColor.classList.add('active');
+                    }
+                    
+                    this.updateStatus(`自定义颜色: ${this.currentColor}`);
+                });
+                
+                // 画笔大小调整
+                document.getElementById('brushSize').addEventListener('input', (e) => {
+                    this.brushSize = parseInt(e.target.value);
+                    document.getElementById('brushSizePreview').textContent = this.brushSize;
+                    document.getElementById('brushSizePreview').style.width = `${20 + this.brushSize}px`;
+                    document.getElementById('brushSizePreview').style.height = `${20 + this.brushSize}px`;
+                });
+                
+                // 时间控制
+                document.getElementById('timeOfDay').addEventListener('input', (e) => {
+                    this.currentTime = parseInt(e.target.value);
+                    this.updateEnvironment();
+                });
+                
+                // 天气控制
+                document.querySelectorAll('.weather-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.weather-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.currentWeather = btn.getAttribute('data-weather');
+                        this.updateEnvironment();
+                        this.updateStatus(`天气已切换为: ${btn.querySelector('span').textContent}`);
+                    });
+                });
+                
+                // 音频控制
+                document.getElementById('volumeSlider').addEventListener('input', (e) => {
+                    this.volume = parseInt(e.target.value);
+                    this.updateAudio();
+                });
+                
+                document.getElementById('muteBtn').addEventListener('click', () => {
+                    this.isMuted = !this.isMuted;
+                    const muteBtn = document.getElementById('muteBtn');
+                    
+                    if (this.isMuted) {
+                        muteBtn.classList.add('muted');
+                        muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                        this.updateStatus('音效已静音');
+                    } else {
+                        muteBtn.classList.remove('muted');
+                        muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                        this.updateStatus('音效已开启');
+                    }
+                    
+                    this.updateAudio();
+                });
+                
+                // 岛屿名称编辑
+                document.getElementById('islandNameDisplay').addEventListener('click', () => {
+                    this.startEditingName();
+                });
+                
+                document.getElementById('islandNameInput').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        this.finishEditingName();
+                    } else if (e.key === 'Escape') {
+                        this.cancelEditingName();
+                    }
+                });
+                
+                document.getElementById('islandNameInput').addEventListener('blur', () => {
+                    this.finishEditingName();
+                });
+                
+                // 按钮事件
+                document.getElementById('saveBtn').addEventListener('click', () => this.saveIsland());
+                document.getElementById('newIslandBtn').addEventListener('click', () => this.createNewIsland());
+                document.getElementById('historyBtn').addEventListener('click', () => this.showHistory());
+                document.getElementById('exportBtn').addEventListener('click', () => this.exportIsland());
+                
+                // 历史模态框
+                document.getElementById('closeHistoryModal').addEventListener('click', () => {
+                    this.hideModal('historyModal');
+                });
+                
+                document.getElementById('historyModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('historyModal')) {
+                        this.hideModal('historyModal');
+                    }
+                });
+                
+                // 窗口大小调整
+                window.addEventListener('resize', () => {
+                    this.setupCanvas();
+                    this.redrawCanvas();
+                    this.updateStickyPositions();
+                });
+                
+                // 自动保存
+                setInterval(() => {
+                    this.autoSave();
+                }, 30000); // 每30秒自动保存
+                
+                // 键盘快捷键
+                document.addEventListener('keydown', (e) => {
+                    // Ctrl/Cmd + S 保存
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        e.preventDefault();
+                        this.saveIsland();
+                    }
+                    
+                    // Ctrl/Cmd + N 新建岛屿
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                        e.preventDefault();
+                        this.createNewIsland();
+                    }
+                    
+                    // Ctrl/Cmd + H 显示历史
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
+                        e.preventDefault();
+                        this.showHistory();
+                    }
+                    
+                    // Delete 键删除选中的便签
+                    if (e.key === 'Delete') {
+                        this.deleteSelectedSticky();
+                    }
+                    
+                    // 数字键切换天气
+                    if (e.key >= '1' && e.key <= '4') {
+                        const index = parseInt(e.key) - 1;
+                        const weatherBtns = document.querySelectorAll('.weather-btn');
+                        if (weatherBtns[index]) {
+                            weatherBtns[index].click();
+                        }
+                    }
+                });
+            }
+            
+            // 开始绘图
+            startDrawing(e) {
+                this.isDrawing = true;
+                const rect = this.canvas.getBoundingClientRect();
+                [this.lastX, this.lastY] = [e.clientX - rect.left, e.clientY - rect.top];
+                
+                // 播放绘图音效
+                this.playDrawSound();
+            }
+            
+            // 绘图过程
+            draw(e) {
+                if (!this.isDrawing) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                this.ctx.lineWidth = this.brushSize;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+                
+                if (this.currentTool === 'eraser') {
+                    this.ctx.globalCompositeOperation = 'destination-out';
+                    this.ctx.strokeStyle = 'rgba(0,0,0,1)';
+                } else {
+                    this.ctx.globalCompositeOperation = 'source-over';
+                    this.ctx.strokeStyle = this.currentColor;
+                }
+                
+                // 根据工具调整绘图效果
+                if (this.currentTool === 'brush') {
+                    this.ctx.globalAlpha = 0.7;
+                } else {
+                    this.ctx.globalAlpha = 1.0;
+                }
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.lastX, this.lastY);
+                this.ctx.lineTo(x, y);
+                this.ctx.stroke();
+                
+                [this.lastX, this.lastY] = [x, y];
+                
+                // 播放绘图音效（偶尔）
+                if (Math.random() < 0.1) {
+                    this.playDrawSound();
+                }
+            }
+            
+            // 停止绘图
+            stopDrawing() {
+                if (this.isDrawing) {
+                    this.isDrawing = false;
+                    this.saveDrawingState();
+                    this.updateStatus("绘图已保存");
+                }
+            }
+            
+            // 添加便签（与之前相同，但添加了音效）
+            addStickyNote(x, y, content = '', color = 'yellow', id = null) {
+                const stickyId = id || `sticky_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                const stickyContainer = document.getElementById('stickyContainer');
+                
+                // 默认位置在画布中心
+                const rect = this.canvas.getBoundingClientRect();
+                const posX = x || rect.width / 2 - 75;
+                const posY = y || rect.height / 2 - 60;
+                
+                const sticky = document.createElement('div');
+                sticky.className = 'sticky-note';
+                sticky.id = stickyId;
+                sticky.setAttribute('data-color', color);
+                sticky.style.left = `${posX}px`;
+                sticky.style.top = `${posY}px`;
+                
+                sticky.innerHTML = `
+                    <div class="sticky-header">
+                        <span>便签</span>
+                        <div class="sticky-close">&times;</div>
+                    </div>
+                    <div class="sticky-content" contenteditable="true">${content || '点击编辑内容...'}</div>
+                `;
+                
+                // 便签数据
+                const stickyData = {
+                    id: stickyId,
+                    x: posX,
+                    y: posY,
+                    width: 150,
+                    height: 120,
+                    content: content || '点击编辑内容...',
+                    color: color,
+                    zIndex: 100 + this.stickyCount
+                };
+                
+                // 添加拖动功能
+                this.makeStickyDraggable(sticky, stickyData);
+                
+                // 添加调整大小功能
+                this.makeStickyResizable(sticky, stickyData);
+                
+                // 添加关闭按钮事件
+                const closeBtn = sticky.querySelector('.sticky-close');
+                closeBtn.addEventListener('click', () => {
+                    this.removeSticky(stickyId);
+                });
+                
+                // 添加内容编辑事件
+                const contentEl = sticky.querySelector('.sticky-content');
+                contentEl.addEventListener('input', () => {
+                    stickyData.content = contentEl.innerHTML;
+                    this.saveStickiesToStorage();
+                });
+                
+                contentEl.addEventListener('focus', () => {
+                    sticky.style.zIndex = 1000;
+                });
+                
+                stickyContainer.appendChild(sticky);
+                
+                // 添加到便签数组
+                this.stickies.push(stickyData);
+                this.stickyCount++;
+                this.updateStickyCount();
+                
+                this.updateStatus("添加了新便签");
+                return stickyData;
+            }
+            
+            // 使便签可拖动
+            makeStickyDraggable(sticky, stickyData) {
+                const header = sticky.querySelector('.sticky-header');
+                let isDragging = false;
+                let offsetX, offsetY;
+                
+                header.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    sticky.style.zIndex = 1000;
+                    
+                    const rect = sticky.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left;
+                    offsetY = e.clientY - rect.top;
+                    
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    
+                    const containerRect = document.querySelector('.canvas-container').getBoundingClientRect();
+                    const maxX = containerRect.width - sticky.offsetWidth;
+                    const maxY = containerRect.height - sticky.offsetHeight;
+                    
+                    let newX = e.clientX - containerRect.left - offsetX;
+                    let newY = e.clientY - containerRect.top - offsetY;
+                    
+                    // 限制在画布范围内
+                    newX = Math.max(0, Math.min(newX, maxX));
+                    newY = Math.max(0, Math.min(newY, maxY));
+                    
+                    sticky.style.left = `${newX}px`;
+                    sticky.style.top = `${newY}px`;
+                    
+                    stickyData.x = newX;
+                    stickyData.y = newY;
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        this.saveStickiesToStorage();
+                    }
+                });
+            }
+            
+            // 使便签可调整大小
+            makeStickyResizable(sticky, stickyData) {
+                let isResizing = false;
+                let startX, startY, startWidth, startHeight;
+                
+                sticky.addEventListener('mousedown', (e) => {
+                    // 检查是否点击在边框附近（右下角）
+                    const rect = sticky.getBoundingClientRect();
+                    const cornerSize = 20;
+                    
+                    if (e.clientX >= rect.right - cornerSize && e.clientY >= rect.bottom - cornerSize) {
+                        isResizing = true;
+                        startX = e.clientX;
+                        startY = e.clientY;
+                        startWidth = rect.width;
+                        startHeight = rect.height;
+                        
+                        sticky.classList.add('resizing');
+                        e.preventDefault();
+                    }
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isResizing) return;
+                    
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    
+                    const newWidth = Math.max(150, startWidth + deltaX);
+                    const newHeight = Math.max(120, startHeight + deltaY);
+                    
+                    sticky.style.width = `${newWidth}px`;
+                    sticky.style.height = `${newHeight}px`;
+                    
+                    stickyData.width = newWidth;
+                    stickyData.height = newHeight;
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (isResizing) {
+                        isResizing = false;
+                        sticky.classList.remove('resizing');
+                        this.saveStickiesToStorage();
+                    }
+                });
+            }
+            
+            // 移除便签
+            removeSticky(stickyId) {
+                const sticky = document.getElementById(stickyId);
+                if (sticky) {
+                    sticky.remove();
+                    this.stickies = this.stickies.filter(s => s.id !== stickyId);
+                    this.stickyCount--;
+                    this.updateStickyCount();
+                    this.saveStickiesToStorage();
+                    this.updateStatus("便签已删除");
+                }
+            }
+            
+            // 删除选中的便签
+            deleteSelectedSticky() {
+                // 这里简化处理：删除最上层的便签
+                if (this.stickies.length > 0) {
+                    const topSticky = this.stickies[this.stickies.length - 1];
+                    this.removeSticky(topSticky.id);
+                }
+            }
+            
+            // 更新便签位置（响应式调整）
+            updateStickyPositions() {
+                const containerRect = document.querySelector('.canvas-container').getBoundingClientRect();
+                const scaleX = containerRect.width / this.canvas.width;
+                const scaleY = containerRect.height / this.canvas.height;
+                
+                this.stickies.forEach(stickyData => {
+                    const sticky = document.getElementById(stickyData.id);
+                    if (sticky) {
+                        sticky.style.left = `${stickyData.x * scaleX}px`;
+                        sticky.style.top = `${stickyData.y * scaleY}px`;
+                    }
+                });
+            }
+            
+            // 保存便签到存储
+            saveStickiesToStorage() {
+                // 更新所有便签的当前状态
+                this.stickies.forEach(stickyData => {
+                    const sticky = document.getElementById(stickyData.id);
+                    if (sticky) {
+                        stickyData.x = parseInt(sticky.style.left) || stickyData.x;
+                        stickyData.y = parseInt(sticky.style.top) || stickyData.y;
+                        stickyData.width = sticky.offsetWidth;
+                        stickyData.height = sticky.offsetHeight;
+                        
+                        const contentEl = sticky.querySelector('.sticky-content');
+                        if (contentEl) {
+                            stickyData.content = contentEl.innerHTML;
+                        }
+                    }
+                });
+                
+                // 触发自动保存
+                this.autoSave();
+            }
+            
+            // 更新便签计数显示
+            updateStickyCount() {
+                document.getElementById('stickyCount').textContent = this.stickyCount;
+            }
+            
+            // 保存绘图状态到历史记录
+            saveDrawingState() {
+                // 将当前画布状态保存为图像数据
+                const imageData = this.canvas.toDataURL();
+                this.drawingHistory.push(imageData);
+                
+                // 限制历史记录数量
+                if (this.drawingHistory.length > 50) {
+                    this.drawingHistory.shift();
+                }
+            }
+            
+            // 重绘画布（从历史记录）
+            redrawCanvas() {
+                if (this.drawingHistory.length > 0) {
+                    const img = new Image();
+                    img.onload = () => {
+                        // 先绘制背景
+                        this.generateIsland();
+                        // 再绘制保存的绘图
+                        this.ctx.globalCompositeOperation = 'source-over';
+                        this.ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = this.drawingHistory[this.drawingHistory.length - 1];
+                } else {
+                    this.generateIsland();
+                }
+            }
+            
+            // 自动保存到本地存储
+            autoSave() {
+                // 收集便签数据
+                this.saveStickiesToStorage();
+                
+                const data = {
+                    seed: this.islandSeed,
+                    id: this.islandId,
+                    name: this.islandName,
+                    drawing: this.canvas.toDataURL(),
+                    stickies: this.stickies,
+                    timestamp: new Date().toISOString(),
+                    tool: this.currentTool,
+                    color: this.currentColor,
+                    brushSize: this.brushSize,
+                    customColors: this.customColors,
+                    time: this.currentTime,
+                    weather: this.currentWeather,
+                    volume: this.volume,
+                    isMuted: this.isMuted
+                };
+                
+                localStorage.setItem(`island_${this.islandId}`, JSON.stringify(data));
+                
+                // 更新历史列表
+                this.addToHistory(data);
+                
+                // 显示通知（减少频率，避免打扰）
+                if (Math.random() < 0.3) { // 30%几率显示
+                    this.showNotification('内容已自动保存！', 'info');
+                }
+            }
+            
+            // 从本地存储加载
+            loadFromStorage() {
+                // 检查是否有保存的岛屿数据
+                const savedIslands = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('island_')) {
+                        savedIslands.push(JSON.parse(localStorage.getItem(key)));
+                    }
+                }
+                
+                if (savedIslands.length > 0) {
+                    // 按时间排序，获取最新的
+                    savedIslands.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    const latest = savedIslands[0];
+                    
+                    this.islandSeed = latest.seed;
+                    this.islandId = latest.id;
+                    this.islandName = latest.name || `漂流岛 #${latest.id}`;
+                    
+                    // 加载自定义颜色
+                    if (latest.customColors) {
+                        this.customColors = latest.customColors;
+                        this.customColors.forEach(color => this.addCustomColor(color, false));
+                    }
+                    
+                    // 加载环境设置
+                    if (latest.time !== undefined) {
+                        this.currentTime = latest.time;
+                        document.getElementById('timeOfDay').value = this.currentTime;
+                    }
+                    
+                    if (latest.weather) {
+                        this.currentWeather = latest.weather;
+                        document.querySelectorAll('.weather-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('data-weather') === this.currentWeather) {
+                                btn.classList.add('active');
+                            }
+                        });
+                    }
+                    
+                    if (latest.volume !== undefined) {
+                        this.volume = latest.volume;
+                        document.getElementById('volumeSlider').value = this.volume;
+                    }
+                    
+                    if (latest.isMuted !== undefined) {
+                        this.isMuted = latest.isMuted;
+                        const muteBtn = document.getElementById('muteBtn');
+                        if (this.isMuted) {
+                            muteBtn.classList.add('muted');
+                            muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                        } else {
+                            muteBtn.classList.remove('muted');
+                            muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                        }
+                    }
+                    
+                    // 加载绘图
+                    const img = new Image();
+                    img.onload = () => {
+                        // 先绘制背景
+                        this.generateIsland();
+                        // 再绘制保存的绘图
+                        this.ctx.globalCompositeOperation = 'source-over';
+                        this.ctx.drawImage(img, 0, 0);
+                        this.drawingHistory.push(img.src);
+                    };
+                    img.src = latest.drawing;
+                    
+                    // 加载便签
+                    if (latest.stickies && latest.stickies.length > 0) {
+                        latest.stickies.forEach(stickyData => {
+                            this.addStickyNote(
+                                stickyData.x,
+                                stickyData.y,
+                                stickyData.content,
+                                stickyData.color,
+                                stickyData.id
+                            );
+                        });
+                    }
+                    
+                    // 恢复设置
+                    this.currentTool = latest.tool || 'pencil';
+                    this.currentColor = latest.color || '#2c3e50';
+                    this.brushSize = latest.brushSize || 5;
+                    
+                    const date = new Date(latest.timestamp);
+                    document.getElementById('islandDate').textContent = date.toLocaleDateString('zh-CN');
+                    
+                    this.updateStatus(`加载了岛屿: ${this.islandName}`);
+                } else {
+                    // 没有保存的数据，生成新岛屿
+                    this.updateStatus('欢迎来到你的第一个漂流岛！');
+                }
+                
+                // 更新环境
+                this.updateEnvironment();
+            }
+            
+            // 添加自定义颜色
+            addCustomColor(color, save = true) {
+                // 检查是否已存在
+                if (this.customColors.includes(color)) return;
+                
+                this.customColors.push(color);
+                
+                // 创建颜色元素
+                const colorElement = document.createElement('div');
+                colorElement.className = 'color';
+                colorElement.style.backgroundColor = color;
+                colorElement.setAttribute('data-color', color);
+                colorElement.title = `自定义颜色: ${color}`;
+                
+                colorElement.addEventListener('click', () => {
+                    document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
+                    colorElement.classList.add('active');
+                    this.currentColor = color;
+                    this.updateStatus(`自定义颜色: ${color}`);
+                });
+                
+                // 添加到颜色选择器
+                const colorPicker = document.querySelector('.color-picker');
+                const customColorBtn = document.querySelector('.color-custom');
+                colorPicker.insertBefore(colorElement, customColorBtn);
+                
+                if (save) {
+                    this.autoSave();
+                }
+            }
+            
+            // 开始编辑岛屿名称
+            startEditingName() {
+                this.isEditingName = true;
+                document.getElementById('islandInfo').classList.add('editing');
+                document.getElementById('islandNameDisplay').style.display = 'none';
+                document.getElementById('islandNameInput').style.display = 'block';
+                document.getElementById('islandNameInput').value = this.islandName;
+                document.getElementById('islandNameInput').focus();
+                document.getElementById('islandNameInput').select();
+            }
+            
+            // 完成编辑岛屿名称
+            finishEditingName() {
+                const newName = document.getElementById('islandNameInput').value.trim();
+                if (newName && newName !== this.islandName) {
+                    this.islandName = newName;
+                    this.updateStatus(`岛屿已重命名为: ${this.islandName}`);
+                    this.autoSave();
+                }
+                
+                this.cancelEditingName();
+            }
+            
+            // 取消编辑岛屿名称
+            cancelEditingName() {
+                this.isEditingName = false;
+                document.getElementById('islandInfo').classList.remove('editing');
+                document.getElementById('islandNameDisplay').style.display = 'block';
+                document.getElementById('islandNameInput').style.display = 'none';
+                this.updateIslandNameDisplay();
+            }
+            
+            // 更新岛屿名称显示
+            updateIslandNameDisplay() {
+                document.getElementById('islandNameText').textContent = this.islandName;
+            }
+            
+            // 保存当前岛屿
+            saveIsland() {
+                this.autoSave();
+                this.showNotification('岛屿已保存！');
+                this.updateStatus(`岛屿 "${this.islandName}" 已保存到本地存储`);
+            }
+            
+            // 创建新岛屿
+            createNewIsland() {
+                if (confirm('创建新岛屿会保存当前岛屿，确定要继续吗？')) {
+                    // 保存当前岛屿
+                    this.autoSave();
+                    
+                    // 清除便签
+                    document.getElementById('stickyContainer').innerHTML = '';
+                    this.stickies = [];
+                    this.stickyCount = 0;
+                    this.updateStickyCount();
+                    
+                    // 生成新岛屿
+                    this.islandSeed = this.generateSeed();
+                    this.islandId = Date.now(); // 使用时间戳作为唯一ID
+                    this.islandName = `漂流岛 #${this.historyIslands.length + 1}`;
+                    this.drawingHistory = [];
+                    
+                    // 重置为默认环境
+                    this.currentTime = 12;
+                    this.currentWeather = 'sunny';
+                    document.getElementById('timeOfDay').value = this.currentTime;
+                    document.querySelectorAll('.weather-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.getAttribute('data-weather') === 'sunny') {
+                            btn.classList.add('active');
+                        }
+                    });
+                    
+                    this.generateIsland();
+                    this.updateUI();
+                    this.updateEnvironment();
+                    this.updateStatus(`创建了新岛屿: ${this.islandName}`);
+                    
+                    // 更新URL（如果支持History API）
+                    if (history.pushState) {
+                        history.pushState(null, null, `?seed=${this.islandSeed}`);
+                    }
+                }
+            }
+            
+            // 加载历史
+            loadHistory() {
+                this.historyIslands = [];
+                
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('island_')) {
+                        const islandData = JSON.parse(localStorage.getItem(key));
+                        this.historyIslands.push(islandData);
+                    }
+                }
+                
+                // 按时间倒序排序
+                this.historyIslands.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                document.getElementById('historyCount').textContent = this.historyIslands.length;
+            }
+            
+            // 添加到历史
+            addToHistory(islandData) {
+                // 检查是否已存在
+                const existingIndex = this.historyIslands.findIndex(island => island.id === islandData.id);
+                
+                if (existingIndex >= 0) {
+                    // 更新现有记录
+                    this.historyIslands[existingIndex] = islandData;
+                } else {
+                    // 添加到历史
+                    this.historyIslands.unshift(islandData);
+                }
+                
+                // 保持最多50个历史记录
+                if (this.historyIslands.length > 50) {
+                    this.historyIslands.pop();
+                }
+                
+                document.getElementById('historyCount').textContent = this.historyIslands.length;
+            }
+            
+            // 显示历史画廊
+            showHistory() {
+                this.loadHistory();
+                this.renderHistoryGallery();
+                this.showModal('historyModal');
+            }
+            
+            // 渲染历史画廊
+            renderHistoryGallery() {
+                const historyGrid = document.getElementById('historyGrid');
+                const emptyHistory = document.getElementById('emptyHistory');
+                
+                if (this.historyIslands.length === 0) {
+                    historyGrid.innerHTML = '';
+                    emptyHistory.style.display = 'block';
+                    return;
+                }
+                
+                emptyHistory.style.display = 'none';
+                historyGrid.innerHTML = '';
+                
+                this.historyIslands.forEach((island, index) => {
+                    const islandElement = document.createElement('div');
+                    islandElement.className = 'history-island';
+                    if (island.id === this.islandId) {
+                        islandElement.classList.add('active');
+                    }
+                    
+                    const date = new Date(island.timestamp);
+                    const dateStr = date.toLocaleDateString('zh-CN');
+                    
+                    islandElement.innerHTML = `
+                        <div class="history-thumbnail">
+                            <i class="fas fa-island-tropical"></i>
+                        </div>
+                        <div class="history-info">
+                            <div class="history-name" title="${island.name || `漂流岛 #${island.id}`}">
+                                ${island.name || `漂流岛 #${island.id}`}
+                            </div>
+                            <div class="history-date">${dateStr}</div>
+                            <div class="history-actions">
+                                <button class="history-btn load" data-id="${island.id}">加载</button>
+                                <button class="history-btn delete" data-id="${island.id}">删除</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 加载按钮事件
+                    const loadBtn = islandElement.querySelector('.load');
+                    loadBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.loadIslandFromHistory(island.id);
+                    });
+                    
+                    // 删除按钮事件
+                    const deleteBtn = islandElement.querySelector('.delete');
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (confirm(`确定要删除岛屿 "${island.name || `漂流岛 #${island.id}`}" 吗？`)) {
+                            this.deleteIslandFromHistory(island.id);
+                        }
+                    });
+                    
+                    // 整个岛屿卡片点击事件
+                    islandElement.addEventListener('click', () => {
+                        this.loadIslandFromHistory(island.id);
+                    });
+                    
+                    historyGrid.appendChild(islandElement);
+                });
+            }
+            
+            // 从历史加载岛屿
+            loadIslandFromHistory(islandId) {
+                const islandData = JSON.parse(localStorage.getItem(`island_${islandId}`));
+                
+                if (!islandData) {
+                    this.showNotification('无法加载岛屿数据', 'error');
+                    return;
+                }
+                
+                // 保存当前岛屿
+                this.autoSave();
+                
+                // 加载新岛屿数据
+                this.islandSeed = islandData.seed;
+                this.islandId = islandData.id;
+                this.islandName = islandData.name || `漂流岛 #${islandData.id}`;
+                
+                // 加载环境设置
+                if (islandData.time !== undefined) {
+                    this.currentTime = islandData.time;
+                    document.getElementById('timeOfDay').value = this.currentTime;
+                }
+                
+                if (islandData.weather) {
+                    this.currentWeather = islandData.weather;
+                    document.querySelectorAll('.weather-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.getAttribute('data-weather') === this.currentWeather) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+                
+                if (islandData.volume !== undefined) {
+                    this.volume = islandData.volume;
+                    document.getElementById('volumeSlider').value = this.volume;
+                }
+                
+                if (islandData.isMuted !== undefined) {
+                    this.isMuted = islandData.isMuted;
+                    const muteBtn = document.getElementById('muteBtn');
+                    if (this.isMuted) {
+                        muteBtn.classList.add('muted');
+                        muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    } else {
+                        muteBtn.classList.remove('muted');
+                        muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    }
+                }
+                
+                // 清除当前便签
+                document.getElementById('stickyContainer').innerHTML = '';
+                this.stickies = [];
+                this.stickyCount = 0;
+                
+                // 加载绘图
+                const img = new Image();
+                img.onload = () => {
+                    // 先绘制背景
+                    this.generateIsland();
+                    // 再绘制保存的绘图
+                    this.ctx.globalCompositeOperation = 'source-over';
+                    this.ctx.drawImage(img, 0, 0);
+                    this.drawingHistory = [img.src];
+                };
+                img.src = islandData.drawing;
+                
+                // 加载便签
+                if (islandData.stickies && islandData.stickies.length > 0) {
+                    islandData.stickies.forEach(stickyData => {
+                        this.addStickyNote(
+                            stickyData.x,
+                            stickyData.y,
+                            stickyData.content,
+                            stickyData.color,
+                            stickyData.id
+                        );
+                    });
+                }
+                
+                // 加载自定义颜色
+                if (islandData.customColors) {
+                    this.customColors = islandData.customColors;
+                    // 清除现有的自定义颜色（除了预定义的和自定义按钮）
+                    document.querySelectorAll('.color:not(.color-custom)').forEach(color => {
+                        if (!['#2c3e50','#e74c3c','#27ae60','#3498db','#9b59b6','#f39c12','#1abc9c','#e67e22'].includes(color.getAttribute('data-color'))) {
+                            color.remove();
+                        }
+                    });
+                    
+                    // 添加自定义颜色
+                    islandData.customColors.forEach(color => this.addCustomColor(color, false));
+                }
+                
+                // 恢复设置
+                this.currentTool = islandData.tool || 'pencil';
+                this.currentColor = islandData.color || '#2c3e50';
+                this.brushSize = islandData.brushSize || 5;
+                
+                // 更新UI
+                this.updateUI();
+                this.updateEnvironment();
+                
+                const date = new Date(islandData.timestamp);
+                document.getElementById('islandDate').textContent = date.toLocaleDateString('zh-CN');
+                
+                this.hideModal('historyModal');
+                this.showNotification(`已加载岛屿: ${this.islandName}`);
+                this.updateStatus(`加载了历史岛屿: ${this.islandName}`);
+            }
+            
+            // 从历史删除岛屿
+            deleteIslandFromHistory(islandId) {
+                // 不能删除当前岛屿
+                if (islandId === this.islandId) {
+                    this.showNotification('不能删除当前正在编辑的岛屿', 'error');
+                    return;
+                }
+                
+                localStorage.removeItem(`island_${islandId}`);
+                this.loadHistory();
+                this.renderHistoryGallery();
+                this.showNotification('岛屿已删除');
+            }
+            
+            // 导出岛屿为图片
+            exportIsland() {
+                // 临时隐藏便签
+                const stickyContainer = document.getElementById('stickyContainer');
+                const originalDisplay = stickyContainer.style.display;
+                stickyContainer.style.display = 'none';
+                
+                // 创建临时Canvas，包含背景和绘图
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = this.canvas.width;
+                tempCanvas.height = this.canvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                // 绘制当前Canvas内容
+                tempCtx.drawImage(this.canvas, 0, 0);
+                
+                // 恢复便签显示
+                stickyContainer.style.display = originalDisplay;
+                
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.download = `漂流岛_${this.islandName}_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = tempCanvas.toDataURL('image/png');
+                link.click();
+                
+                this.updateStatus(`岛屿已导出为图片: ${link.download}`);
+            }
+            
+            // 显示模态框
+            showModal(modalId) {
+                document.getElementById(modalId).classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // 隐藏模态框
+            hideModal(modalId) {
+                document.getElementById(modalId).classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+            
+            // 更新UI
+            updateUI() {
+                document.getElementById('islandId').textContent = this.islandId;
+                document.getElementById('seedValue').textContent = this.islandSeed;
+                this.updateIslandNameDisplay();
+                
+                // 更新活动工具
+                document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
+                const currentToolElement = document.querySelector(`.tool[data-tool="${this.currentTool}"]`);
+                if (currentToolElement) {
+                    currentToolElement.classList.add('active');
+                } else {
+                    document.querySelector('.tool[data-tool="pencil"]').classList.add('active');
+                }
+                
+                // 更新活动颜色
+                document.querySelectorAll('.color').forEach(c => c.classList.remove('active'));
+                const currentColorElement = document.querySelector(`.color[data-color="${this.currentColor}"]`);
+                if (currentColorElement) {
+                    currentColorElement.classList.add('active');
+                } else {
+                    // 如果是自定义颜色，添加到颜色选择器
+                    this.addCustomColor(this.currentColor);
+                    document.querySelector(`.color[data-color="${this.currentColor}"]`).classList.add('active');
+                }
+                
+                // 更新画笔大小
+                document.getElementById('brushSize').value = this.brushSize;
+                document.getElementById('brushSizePreview').textContent = this.brushSize;
+                document.getElementById('brushSizePreview').style.width = `${20 + this.brushSize}px`;
+                document.getElementById('brushSizePreview').style.height = `${20 + this.brushSize}px`;
+                
+                // 更新历史计数
+                document.getElementById('historyCount').textContent = this.historyIslands.length;
+            }
+            
+            // 更新状态栏
+            updateStatus(message) {
+                document.getElementById('status').textContent = message;
+            }
+            
+            // 显示通知
+            showNotification(message, type = 'info') {
+                const notification = document.getElementById('notification');
+                notification.querySelector('.notification-text').textContent = message;
+                
+                // 设置类型
+                notification.className = 'notification';
+                notification.classList.add(type);
+                
+                // 显示
+                notification.classList.add('show');
+                
+                // 自动隐藏
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
             }
         }
-    }
-    
-    // 4. 边界死亡
-    if (p.y > 600) {
-        p.health = 0;
-    }
-    
-    // 5. 更新攻击计时器
-    if (p.attackTimer > 0) {
-        p.attackTimer--;
-        if (p.attackTimer <= 0) p.isAttacking = false;
-    }
-    
-    // 6. 无敌帧
-    if (p.invincible > 0) {
-        p.invincible--;
-        p.blink = (p.blink + 1) % 10;
-    }
-    
-    // 7. 攻击检测
-    if (p.isAttacking) {
-        const attackRange = p.facingRight ? 50 : -50;
-        const attackX = p.facingRight ? p.x + p.width : p.x - 30;
-        const attackY = p.y + 20;
         
-        for (const m of GameState.monsters) {
-            if (attackX < m.x + m.width &&
-                attackX + 30 > m.x &&
-                attackY < m.y + m.height &&
-                attackY + 30 > m.y) {
-                m.health -= 25;
-                m.vx = p.facingRight ? 10 : -10; // 击退
-                p.score += 50;
-                if (m.health <= 0) p.score += 100;
+        // 页面加载完成后初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+            const islandApp = new DriftingIsland();
+            window.islandApp = islandApp; // 便于调试
+            
+            // 检查URL中是否有种子参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const seedParam = urlParams.get('seed');
+            if (seedParam) {
+                // 如果有种子参数，使用它生成岛屿
+                islandApp.islandSeed = seedParam;
+                islandApp.generateIsland();
+                islandApp.updateUI();
+                islandApp.updateEnvironment();
+                islandApp.updateStatus(`从URL种子加载的岛屿`);
             }
-        }
-    }
-    
-    // 8. 更新怪物
-    for (let i = GameState.monsters.length - 1; i >= 0; i--) {
-        const m = GameState.monsters[i];
-        
-        // AI移动
-        m.x += m.vx;
-        
-        // 简单平台边缘检测
-        let onPlatform = false;
-        for (const plat of GameState.platforms) {
-            if (m.x >= plat.x && m.x + m.width <= plat.x + plat.width &&
-                m.y + m.height >= plat.y - 2 && m.y + m.height <= plat.y + 5) {
-                onPlatform = true;
-                break;
-            }
-        }
-        
-        if (!onPlatform || m.x <= 0 || m.x + m.width >= CONFIG.WORLD_WIDTH) {
-            m.vx *= -1;
-        }
-        
-        // 怪物攻击玩家
-        if (p.invincible <= 0 &&
-            p.x < m.x + m.width &&
-            p.x + p.width > m.x &&
-            p.y < m.y + m.height &&
-            p.y + p.height > m.y) {
-            p.health -= 10;
-            p.invincible = 30;
-            p.vx = m.x > p.x ? -8 : 8;
-            p.vy = -5;
-            updateHUD();
-        }
-        
-        // 移除死亡的怪物
-        if (m.health <= 0) {
-            GameState.monsters.splice(i, 1);
-        }
-    }
-    
-    // 9. 金币收集
-    for (const coin of GameState.coins) {
-        if (!coin.collected &&
-            p.x < coin.x + coin.width &&
-            p.x + p.width > coin.x &&
-            p.y < coin.y + coin.height &&
-            p.y + p.height > coin.y) {
-            coin.collected = true;
-            p.score += 10;
-            updateHUD();
-        }
-    }
-    
-    // 10. 检查胜利（到达终点）
-    if (p.x < GameState.goal.x + GameState.goal.width &&
-        p.x + p.width > GameState.goal.x &&
-        p.y < GameState.goal.y + GameState.goal.height &&
-        p.y + p.height > GameState.goal.y) {
-        GameState.victory = true;
-        GameState.gameActive = false;
-        document.getElementById('finalScore').textContent = p.score;
-        document.getElementById('victoryScreen').style.display = 'flex';
-    }
-    
-    // 11. 检查死亡
-    if (p.health <= 0) {
-        GameState.gameOver = true;
-        GameState.gameActive = false;
-        document.getElementById('gameOverScreen').style.display = 'flex';
-    }
-    
-    // 12. 更新相机
-    const targetX = p.x - canvas.width / 3;
-    GameState.camera.x += (targetX - GameState.camera.x) * CONFIG.CAMERA_SMOOTH;
-    GameState.camera.x = Math.max(0, Math.min(GameState.camera.x, CONFIG.WORLD_WIDTH - canvas.width));
-    
-    updateHUD();
-}
-
-// ==================== 渲染 ====================
-function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.translate(-GameState.camera.x, -GameState.camera.y);
-    
-    // 1. 绘制背景
-    drawBackground();
-    
-    // 2. 绘制平台
-    for (const plat of GameState.platforms) {
-        ctx.fillStyle = plat.color;
-        ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
-        // 平台顶部高光
-        ctx.fillStyle = plat.color === '#FFD700' ? '#FFF59D' : '#D2691E';
-        ctx.fillRect(plat.x, plat.y, plat.width, 5);
-    }
-    
-    // 3. 绘制金币
-    for (const coin of GameState.coins) {
-        if (!coin.collected) {
-            ctx.fillStyle = '#FFD700';
-            ctx.beginPath();
-            ctx.arc(coin.x + 7.5, coin.y + 7.5, 7.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#FFA000';
-            ctx.beginPath();
-            ctx.arc(coin.x + 7.5, coin.y + 7.5, 5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-    
-    // 4. 绘制怪物
-    for (const m of GameState.monsters) {
-        ctx.fillStyle = m.color;
-        // 身体
-        ctx.beginPath();
-        ctx.roundRect(m.x, m.y, m.width, m.height, 10);
-        ctx.fill();
-        // 眼睛
-        ctx.fillStyle = 'white';
-        ctx.beginPath();
-        ctx.arc(m.x + m.width/3, m.y + m.height/3, 5, 0, Math.PI * 2);
-        ctx.arc(m.x + 2*m.width/3, m.y + m.height/3, 5, 0, Math.PI * 2);
-        ctx.fill();
-        // 瞳孔
-        ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.arc(m.x + m.width/3 + (m.vx > 0 ? 2 : -2), m.y + m.height/3, 2, 0, Math.PI * 2);
-        ctx.arc(m.x + 2*m.width/3 + (m.vx > 0 ? 2 : -2), m.y + m.height/3, 2, 0, Math.PI * 2);
-        ctx.fill();
-        // 嘴巴
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(m.x + m.width/2, m.y + 2*m.height/3, 8, 0.2, 0.8 * Math.PI);
-        ctx.stroke();
-    }
-    
-    // 5. 绘制玩家（苹果骑士）
-    drawPlayer();
-    
-    // 6. 绘制终点（国王苹果）
-    ctx.fillStyle = '#FF6B6B';
-    ctx.beginPath();
-    ctx.ellipse(GameState.goal.x + 30, GameState.goal.y + 40, 30, 40, 0, 0, Math.PI * 2);
-    ctx.fill();
-    // 皇冠
-    ctx.fillStyle = '#FFD700';
-    ctx.fillRect(GameState.goal.x + 15, GameState.goal.y, 30, 15);
-    ctx.beginPath();
-    ctx.moveTo(GameState.goal.x + 15, GameState.goal.y);
-    ctx.lineTo(GameState.goal.x + 22, GameState.goal.y - 10);
-    ctx.lineTo(GameState.goal.x + 30, GameState.goal.y);
-    ctx.lineTo(GameState.goal.x + 38, GameState.goal.y - 10);
-    ctx.lineTo(GameState.goal.x + 45, GameState.goal.y);
-    ctx.fill();
-    
-    ctx.restore();
-}
-
-function drawPlayer() {
-    const p = GameState.player;
-    if (p.invincible > 0 && p.blink < 5) return; // 无敌闪烁
-    
-    ctx.save();
-    ctx.translate(p.x + p.width/2, p.y + p.height/2);
-    if (!p.facingRight) ctx.scale(-1, 1);
-    
-    // 身体（苹果）
-    ctx.fillStyle = '#FF4444';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, p.width/2 - 5, p.height/2 - 5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 茎和叶
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(-2, -p.height/2 + 5, 4, 10);
-    ctx.fillStyle = '#228B22';
-    ctx.beginPath();
-    ctx.ellipse(5, -p.height/2 + 10, 6, 4, Math.PI/4, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 眼睛
-    ctx.fillStyle = 'white';
-    ctx.beginPath();
-    ctx.arc(-8, -5, 5, 0, Math.PI * 2);
-    ctx.arc(8, -5, 5, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.fillStyle = 'black';
-    ctx.beginPath();
-    ctx.arc(-8, -5, 2, 0, Math.PI * 2);
-    ctx.arc(8, -5, 2, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 嘴巴（根据状态变化）
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    if (p.isAttacking) {
-        ctx.arc(0, 5, 6, 0.1 * Math.PI, 0.9 * Math.PI);
-    } else {
-        ctx.arc(0, 5, 6, 0.3 * Math.PI, 0.7 * Math.PI);
-    }
-    ctx.stroke();
-    
-    // 剑（攻击时显示）
-    if (p.isAttacking) {
-        ctx.fillStyle = '#CCCCCC';
-        ctx.fillRect(15, -10, 25, 4);
-        ctx.fillRect(40, -15, 4, 15);
-        // 剑光
-        ctx.fillStyle = 'rgba(255, 255, 200, 0.7)';
-        ctx.fillRect(44, -15, 8, 15);
-    }
-    
-    ctx.restore();
-}
-
-function drawBackground() {
-    // 天空
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, '#87CEEB');
-    gradient.addColorStop(1, '#98FB98');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, CONFIG.WORLD_WIDTH, canvas.height);
-    
-    // 远山
-    ctx.fillStyle = '#2E8B57';
-    for (let i = 0; i < 8; i++) {
-        const x = (i * 400) % CONFIG.WORLD_WIDTH;
-        ctx.beginPath();
-        ctx.moveTo(x, canvas.height - 100);
-        ctx.bezierCurveTo(x + 100, canvas.height - 200, x + 200, canvas.height - 150, x + 300, canvas.height - 100);
-        ctx.lineTo(x + 300, canvas.height);
-        ctx.lineTo(x, canvas.height);
-        ctx.closePath();
-        ctx.fill();
-    }
-    
-    // 云
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    for (let i = 0; i < 10; i++) {
-        const x = (i * 350 + GameState.camera.x * 0.2) % CONFIG.WORLD_WIDTH;
-        const y = 60 + Math.sin(i) * 30;
-        ctx.beginPath();
-        ctx.arc(x, y, 30, 0, Math.PI * 2);
-        ctx.arc(x + 25, y - 10, 20, 0, Math.PI * 2);
-        ctx.arc(x + 25, y + 10, 20, 0, Math.PI * 2);
-        ctx.arc(x - 25, y, 20, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-// ==================== UI更新 ====================
-function updateHUD() {
-    const p = GameState.player;
-    document.getElementById('health').textContent = p.health;
-    document.getElementById('score').textContent = p.score;
-    const dist = Math.floor((p.x - 100) / 10);
-    document.getElementById('distance').textContent = dist + 'm';
-}
-
-// ==================== 主循环 ====================
-function gameLoop() {
-    if (GameState.gameActive) {
-        update();
-        render();
-    }
-    requestAnimationFrame(gameLoop);
-}
-
-// ==================== 初始化 ====================
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
-function resizeCanvas() {
-    canvas.width = document.getElementById('gameContainer').clientWidth;
-    canvas.height = document.getElementById('gameContainer').clientHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-// 事件监听
-document.getElementById('startBtn').addEventListener('click', () => {
-    initLevel(GameState.level);
-    document.getElementById('startScreen').style.display = 'none';
-});
-document.getElementById('retryBtn').addEventListener('click', () => {
-    initLevel(GameState.level);
-    document.getElementById('gameOverScreen').style.display = 'none';
-});
-document.getElementById('nextLevelBtn').addEventListener('click', () => {
-    GameState.level++;
-    initLevel(GameState.level);
-    document.getElementById('victoryScreen').style.display = 'none';
-});
-
-// 键盘控制（开发用）
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') GameState.keys.left = true;
-    if (e.key === 'ArrowRight') GameState.keys.right = true;
-    if (e.key === 'ArrowUp' || e.key === ' ') GameState.keys.up = true;
-    if (e.key === 'a' || e.key === 'A') GameState.keys.attack = true;
-});
-document.addEventListener('keyup', (e) => {
-    if (e.key === 'ArrowLeft') GameState.keys.left = false;
-    if (e.key === 'ArrowRight') GameState.keys.right = false;
-    if (e.key === 'ArrowUp' || e.key === ' ') GameState.keys.up = false;
-    if (e.key === 'a' || e.key === 'A') GameState.keys.attack = false;
-});
-
-// 虚拟按钮控制
-document.getElementById('leftBtn').addEventListener('touchstart', () => GameState.keys.left = true);
-document.getElementById('leftBtn').addEventListener('touchend', () => GameState.keys.left = false);
-document.getElementById('rightBtn').addEventListener('touchstart', () => GameState.keys.right = true);
-document.getElementById('rightBtn').addEventListener('touchend', () => GameState.keys.right = false);
-document.getElementById('jumpBtn').addEventListener('touchstart', () => GameState.keys.up = true);
-document.getElementById('jumpBtn').addEventListener('touchend', () => GameState.keys.up = false);
-document.getElementById('attackBtn').addEventListener('touchstart', () => GameState.keys.attack = true);
-document.getElementById('attackBtn').addEventListener('touchend', () => GameState.keys.attack = false);
-
-// 开始游戏循环
-gameLoop();
+        });
     </script>
 </body>
 </html>
