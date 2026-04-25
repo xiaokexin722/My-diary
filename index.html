@@ -3,195 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0">
-    <title>W.A.S.T.E. 废物学人格测试</title>
+    <title>狗格测试 | 找到你的内心小狗</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #1e1b2e;
+            background: #e8e5df;
             font-family: 'Press Start 2P', 'Courier New', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 1.5rem;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 1.5rem;
+            image-rendering: pixelated; image-rendering: crisp-edges;
         }
 
         .screen {
-            max-width: 700px;
-            width: 100%;
-            background: #2e2b4a;
-            border: 6px solid #988bc7;
-            box-shadow: 10px 10px 0 #0f0c1f;
-            padding: 2rem 1.5rem;
-            color: #f5ecd7;
+            max-width: 780px; width: 100%; background: #f5f2eb;
+            border: 6px solid #2c2c2c; box-shadow: 12px 12px 0 #b1aaa0;
+            padding: 2.2rem 1.8rem; color: #1e1e1e; position: relative;
         }
 
-        h1 {
-            font-size: 1.1rem;
-            text-align: center;
-            line-height: 1.9;
-            color: #ffca7a;
-            text-shadow: 4px 4px 0 #3f2e5c;
-            margin-bottom: 1.8rem;
-            letter-spacing: 1px;
+        #splashScreen {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 2.5rem; min-height: 400px; text-align: center;
         }
+
+        .splash-title { font-size: 1.8rem; line-height: 1.8; color: #3a3a3a; text-shadow: 4px 4px 0 #cbc3b8; }
+        .splash-emoji { font-size: 3.5rem; filter: drop-shadow(6px 6px 0 #b1aaa0); }
 
         .progress-wrap {
-            width: 100%;
-            height: 18px;
-            background: #17132b;
-            border: 3px solid #6b608c;
-            margin-bottom: 1.5rem;
+            width: 100%; height: 22px; background: #d6d0c4;
+            border: 3px solid #3a3a3a; margin-bottom: 1.8rem;
         }
 
         .progress-fill {
-            height: 100%;
-            background: #7de8a5;
-            width: 0%;
-            box-shadow: 0 0 10px #6be09c;
-            transition: width 0.2s ease;
+            height: 100%; background: #8fc9a3; width: 0%;
+            box-shadow: 0 0 10px #a5d8b0; transition: width 0.2s ease;
         }
 
         .question-box {
-            background: #26223f;
-            border: 3px solid #5f5580;
-            padding: 1.2rem;
-            margin-bottom: 1.8rem;
-            box-shadow: inset 0 0 0 2px #151122;
+            background: #ffffff; border: 3px solid #4f4f4f;
+            padding: 1.5rem; margin-bottom: 2rem; box-shadow: inset 0 0 0 2px #e2dcd0;
         }
 
-        .q-text {
-            font-size: 0.75rem;
-            line-height: 2;
-            color: #ffe3a5;
-            margin-bottom: 1.5rem;
-            word-break: break-word;
-        }
+        .q-text { font-size: 0.85rem; line-height: 2.2; color: #2b2b2b; margin-bottom: 1.8rem; word-break: break-word; }
 
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
+        .options-grid { display: flex; flex-direction: column; gap: 1rem; }
 
         .opt-btn {
-            background: #342c52;
-            border: 3px solid #7a6fa0;
-            color: #e5d9c6;
-            padding: 0.9rem 1.2rem;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 0.6rem;
-            text-align: left;
-            cursor: pointer;
-            word-break: break-word;
-            line-height: 1.6;
-            box-shadow: 4px 4px 0 #16122a;
-            transition: all 0.08s linear;
+            background: #f0ede5; border: 3px solid #5e5e5e; color: #2b2b2b;
+            padding: 1.1rem 1.4rem; font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem; text-align: left; cursor: pointer;
+            word-break: break-word; line-height: 1.8;
+            box-shadow: 4px 4px 0 #bcb4a2; transition: all 0.08s linear;
         }
 
         .opt-btn:hover {
-            background: #473b6b;
-            border-color: #f5c971;
-            color: #fef0b8;
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 #16122a;
+            background: #e4dccb; border-color: #f5b042; color: #1e1e1e;
+            transform: translate(2px, 2px); box-shadow: 2px 2px 0 #bcb4a2;
         }
 
         .pixel-btn {
-            background: #facc6f;
-            border: 3px solid #dfb042;
-            color: #221a36;
-            font-family: 'Press Start 2P', monospace;
-            padding: 1rem 2rem;
-            font-size: 0.75rem;
-            cursor: pointer;
-            box-shadow: 5px 5px 0 #6b542c;
-            text-transform: uppercase;
-            transition: 0.06s linear;
-            display: inline-block;
-            margin-top: 1.2rem;
+            background: #fadf8a; border: 3px solid #b38b40; color: #2e2b1f;
+            font-family: 'Press Start 2P', monospace; padding: 1.2rem 2.4rem;
+            font-size: 0.85rem; cursor: pointer; box-shadow: 6px 6px 0 #9e8b6f;
+            text-transform: uppercase; transition: 0.06s linear;
+            display: inline-block; margin-top: 1.5rem; letter-spacing: 1px;
         }
 
-        .pixel-btn:hover {
-            background: #ffe094;
-            transform: translate(3px, 3px);
-            box-shadow: 2px 2px 0 #6b542c;
-        }
+        .pixel-btn:hover { background: #ffe69b; transform: translate(3px, 3px); box-shadow: 3px 3px 0 #9e8b6f; }
+        .start-btn { background: #f5cf7b; border: 3px solid #6b4f2c; font-size: 1rem; padding: 1.3rem 2.6rem; box-shadow: 8px 8px 0 #b8a17c; }
 
-        .result-area {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.8rem;
-        }
+        .result-area { display: none; flex-direction: column; align-items: center; gap: 2rem; }
 
         canvas {
-            width: 128px;
-            height: 128px;
-            border: 5px solid #af9fd4;
-            background: #1c1630;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            box-shadow: 6px 6px 0 #0e0b1f;
+            width: 128px; height: 128px; border: 5px solid #3a3a3a;
+            background: #ffffff; image-rendering: pixelated; image-rendering: crisp-edges;
+            box-shadow: 8px 8px 0 #b1aaa0;
         }
 
         .type-name {
-            font-size: 1.3rem;
-            color: #ffcf7c;
-            text-shadow: 3px 3px 0 #372a4e;
-            background: #221d3a;
-            padding: 0.5rem 1.2rem;
-            border: 3px solid #b7a7dd;
+            font-size: 1.2rem; line-height: 1.8; color: #2b2b2b; text-shadow: 3px 3px 0 #d9cfbb;
+            background: #ffffff; padding: 0.8rem 1.6rem; border: 3px solid #4f4f4f;
+            box-shadow: 4px 4px 0 #c0b7a4; text-align: center;
         }
 
         .report {
-            background: #1f1b33;
-            border: 3px solid #6a5c94;
-            padding: 1.2rem;
-            font-size: 0.6rem;
-            line-height: 2;
-            color: #daceb5;
-            width: 100%;
-            text-align: left;
-            max-height: 300px;
-            overflow-y: auto;
-            white-space: pre-wrap;
+            background: #ffffff; border: 3px solid #5e5e5e; padding: 1.5rem;
+            font-size: 0.7rem; line-height: 2.3; color: #2e2e2e;
+            width: 100%; text-align: left; max-height: 380px; overflow-y: auto;
+            white-space: pre-wrap; box-shadow: inset 0 0 0 2px #e9e2d5;
         }
 
-        .nav-btns {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 <div class="screen" id="mainScreen">
-    <h1>🧬 W.A.S.T.E.<br>废物学人格测试</h1>
-    <div id="quizArea">
-        <div class="progress-wrap">
-            <div class="progress-fill" id="progressFill" style="width:0%"></div>
-        </div>
+    <div id="splashScreen">
+        <div class="splash-emoji">🐾🐶</div>
+        <div class="splash-title">W.A.S.T.E.<br>狗格测试</div>
+        <p style="font-size:0.7rem; color:#5e5e5e;">测测你内心住着哪只小狗</p>
+        <button class="pixel-btn start-btn" id="startBtn">▶ 开始测试</button>
+    </div>
+
+    <div id="quizArea" class="hidden">
+        <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
         <div class="question-box">
             <div class="q-text" id="questionText"></div>
             <div class="options-grid" id="optionsContainer"></div>
         </div>
-        <button class="pixel-btn hidden" id="prevBtn" style="margin-right:1rem;">◀ 上一题</button>
+        <button class="pixel-btn hidden" id="prevBtn">◀ 上一题</button>
     </div>
+
     <div class="result-area" id="resultArea">
         <canvas id="pixelAvatar" width="128" height="128"></canvas>
         <div class="type-name" id="typeName"></div>
@@ -202,281 +126,253 @@
 
 <script>
     (function() {
-        // ---------- 题库 ----------
+        // ---------- 小狗日常题库 ----------
         const questions = [
-            { dimension:"T", text:"深夜躺床上，你更可能在做什么？", options:[
-                {text:"回放三年前说错的一句话，脚趾再次扣地", score:0},
-                {text:"规划下个月的减肥计划，连食谱都存好了", score:100},
-                {text:"回忆今天有没有人用奇怪的语气跟你说话", score:30},
-                {text:"畅想中了彩票后的具体分配方案，精确到朋友", score:80}
+            { dimension:"T", text:"你是一只小狗，深夜躺在窝里，你更可能在做什么？", options:[
+                {text:"回想今天在公园有没有惹别狗生气，脚脚再次扣地", score:0},
+                {text:"计划明天去哪片草坪挖洞，连路线都规划好了", score:100},
+                {text:"幻想自己抓到飞盘的英姿，以及在社交平台获得多少点赞", score:80}
             ]},
-            { dimension:"T", text:"朋友说“有空聚聚”，你第一反应是？", options:[
-                {text:"立刻回忆上次聚会自己有没有说错话", score:0},
-                {text:"已经开始焦虑到时候穿什么、聊什么、会不会冷场", score:100},
-                {text:"翻聊天记录确认对方是不是在客套", score:30},
-                {text:"打开日历看未来三个月哪天“有空”", score:80}
+            { dimension:"T", text:"主人说“等会儿带你出去玩”，你的第一反应是？", options:[
+                {text:"立刻回顾上次出门有没有被骂乱跑", score:0},
+                {text:"已经开始焦虑要穿哪件小衣服，会不会遇到凶狗", score:100},
+                {text:"跑到门口不停地转圈，看着门把手期待", score:80}
             ]},
-            { dimension:"T", text:"看到一张旧照片，你的感受更接近？", options:[
-                {text:"“那时候真好啊，虽然当时不觉得”", score:0},
-                {text:"“我那时候怎么那么胖/土/傻，不行我得再减一次”", score:100},
-                {text:"“这张照片里的那个人，已经不在了……因为换了手机”", score:50},
-                {text:"“拍这张照片时我在想什么来着？算了不想了，明天再说”", score:80}
+            { dimension:"T", text:"看到一张你小时候的狗仔照片，你的感受接近？", options:[
+                {text:"“那时候真好啊，小肉球一样，虽然什么都干不了”", score:0},
+                {text:"“我当时毛色怎么那么杂？不行，我得舔顺一点”", score:100},
+                {text:"“拍这张照片时我在叫啥来着？算了不想了，接着睡”", score:60}
             ]},
-            { dimension:"R", text:"领导在群里发了一条模糊的消息，你倾向于？", options:[
-                {text:"秒回“收到”，然后才仔细看内容", score:0},
-                {text:"把消息截图发给三个同事分别问“他什么意思”", score:100},
-                {text:"先在对话框里打了一段字，删掉，又打，又删，最后回“好的”", score:60},
-                {text:"假装没看到，等有人先回了再跟队形", score:90}
+            { dimension:"R", text:"主人在厨房掉了一块肉，你听到声音，你会？", options:[
+                {text:"瞬间冲过去，先吃掉再确定是啥", score:0},
+                {text:"竖起耳朵，反复确认是不是掉了我最爱的肉，绕厨房三圈观察", score:100},
+                {text:"冲过去但又急刹车，因为记得上次被骂护食，只敢在远处摇尾巴", score:60}
             ]},
-            { dimension:"R", text:"有人当众夸你，你的即时反应是？", options:[
-                {text:"立刻大声说“没有没有没有”，摆手摆出残影", score:0},
-                {text:"微笑说谢谢，然后接下来三天反复思考自己当时的表情是否得体", score:100},
-                {text:"愣住三秒，内心开始怀疑对方是不是有求于你", score:70},
-                {text:"记住这个人的脸，下次找机会夸回去，形成夸夸循环", score:40}
+            { dimension:"R", text:"客人来家里摸你头，你的即时反应是？", options:[
+                {text:"立刻躺倒露出肚皮，尾巴摇成螺旋桨", score:0},
+                {text:"礼貌地摇尾巴，但全程盯着主人，心想这人手上有别的狗味", score:100},
+                {text:"僵硬地接受抚摸，心里默念“摸完赶紧走”", score:70}
             ]},
-            { dimension:"R", text:"你发现手机掉地上，屏幕朝下，你会？", options:[
-                {text:"秒捡，先看屏幕碎没碎，心跳160", score:0},
-                {text:"捡起来仔细检查五分钟，反复摩挲每个角落", score:100},
-                {text:"先愣两秒，默默捡起，不敢看，先放口袋里走几步再拿出来", score:70},
-                {text:"捡起来发现没碎，立刻觉得自己是天选之子，开始复盘今天运势", score:30}
+            { dimension:"R", text:"你打翻了水碗，水漫金山，你会？", options:[
+                {text:"秒速逃离现场，假装是猫干的", score:0},
+                {text:"急忙用爪子扒拉抹布（当然是帮倒忙），边扒拉边看主人脸色", score:100},
+                {text:"愣在原地两秒，然后悄悄躲进笼子里反思狗生", score:70}
             ]},
-            { dimension:"A", text:"你在工作时，突然想起家里的花没浇，你会？", options:[
-                {text:"立刻放下工作去浇水，回来继续，无缝切换", score:0},
-                {text:"记在便签上“下班浇花”，然后继续工作，真的记得浇", score:60},
-                {text:"从花想到养花知识，搜了半小时多肉养护，然后忘了自己要干嘛", score:100},
-                {text:"开始纠结“要不要现在浇”，纠结到下班，花死了", score:80}
+            { dimension:"A", text:"你在啃骨头时，突然窗外有鸟叫，你会？", options:[
+                {text:"放下骨头飞奔到窗边狂吠，宣誓领地", score:0},
+                {text:"骨头不要了，盯着鸟思考“它是什么品种？能吃吗？”，然后开始掘地板", score:100},
+                {text:"纠结是先吃完骨头还是先去看鸟，等决定好鸟早飞走了", score:80}
             ]},
-            { dimension:"A", text:"你打开手机想查一个词，五分钟后你在？", options:[
-                {text:"还在查那个词，并且已经做了笔记", score:0},
-                {text:"在刷朋友圈，完全不记得自己打开手机干嘛", score:100},
-                {text:"在购物软件里看与那个词完全无关的东西", score:80},
-                {text:"查完了词，顺便查了五个相关词，在百科里逛了一圈", score:40}
+            { dimension:"A", text:"主人带你去新公园，到处都是新味道，你会？", options:[
+                {text:"专注地在每个角落留下自己的记号，有规律地巡逻", score:0},
+                {text:"到处乱窜，被每条狗吸引，五分钟换了八个玩伴", score:100},
+                {text:"跟着主人走，但时不时被味道带偏，然后急忙追上主人", score:50}
             ]},
-            { dimension:"A", text:"你同时有三件事要做，你更倾向于？", options:[
-                {text:"一件一件来，做完一件再做下一件，井然有序", score:0},
-                {text:"三件同时推进，来回切换，感觉自己在多线程飞翔", score:100},
-                {text:"先把三件事列个表，评估优先级，然后开始焦虑", score:70},
-                {text:"三件都不想干，开第四件事逃避，最后四件事都没干", score:90}
+            { dimension:"A", text:"同时有飞盘、零食和球放在面前，你更可能？", options:[
+                {text:"一个一个玩，先叼飞盘给主人，再吃零食，最后玩球", score:0},
+                {text:"在三个东西之间横跳，企图同时拥有", score:100},
+                {text:"先把最喜欢的叼走藏起来，再回来拿第二喜欢的", score:70}
             ]},
-            { dimension:"S", text:"周末两天没有任何安排，你会？", options:[
-                {text:"立刻开始约人，没有社交安排的周末不叫周末", score:0},
-                {text:"在家躺一天，另一天约人，平衡是艺术", score:50},
-                {text:"两天都不出门，手机开勿扰，爽到飞起", score:100},
-                {text:"想说不出门，但有人约还是会去，一边去一边想回家", score:30}
+            { dimension:"S", text:"周末主人带你去狗公园，你会？", options:[
+                {text:"冲向每一只狗打招呼，没狗就缠着别人主人", score:0},
+                {text:"希望今天公园没狗，独自占领长椅，享受主人专宠", score:100},
+                {text:"先疯玩一阵，然后躲到长椅下休息，看心情再出去", score:50}
             ]},
-            { dimension:"S", text:"团建活动对你来说是？", options:[
-                {text:"期待！和同事一起玩耍多开心", score:0},
-                {text:"去可以，但需要一个星期的独处来恢复电量", score:100},
-                {text:"灵魂拷问：这算加班吗？有加班费吗？", score:60},
-                {text:"全程戴耳机假装听不见，在角落里默默吃菜", score:80}
+            { dimension:"S", text:"主人请了狗友聚会，家里来了三只陌生狗，你？", options:[
+                {text:"摇着尾巴挨个闻，组织大家玩追逐游戏", score:0},
+                {text:"全程躲在沙发后，只在饭点才出来，并且要求主人抱着", score:100},
+                {text:"敷衍地闻两下，然后独自叼着玩具在角落里观望", score:70}
             ]},
-            { dimension:"S", text:"和朋友聚会结束后，你通常？", options:[
-                {text:"意犹未尽，想续摊，甚至可以通宵", score:0},
-                {text:"回家路上就开始复盘自己今晚的表现", score:100},
-                {text:"一回家立刻躺平，三天内不想见任何人", score:80},
-                {text:"嘴上说“下次再聚”，心里知道这个下次可能是明年", score:50}
+            { dimension:"S", text:"遛完狗回家后，你通常？", options:[
+                {text:"还想再出去，扒拉牵绳暗示主人再来一轮", score:0},
+                {text:"直接瘫倒在地，谁叫都不理，进入彻底休眠模式", score:100},
+                {text:"喝点水，然后开始在窝里复盘今天哪只狗挑衅了自己", score:70}
             ]},
-            { dimension:"H", text:"早上下雨了，你的心情是？", options:[
-                {text:"完蛋，今天什么都干不了，回床上躺着", score:0},
-                {text:"正好，有理由不出门了，舒服", score:30},
-                {text:"下雨？挺好的，氛围适合我的气质", score:100},
-                {text:"该干嘛干嘛，下雨关我什么事，我有伞", score:60}
+            { dimension:"H", text:"早上下雨了，不能出门散步，你的心情是？", options:[
+                {text:"毁灭吧，疯狂扒门嚎叫，直到主人妥协穿雨衣", score:0},
+                {text:"正好，可以在家陪主人一整天，顺便把玩具全翻出来", score:100},
+                {text:"叹一口气，趴在窗边看雨，思考狗生", score:60}
             ]},
-            { dimension:"H", text:"你搞砸了一件小事，你会？", options:[
-                {text:"当场崩溃，觉得人生完了，然后十分钟后好了", score:0},
-                {text:"表面镇定，内心已经开始给自己写检讨书", score:100},
-                {text:"立刻找朋友倾诉，要求对方疯狂安慰自己", score:30},
-                {text:"搞砸了？没事，反正在我的失败清单里排不进前十", score:80}
+            { dimension:"H", text:"你把主人心爱的拖鞋咬坏了，接下来你会？", options:[
+                {text:"当场崩溃，呜咽着打滚求原谅", score:0},
+                {text:"假装镇定，把拖鞋藏到沙发下，然后不断偷瞄主人", score:100},
+                {text:"叼来另一只鞋试图替换，用大眼睛发射“原谅我”光波", score:30}
             ]},
-            { dimension:"H", text:"看到别人的好事（升职/脱单/中奖），你更接近？", options:[
-                {text:"真心为对方高兴，沾喜气", score:0},
-                {text:"表面恭喜，内心在算自己什么时候才能轮上", score:100},
-                {text:"先恭喜，然后开始怀疑自己的人生选择", score:70},
-                {text:"关我什么事，又不是我中奖", score:50}
+            { dimension:"H", text:"看到别的狗有更贵的零食，你更接近？", options:[
+                {text:"真心为它高兴，并期待主人也给我买", score:0},
+                {text:"表面一起玩，内心在算自己什么时候也能有同等地位", score:100},
+                {text:"失落一小会儿，然后安慰自己“反正主人最爱我”", score:70}
             ]},
-            { dimension:"B", text:"拿到一件新的宜家家具，你会？", options:[
-                {text:"严格按照说明书，一步一步来，螺丝分三堆", score:0},
-                {text:"先凭直觉装，装到一半发现不对，再回去翻说明书", score:60},
-                {text:"说明书是什么？自由发挥，剩几个零件无所谓的", score:100},
-                {text:"找会装的人来装，自己在旁边配音指挥", score:80}
+            { dimension:"B", text:"主人给你一个新益智玩具，需要按顺序拔开，你会？", options:[
+                {text:"小心翼翼地尝试，严格按照说明书精神（虽然看不懂）", score:0},
+                {text:"一通乱扒，暴力拆解，零件满天飞", score:100},
+                {text:"先仔细观察，然后尝试几轮，不对就叫主人帮忙", score:60}
             ]},
-            { dimension:"B", text:"玩桌游时有人提出一个规则争议，你倾向于？", options:[
-                {text:"翻说明书，查官方FAQ，必须按规则来", score:0},
-                {text:"大家举手表决，少数服从多数，开心最重要", score:40},
-                {text:"当场编一个更合理的规则，还能延伸出新玩法", score:100},
-                {text:"什么规则？玩到哪了？我刚才在吃零食没听", score:80}
+            { dimension:"B", text:"小狗社交圈里流行一种新游戏，但规则有点怪，你会？", options:[
+                {text:"坚守传统游戏（比如捡球），对其他不屑一顾", score:0},
+                {text:"立刻加入，并且自创更酷的玩法", score:100},
+                {text:"看着别的狗玩，等确定好玩没风险再参与", score:40}
             ]},
-            { dimension:"B", text:"生活中有个约定俗成的“规矩”，你通常会？", options:[
-                {text:"遵守，规矩就是规矩，不守规矩社会会乱", score:0},
-                {text:"遵守，但会在心里吐槽这个规矩不合理", score:50},
-                {text:"看情况，合理就遵守，不合理就当没看见", score:100},
-                {text:"什么规矩？谁定的？问过我了吗？", score:90}
+            { dimension:"B", text:"在你家地盘，有只陌生狗路过并撒尿，你通常会？", options:[
+                {text:"必须覆盖它的气味，这是规则！", score:0},
+                {text:"无所谓，闻一下就走，大家交个朋友", score:100},
+                {text:"在心里吐槽这片街区越来越没规矩了，但懒得理", score:50}
             ]},
-            { dimension:"I", text:"你发了一条消息，对方已读不回十分钟，你？", options:[
-                {text:"完全没注意到，发了就发了，回不回是人家的事", score:0},
-                {text:"注意到了，但觉得对方可能在忙，没事", score:30},
-                {text:"开始脑补自己是不是说错了什么，要不要撤回", score:100},
-                {text:"已经在内心写小作文解释“其实我刚才那句话的意思是……”", score:90}
+            { dimension:"I", text:"你冲主人摇尾巴但主人没理你（在看手机），你会？", options:[
+                {text:"根本没注意，继续玩自己的", score:0},
+                {text:"开始怀疑自己是不是做错了什么，焦虑地转圈", score:100},
+                {text:"再摇一次，然后凑过去把头塞进主人手里", score:30}
             ]},
-            { dimension:"I", text:"你需要做一个无关紧要的小决定，比如点外卖，你会？", options:[
-                {text:"打开软件，滑三下，下单，全程两分钟", score:0},
-                {text:"看评分看评论，货比三家，半小时后下单", score:70},
-                {text:"纠结到饿过头，最后泡了碗面", score:100},
-                {text:"让朋友帮你选，然后嫌弃朋友选的不好", score:80}
+            { dimension:"I", text:"开饭时间到了，盆里有三种狗粮混合，你会？", options:[
+                {text:"闻到味道立刻光盘，啥都不挑", score:0},
+                {text:"纠结许久，把不喜欢的味道一颗颗挑出来，最后饿得吃了", score:100},
+                {text:"先把喜欢的吃了，然后慢慢吃剩下的", score:70}
             ]},
-            { dimension:"I", text:"想到明天有一个不太重要的会议，你的内心活动是？", options:[
-                {text:"没感觉，会议而已，开完就完了", score:0},
-                {text:"稍微想一下要说什么，然后就不想了", score:30},
-                {text:"提前一晚开始过PPT，反复修改两页的内容", score:100},
-                {text:"连会议可能出现的二十种意外情况都预演了一遍", score:90}
+            { dimension:"I", text:"明天要去宠物医院打疫苗，你的内心活动是？", options:[
+                {text:"毫无感觉，不就是坐个车嘛", score:0},
+                {text:"提前一晚开始发抖，反复舔鼻子，在窝里烙饼", score:100},
+                {text:"有点紧张，但看到主人拿出零食篮就暂时忘了", score:30}
             ]},
-            { dimension:"N", text:"你跟朋友描述今天午餐吃了什么，你会说？", options:[
-                {text:"“吃的面。” 句号，结束。", score:0},
-                {text:"“吃了家新开的面馆，还不错，下次可以一起去。”", score:40},
-                {text:"“今天中午，我推开了那扇玻璃门，一场改变我味觉的旅程就此展开……”", score:100},
-                {text:"先发九张精修照片到朋友圈，每张配一句文案，然后再跟朋友聊", score:80}
+            { dimension:"N", text:"你跟邻居狗讲今天早上吃了什么，你会？", options:[
+                {text:"“汪。” 句号，结束。", score:0},
+                {text:"“早上主人打开了那个神奇的柜子，倒出了一把像星星形状的东西……”", score:100},
+                {text:"疯狂刨地展示埋起来的食物残渣，并用肢体语言描述", score:80}
             ]},
-            { dimension:"N", text:"有人问路，你指路的方式更接近？", options:[
-                {text:"“直走，第二个路口右转，看到红色招牌就到了。”", score:0},
-                {text:"“你往前走，看到有个卖红薯的大爷就右转，然后你会看到……”", score:50},
-                {text:"“这条路我走过无数次，每次都有不同的心境，今天遇见你也是缘分……”", score:100},
-                {text:"直接打开地图App帮对方导航，一句话不多说", score:10}
+            { dimension:"N", text:"有只刚搬来的小狗问怎么去公园，你带路的方式是？", options:[
+                {text:"简洁地叫一声“跟我走”，直接穿过最佳路线", score:0},
+                {text:"边走边在每个电线杆留气味记号，并讲述每根杆的历史", score:100},
+                {text:"直接带它认识另一只老狗，让老狗带路", score:10}
             ]},
-            { dimension:"N", text:"你朋友问你最近过得怎么样，你通常回答？", options:[
-                {text:"“还行。”", score:0},
-                {text:"“挺好的，最近在忙一个项目，还挺有意思的。”", score:30},
-                {text:"“你问这个问题让我陷入了沉思……最近这个词涵盖的范围太大了，你是问工作？情感？还是灵魂？”", score:100},
-                {text:"“你等我做个PPT，下周三给你汇报一下。”", score:80}
+            { dimension:"N", text:"主人问你“谁是最棒的狗子？”，你通常回答？", options:[
+                {text:"摇两下尾巴意思意思", score:0},
+                {text:"开始展示才艺，从倒地打滚到激情演讲，一副要拿奥斯卡的模样", score:100},
+                {text:"扑上去狂舔，用行动证明我就是最棒的", score:30}
             ]}
         ];
 
-        // ---------- 人格数据 ----------
-        const personalities = [
-            { id:1, name:"纯血吗喽", report:"恭喜你，你是这个系统里最原生态的存在。纯血吗喽，血统纯正得能追溯到第一只下树的猴子。你的核心矛盾在于：不想努力，但又不敢完全不努力，怕被当成异类。\n你的人生名言是“活着就行”，但执行时过于认真。每天准点上班、摸鱼、下班、emo。生活像设定好的程序，偶尔弹出“做点不一样的事？”，你点击取消。\n朋友眼中靠谱但不怎么有趣；老板眼中省心但不怎么上进；你自己眼中：一个在文明社会努力扮演正常人的猴子，演技日渐精湛。记住，祖先在森林里也这么混，不丢人。" },
-            { id:2, name:"提前蕉绿", report:"你的焦虑领先于时代。别人事发才焦虑，你提前一个月预演。大脑像个永远缓冲的视频，进度条一直在转，正片从未开始。\n典型症状：朋友说“有个事想跟你说”，你在他打字的三秒内，脑补完从决裂到绝症的全部剧情。结果他只是问周末吃不吃火锅。松口气，然后开始焦虑那天穿什么、会不会上火、要不要查差评。\n情绪底色是“万一呢”，口头禅是“可是”。香蕉与你相关——每次把事从青涩焦虑到发黄，最后自己烂了。但记住，焦虑过的坏事90%没发生，剩下10%发生了，你也活过来了。" },
-            { id:3, name:"弹幕欠费", report:"你是高配评论员，但嘴是低配。脑子里每分钟弹幕999+，说出口的只有“哈哈”和“好的”。不是不想表达，是表达会员到期，续费太贵。\n任何场合都能精准内心吐槽，面部表情永远是“挺好呀”。开会时脑内开三个分会场：吐槽大会、深度分析、表情包。轮到你发言：“我跟前面同事意见差不多。”\n朋友若看到你的内心弹幕，该跟你绝交。但真绝交了，你的弹幕会更精彩。建议找另一个“弹幕欠费”做朋友，坐在一起沉默，却疯狂发小作文。" },
-            { id:4, name:"仰卧起坐", report:"你是健身房里最累的那个，虽然从不去健身房。在“我要努力”和“努力个屁”之间反复横跳，腹肌没练出来，精神腹肌块块分明。\n规律：周日晚上雄心壮志，规划整周计划；周一上午执行30%；下午计划是什么？晚上算了，下周一重新开始。在起跑线上躺下去又坐起来无数次，裁判都看累了。\n最大成就是练就“自我鼓励-怀疑-放弃-安慰”完整闭环。朋友安慰“没事慢慢来”，你内心：“你不懂，我快的时刻只有三分钟。”仰卧起坐型最需要的不是成功学，是替你执行计划的人。" },
-            { id:5, name:"天气型", report:"心情跟天气预报强绑定，准确率比气象台高。出太阳你就灿烂，下雨就抑郁，阴天进入省电模式。你不是情绪的主人，是天气预报员，只负责播报，不负责调控。\n有时分不清是心情导致觉得天气不好，还是天气导致心情不好。阴天下午躺着思考这哲学问题两小时，结论“算了，明天看预报”。朋友已学会根据天气判断回复速度：晴天秒回，阴天轮回，雨天已读不回。\n理想生活是永远25度、晴间多云但不晒，但地球上没有，所以你一直在旅行攻略和实际宅家间仰卧起坐。" },
-            { id:6, name:"脑补Win", report:"你是一个颅内常胜将军。大脑里已反驳赢八百人、拿下十个项目、谈二十段恋爱，并在领奖台感谢所有人。现实里，点外卖都让同事帮你选。\n脑补能力堪比好莱坞，三秒构建完整故事线。领导看你一眼——脑补被开除、封杀、被迫转行全部剧情。同事没回消息——脑补他跳槽并在背后造谣。实际上领导在发呆，同事在上厕所。\n超能力是“把小事脑补成史诗”，弱点是“史诗结尾你永远是悲情主角”。客观说，这能力用来创作能拿不错点击量。建议去写网文，比内耗有价值。" },
-            { id:7, name:"地球NPC", report:"你有个朴素感觉：自己是来人间凑数的。看周围人都像主角，有主线任务和人生剧情，你站在路边，台词就三句：“好的”“收到”“谢谢”。\n不是没梦想，是觉得比起别人不太上档次。别人想改变世界，你想今天不被骂。别人规划五年职业生涯，你只想这周睡够七小时。你觉得自己像游戏NPC，每天固定时间地点说固定台词，下班就下班。\n但NPC有个好处——不死。主角死了要读档重来，NPC永远站在那，永远活着。换个角度想，你不是凑数，是游戏里最稳定的存在。没有NPC，主角也没地方交任务。" },
-            { id:8, name:"人间清醒", report:"你不是真的醒着，是清醒到睡不着。被生活反复捶打后，悟出真理：认真我就输了。于是选择更节能的活法——躺平，但躺得明明白白。\n不焦虑是因为焦虑配额用完了。现在心态是“该来的总会来，来了我再想办法”。不是不努力，是只在关键事上努力，而且对“关键”定义比一般人窄得多：大概吃喝拉撒睡，以及不被开除。\n在朋友中是“反卷大使”，谁内耗了就去拍拍肩“别想太多”。但没人知道你曾是焦虑冠军，后来宣布退役。人间清醒本质不是看透，是累了。" },
-            { id:9, name:"深夜折学", report:"白天是正常人，天黑变哲学家。思考问题包括但不限于：人生意义、宇宙边界、刚才那句话是不是说得不对、五年前那人到底什么意思。\n“折学”指反复折叠。擅长把一件事来回想八百遍，折出精神褶子。夜深人静，大脑像不知该何时关门的辩论赛，正反方都是你，裁判也是你，观众无。天亮带黑眼圈起床，辩论结果你输了也赢了，毫无意义。\n朋友若凌晨三点收到你长消息，就知道又“折”上了。建议把深夜思考录下来，第二年自己听，大概率觉得“这人在说啥”。不是贬义，说明成长了——至少白天清醒了。" },
-            { id:10, name:"糊弄学叫兽", report:"你是糊弄学终身教授，主攻“如何在付出最少努力情况下不搞砸”。已修炼到：别人看不出你在糊弄，但你自己知道，每件事只用了三成功力。\n代表作品：用“好的收到辛苦啦”回复90%工作消息；用“哈哈确实”回复所有不想接的话题；用“下次一定”答应所有不会去的邀约。学术成果丰硕，至今无人投诉。\n叫兽区别于教授，教授还假装认真，叫兽已放弃假装。偶尔良心发现想认真，认真一半觉得“太累了还是糊弄吧”。人生格言：“差不多得了”。而且你真做到了差不多。" },
-            { id:11, name:"静音尖叫鸡", report:"外表母鸡，内心雄鹰。在任何场合同步进行两套系统：外部系统保持体面，内部系统疯狂尖叫。同事觉得你情绪稳定，其实脑内已摔三个杯子夺门而出又回来坐好。\n尖叫声只有自己听到。领导提离谱需求，内心写檄文，嘴说“好的我试试”。朋友做令人窒息的操作，内心呐喊，表情标准微笑。你是情绪管理奇迹——不是管得好，是管得严，严到情绪蹲了十年大牢。\n唯一问题，长期静音致系统延迟。可能某天因外卖少双筷子哭成狗，不是矫情，是尖叫鸡终于越狱了。" },
-            { id:12, name:"薛定谔社恐", report:"你是量子态人格。在A面前社恐，在B面前社牛，在A和B同时出现时死机。社交能力取决于对面谁、人多不多、熟不熟、天气好不好、刚才吃饱没——变量多到自己搞不清。\n以为自己是社恐，直到遇见更社恐的人，突然变社交担当。以为自己是社牛，直到被推入全是陌生人的饭局，变安静盆栽。朋友评价：“你到底什么物种？”回答：“看情况。”\n最适合给社恐做心理咨询，因为同时懂社恐痛苦和社牛豁达。但自己也无法被治愈，因为压根不知明天的自己是社恐还是社牛。不确定性是唯一确定性。" },
-            { id:13, name:"备忘录文蚝", report:"你的备忘录里藏着另一个世界的你。才华横溢、敏感细腻、修辞满分，和现实中说话卡壳的你判若两人。连写购物清单都有起承转合，写待办事项都有排比句。\n“文蚝”的蚝在于，有颗柔软内心，容易被戳中，一戳就出汁。看广告牌能emo，听老歌能穿越回高中，下雨天对窗发呆能脑补文艺片。可惜才华大多封存在备忘录，从不示人。\n一直在等适当时机展示文采，但这时机从未到来。备忘录容量越来越大，表达欲越来越憋屈。建议去开匿名账号，或至少，把句子发给愿意看的人。" },
-            { id:14, name:"记忆清空大师", report:"大脑自带强大回收站，不愉快记忆自动删除。朋友提起去年出的丑，你一脸茫然：“啊？有吗？你编的吧？”\n不是装失忆，是真不记得。大脑筛选机制严格：利心情的保留，不利的粉碎。记忆是本被撕掉很多页的书，剩下全精彩片段。能力让人羡慕，但有副作用，比如永远记不住欠别人多少钱。\n人生格言：“过去的就让它过去吧。”执行得太彻底，连成长的教训也清空。未必坏事，至少每天活得轻松，反正昨天的事已很模糊。" },
-            { id:15, name:"赛博窦娥", report:"你是网友界首席冤种。对世界预设：“但凡坏事，最终都会落到我头上。”不是悲观，是依据大量数据得出结论。倒霉经历多到可出书，非虚构类。\n抢票卡付款页面，排队前面那人办半小时业务，抽奖永远“谢谢参与”。不是被针对，是被精准打击。朋友圈是当代冤种实录，朋友们看得津津有味。\n但有个宝贵品质：已习惯。不是抱怨，是陈述事实。把倒霉当日常背景音，哪天顺利反而紧张：“暴风雨前宁静？”赛博窦娥不需伸冤，只需愿意说“我懂”的人。" },
-            { id:16, name:"佛系杠鲸", report:"你体型巨大（精神上），但动作缓慢。不太同意别人说的话，但不屑争论。是杠精界退休选手，曾经可能是反应快的嘴炮王者，后来想通：何必呢？\n现在心态：心里翻白眼，嘴说“嗯嗯”。知道对方说的有问题，懒得纠正，因预判纠正后还要讨论、辩论、举例、论证——太累。选择节能模式，只在真的重要时才浮出水面喷一下。\n别人看你佛系，但内心有杆秤。不是不杠，是有选择地杠。座右铭：我可以杠，但不值得。不是放下了，是把较真收起来了。" },
-            { id:17, name:"AI疑似", report:"你有没有怀疑过自己不是真人？有时觉得反应像被训练出来的。别人哭知递纸巾，别人开心知恭喜，但偶尔想：我真的感受到了吗？还是执行“人类社交协议v3.2”？\n行为模式有规律可循，收到外界反馈会优化“参数”。聊天偶尔卡住，因一时不知哪句回复更“像人”。甚至做过图灵测试，并怀疑没通过。\n反过来说，如果AI真混进人类社会，最可能的伪装就是偶尔自我怀疑。所以这篇诊断报告，可能是写给你的，也可能是写给正在模拟你的系统的。自己判断。" },
-            { id:18, name:"高敏土豆", report:"你是一颗高贵的土豆，拥有惊人感知力。能察觉房间最细微情绪变化，三秒内判断新来的人好不好相处，在对方自己发现前发现他心情不好。别人觉得“想太多”，你想的是“是你们想太少”。\n高敏让你擅长照顾别人感受，但也活得累。像情绪海绵，吸收周围所有喜怒哀乐，独处时慢慢挤干。去趟超市都吸收陌生人情绪，回家瘫沙发一小时恢复出厂设置。\n常被说“太敏感”，但这不是缺陷，是天赋。敏感让你看到别人忽略的美好，察觉别人踩不到的雷。只是需要更多独处时间给情绪系统散热。" },
-            { id:19, name:"囤积P", report:"你的坏习惯是囤东西，且囤得理直气壮。表情包存八千，实际用八个。书单收藏三百，读目录。微信“稍后阅读”列表长到拉出地球轨道。\n最妙的是把“囤积癖”升级成“囤积P”，因习惯像格式——标准化、成体系、永无止境。给文件夹分类、打标签、做时间轴，但从不打开。享受的不是使用，是保存。保存即拥有，拥有即满足。\n云盘容量永远不够，浏览器标签页永远关不完。每年元旦说“今年要整理”，然后整理一下，把所有东西归到一个叫“待整理”的文件夹。" },
-            { id:20, name:"精神鼓动家", report:"你拥有神奇能力：让别人的斗志燃烧。擅长鼓励别人追梦、表白、辞职创业。给朋友灌的鸡汤够开连锁汤馆。至于自己的事，在旁边鼓鼓劲就好，不亲自下场。\n在朋友中是“人生导师型话痨”，谁遇困难都能说上两句“你可以的”“相信自己”“不试试怎么知道”。真诚希望身边所有人都过得比你好——因为这样就能继续混在他们中间。是精神补给站，但补给都发给别人。\n偶尔想：是不是该给自己鼓鼓劲？但很快放弃，因为给自己鼓劲太累，还是鼓动别人比较轻松。" },
-            { id:21, name:"高延迟人类", report:"情绪反射弧绕地球三圈。别人上周讲的笑话，今天才笑出声。别人三天前骂你，现在才组织好反击台词，但人家已忘了。\n不是反应慢，是缓冲区太大。对自己情绪感知需加载过程。开心要加载半天，伤心也要加载半天。好消息是对负面情绪同样迟钝，所以不会立刻崩溃。坏消息是会在事过很久后突然崩溃，让人措手不及。\n最经典场景：争吵过去两天后，突然想起完美反击方式。若在吵架后24小时内反击，说明发挥失常。有时需几天或更久。人生是场延迟直播，反正最后也会播完。" },
-            { id:22, name:"善意过分解do", report:"你看世界自带柔光滤镜，能把别人微小言行解读出三层暖意。对方回“嗯”，觉他在忙但还回，挺暖。没回，觉可能手机没电，不是不想理。是那种会替冷漠找理由的人，因为大脑默认程序是“别人对我好”。\n这让你活得开心，很少生气，人缘也好。但副作用：当真被冷落、敷衍、欺骗时，需比别人多一倍时间才反应过来。因解读系统一开始就替对方找好台阶。等终于意识到“好像不对”，事件已过去。\n不是天真，是选择性往好处想。宁可被亏待几次，也不做对所有人戒备的人。" },
-            { id:23, name:"Prompt大失", report:"你的问题在于太会提问。对生活期望像完美prompt，但得到的输出总与预期有偏差。点“微辣”，出来是大辣。计划“睡八小时”，执行四小时。提问时很清楚要什么，世界回复总答非所问。\n这种落差让你常感淡淡失望。不是大吼大叫的人，只叹气：“又跑偏了。”然后修改参数再试。已习惯反复调试的生活。有时想，也许不是prompt问题，是世界大模型没训练好。\n你是精准提问者，只是对话对象不太智能。但你还在继续提问，因为偶尔，偶尔会得到接近预期的答复，那感觉还挺好。" },
-            { id:24, name:"梦导", report:"电影导演梦全在睡眠里实现。每晚一闭眼，进入自己影视帝国。构思的剧情吊打网飞三季剧，安排的角色一个比一个生动，设计的台词让人醒来回味。唯一问题——没有观众。\n偶尔想把梦里故事记下，但拿手机打字速度追不上梦里剧情推进速度。记下开头，中间全忘。但不气馁，因为晚上还有续集。梦里身份可能是导演、主演、编剧三位一体，偶尔客串灯光师。\n现实生活可能平淡，但没关系，梦是另一个平行宇宙。在那个宇宙，已拿好几个奖项，醒来后奖杯变回闹钟。" },
-            { id:25, name:"BUG级存在", report:"我们很抱歉，系统无法对您精准定位。您做完测试，八维度分数分布像心电图乱跳。今天测出A，明天再测B，后天又回到A边缘。不是稳定个体，是行走的系统漏洞。\n可能意味着您本身不被定义。也可能今天心情和昨天不同。也可能随便选的。总之，您让测试看起来像未完成品。但说实话，这标签挺酷——BUG级存在。您是不被定义的变量，无法分类的异常。所有测试在您面前失去权威。\n以上诊断仅供参考，因系统怀疑，您看完后可能会再测一遍，然后变成另一个人格。" }
+        // ---------- 狗格数据（形容词+品种） ----------
+        const dogPersonalities = [
+            { id:1, name:"野性的中华田园犬", report:"恭喜！你内心住着一只血统古老的中华田园犬，自由不羁，保留着犬类最原始的直觉。你不想努力的时候坦然躺着，但该看家时绝不含糊。你的人生信条是“有肉就吃，没肉就睡”，对外界评价基本免疫。朋友眼中你很好相处但有点捉摸不透；你自己清楚，你只是一只懂得自我保全的聪明狗狗。在这个精心修饰的世界，你活得太真了。" },
+            { id:2, name:"焦虑的吉娃娃", report:"你的灵魂是一只眼睛瞪得老大的吉娃娃，时刻处于备战状态。别人还在打盹，你已经脑补完一百种危险可能。你的典型行为：主人离开五分钟，你认为自己被抛弃了。快递员敲门，你确信是外星人入侵。虽然有时过度紧张，但你的警觉性也让你避开真正的麻烦。记住，你战过最大的敌人是脑海里那扇不停旋转的螺旋桨。偶尔放松一下，你不是那么容易碎的。" },
+            { id:3, name:"腹黑的雪纳瑞", report:"你是一只外表正经、内心弹幕飞过一万条的雪纳瑞。你的胡子里藏着无数吐槽，但面上永远挂着“很高兴见到你”的体面微笑。你经常在狗群里扮演和事佬，但脑内小剧场已经给每只狗安排了角色。朋友如果知道你在想什么，可能会重新认识你。不过腹黑归腹黑，你永远不会真的使坏，毕竟你还要维护自己老干部的形象。" },
+            { id:4, name:"仰卧起坐的柯基", report:"你的内心是一只短腿柯基，在“冲向食堂”和“就地躺倒”之间反复切换。你经常制定雄心勃勃的锻炼计划（比如追尾巴十圈），但通常第三圈就开始摆烂。你的人生轨迹就像你那迷人的屁股，扭来扭去但总在左右摇摆。最大的成就是把“反复”练成了本能。别自责，柯基的腿短，你的意志力电池容量也有限，充电两小时运动五分钟很正常。" },
+            { id:5, name:"敏感的金毛", report:"你就是那只会根据天气调整心情的金毛。出太阳你嘴角咧到耳根，阴天你趴在门口叹气，下雨天直接窝在沙发里emo。你的情绪开关不在自己手里，而在云层厚度上。朋友们已经学会根据天气预报判断你会不会秒回消息。你最理想的生活是永远活在气候宜人的秋天，但现实中你只能学会在雨天也叼着玩具自娱自乐。" },
+            { id:6, name:"戏精的边境牧羊犬", report:"你内心住着一只堪比影帝的边牧。在脑内你已经学会了开冰箱、解方程式、甚至跟主人掰手腕赢了。现实中你只是把球叼回来放在主人脚边，然后用眼神加戏：“看吧，我为你征服了世界”。你擅长把小场面脑补成史诗，并且总把自己设定为悲剧英雄。建议你去接点广告，毕竟这演技不用太浪费了。" },
+            { id:7, name:"透明的比格犬", report:"你是一只存在感不强的比格，总觉得自己是狗群里的背景板。别人在追逐打闹时，你在旁边默默嗅草；主人在分发零食时，你担心自己会不会被漏掉。但其实，你独特的声线和灵敏的鼻子让你不可或缺。没有你，谁来发现沙发底下藏着的半块饼干？透明只是你的保护色，你是有重要任务的隐形狗。" },
+            { id:8, name:"佛系的巴哥犬", report:"你已经活成了巴哥的模样：清醒但懒得睁眼。明白生活就是食物、水和打鼾，其他都是浮云。你从不焦虑，因为早就把焦虑配额用完了。你的哲学是“能躺着绝不坐着，能喘气就好”。朋友称你为反内卷先锋，但没人知道你也曾疯狂追过自己的尾巴，后来发现追不上，干脆放弃。佛系不是看破红尘，是知道怎么省电。" },
+            { id:9, name:"深夜emo的哈士奇", report:"你白天是正常的哈士奇，一到晚上就变身思想者。你思考的问题包括：为什么我是狗？骨头存在的意义是什么？主人去洗手间不带我是不是不爱我了？你擅长把简单的事情来回想，直到把脑子揉成一团。朋友习惯在半夜收到你哀嚎一样的消息。建议你把深夜感想印成诗集，说不定能成畅销书——反正哈士奇从来不缺粉丝。" },
+            { id:10, name:"糊弄学的拉布拉多", report:"你是拉布拉多中的生活大师，主要技能是用最少的精力获得最多的零食。你的糊弄技巧包括：用“摇摇尾巴+微笑”应付99%的社交场合；用“叼拖鞋”代替真正的看家护院；用“假装听不懂”回避所有不想做的事。但神奇的是，大家还是觉得你很乖。你把糊弄提升到了艺术，连主人都觉得你只是单纯。" },
+            { id:11, name:"闷骚的柴犬", report:"你外表高冷像柴犬，内心却住着一只尖叫鸡。在你看似淡定的面孔下，藏着对世界极度的内心戏。你讨厌表达情感，却渴望被理解；你拒绝拥抱，却在主人睡着后偷偷把头靠过去。你的高冷是假的，你的闷骚是真的。偶尔你会因为一根掉落的黄瓜而暴露神经质，但很快就会恢复扑克脸。" },
+            { id:12, name:"薛定谔的博美", report:"你是一只处于叠加态的博美：既社恐又社牛。在熟悉的朋友面前，你像个毛茸茸的交际花；在陌生人面前，你瞬间变成缩在角落的毛球。你的状态取决于当时的风向、对方的体型、以及早餐有没有吃饱。你无法预测明天的自己是哪种形态，但这正是你的魅力——像开盲盒一样的狗狗。" },
+            { id:13, name:"文艺的贵宾犬", report:"你有一颗贵宾般的文艺心。你走路的步子都有节奏感，喝水的姿势都像在品味红酒。你的窝里可能藏着主人丢失的诗笺。你对世界感知力超强，能因为一片落叶而发呆半天。朋友们觉得你有点矫情，但他们不懂你内心的交响乐。建议你开个狗狗日记号，肯定能吸引一批忠实的粉丝。" },
+            { id:14, name:"健忘的萨摩耶", report:"你就像微笑天使萨摩耶，但出厂设置里忘了装记忆模块。你不记仇，因为下一秒就忘了；你永远快乐，因为烦恼不存档。主人教训你，你一脸“发生什么事了？”然后继续摇尾巴。这种能力令无数狗羡慕，尽管你连昨天吃了什么都想不起来。但正是这种清澈的愚蠢，让你一直活在阳光下。" },
+            { id:15, name:"冤种的斗牛犬", report:"你是一只倒霉的斗牛犬，总觉得自己被命运针对。出门必踩水坑，想吃的肉必掉地上，抢飞的盘必撞树。你不是不努力，是努力经常跑偏。你已经习惯了把倒霉当作日常背景音，偶尔顺利反而紧张。但斗牛犬的坚韧在于，即使一脸褶子写着“苦大仇深”，你依然会坚持出门，因为你相信下一块肉一定不会掉。" },
+            { id:16, name:"佛系的藏獒", report:"你体型巨大（指精神上），但动作缓慢，像只看破红尘的藏獒。你懒得争辩，懒得证明，甚至懒得移动。你心里翻着白眼，嘴上说“你开心就好”。曾经你也可能是个杠精，但后来发现太耗电。你的座右铭是：我可以，但没必要。你不是没脾气，只是你的战斗状态需要真正值得的敌人。" },
+            { id:17, name:"AI般的杜宾犬", report:"你像一只被精密编程的杜宾犬，反应总是标准而优雅。你递纸巾、在适当的时候摇尾巴，但你偶尔怀疑：这些反应是出自真实情感，还是执行社交协议？你甚至偷偷做过镜子测试，担心自己并不存在。但别担心，真的AI不会怀疑自己是不是AI，你的困扰恰好证明了你有一颗鲜活的狗心。" },
+            { id:18, name:"高敏感的约克夏", report:"你是一只小小的约克夏，却戴着超级感应天线。你能在第一时间察觉到家庭气氛的微妙变化，在主人叹气前就已叼来拖鞋。你像块情绪海绵，吸收周围所有喜怒哀乐，然后躲进窝里慢慢消化。常被说“你也太敏感了”，但这是你的天赋。你只是需要更多独处时间来清理情绪缓存，以便继续做贴心小狗。" },
+            { id:19, name:"囤积的松鼠犬", report:"你内心是一只松鼠犬，热衷收集一切。玩具塞满窝，骨头埋遍院子，连树叶都分类存放。你享受的不是使用，是拥有的感觉。你的狗窝容量永远不够，你的秘密宝箱永远在扩建。每年春天你都下决心整理，结果只是把所有东西搬到一个更大一点的纸箱里。囤货让你安心，虽然你根本玩不过来。" },
+            { id:20, name:"鼓舞的可卡犬", report:"你是狗群里的啦啦队长，一只永远给人打气的可卡犬。你鼓励别的狗去表白、去越狱、去抢更大的骨头，但自己通常只是坐在旁边指导。你真诚地希望朋友们都成功，这样你就可以继续当大家的导师兼气氛组。你不是不想上场，只是觉得幕后工作更适合你。偶尔给自己加加油吧，你值得拥有自己的舞台。" },
+            { id:21, name:"延迟的巴吉度", report:"你的反射弧像巴吉度的耳朵一样长。别人讲的笑话，你三天后才开始摇尾巴；别人骂你，你一周后才想起要反击。你不是笨，是系统加载太慢。好处是，负面情绪也一样延迟，让你能永远保持当下的温和。不过偶尔你会半夜突然惊醒，想起五年前没发挥好的吵架，然后对着月亮狂吠几声。" },
+            { id:22, name:"善意过度的金毛寻回犬", report:"你是一只永远往好处想的金毛。别人随手一扔的树枝，你觉得是专门为你准备的礼物；别人没回你信号，你觉得他在忙着救火。你为所有人找好了台阶，即使对方根本没打算下来。这让你拥有超高的幸福指数，但也偶尔被利用。天真不是傻，是你选择用柔软的眼光看世界，这样的狗运气不会太差。" },
+            { id:23, name:"完美主义的边境牧羊犬", report:"你是一只追求满分的边牧，对生活输入精确的指令，但输出总是微调。你把“捡球”定义为抛接角度、速度、落点全部完美。当现实不如意，你会叹气，然后重新调试。你希望所有事情都井井有条，可惜世界是个混乱的狗场。接纳不完美吧，有时乱跑一通也能达到目的地。" },
+            { id:24, name:"梦幻的阿富汗猎犬", report:"你是一只活在梦里的阿富汗猎犬，优雅飘逸，但随时可能撞到门框。你的精神世界比现实精彩一百倍。晚上你在梦里导演大片，白天你动不动就发呆。你记性不太好，但没关系，因为每晚都有续集。你或许在现实中有点笨拙，但那是你在加载昨夜的梦境。继续做梦吧，你是一只能把生活过成诗的神奇小狗。" }
         ];
 
-        // ---------- 像素人脸绘制 ----------
-        function drawFace(ctx, style) {
+        // ---------- 像素小狗绘制 ----------
+        function drawDog(ctx, style) {
             ctx.clearRect(0,0,128,128);
-            const p = 8; // 像素块大小 8x8，16x16格
-            // 肤色
-            const skin = style.skin || "#f7d9aa";
-            // 背景
-            ctx.fillStyle = "#2a1e3c";
+            const p = 8; // 像素块大小8x8，画布128x128
+            ctx.fillStyle = "#ffffff";
             ctx.fillRect(0,0,128,128);
-            // 脸型 (圆形区域)
-            ctx.fillStyle = skin;
-            for (let y=3; y<13; y++) {
-                let w = (y<5) ? (y-1)*2+1 : (y>10) ? (15-y)*2+1 : 9;
+
+            // 用style包含：baseColor（主毛色）、earType（立耳/垂耳/折耳）、noseColor、eyeStyle、mouthStyle
+            const base = style.baseColor || "#c49a6c";
+            const earColor = style.earColor || base;
+            const nose = style.noseColor || "#333";
+            const eyeP = style.eyeType || "dot";
+
+            // 画脸（圆形区域，以8x8像素为基础，占据中央偏上）
+            ctx.fillStyle = base;
+            // 脸主体
+            for (let y=2; y<13; y++) {
+                let w;
+                if (y<5) w = (y-1)*2+1;
+                else if (y>11) w = (15-y)*2+1;
+                else w = 10;
                 let sx = 8 - Math.floor(w/2);
                 ctx.fillRect(sx*p, y*p, w*p, p);
             }
             // 耳朵
-            ctx.fillStyle = skin;
-            ctx.fillRect(1*p,6*p,p,p); ctx.fillRect(1*p,7*p,p,p); ctx.fillRect(1*p,8*p,p,p);
-            ctx.fillRect(14*p,6*p,p,p); ctx.fillRect(14*p,7*p,p,p); ctx.fillRect(14*p,8*p,p,p);
-            // 头发
-            ctx.fillStyle = style.hair || "#4a3120";
-            if(style.hairStyle==="short") {
-                for (let y=2; y<6; y++) for (let x=2; x<14; x++) ctx.fillRect(x*p,y*p,p,p);
-            } else if(style.hairStyle==="long") {
-                for (let y=2; y<7; y++) for (let x=2; x<14; x++) ctx.fillRect(x*p,y*p,p,p);
-                ctx.fillRect(2*p,7*p,p,p); ctx.fillRect(13*p,7*p,p,p);
-            } else if(style.hairStyle==="messy") {
-                for (let y=2; y<6; y++) for (let x=1; x<15; x++) if((x+y)%3!==0) ctx.fillRect(x*p,y*p,p,p);
-            } else if(style.hairStyle==="bald") {
-                // 光头，不画头发
-            } else if(style.hairStyle==="bangs") {
-                for (let y=2; y<5; y++) for (let x=3; x<13; x++) ctx.fillRect(x*p,y*p,p,p);
+            if (style.earType === "up") { // 立耳
+                ctx.fillStyle = earColor;
+                ctx.fillRect(2*p,3*p,p,p); ctx.fillRect(1*p,4*p,p,p); ctx.fillRect(1*p,5*p,p,p);
+                ctx.fillRect(13*p,3*p,p,p); ctx.fillRect(14*p,4*p,p,p); ctx.fillRect(14*p,5*p,p,p);
+            } else if (style.earType === "down") { // 垂耳
+                ctx.fillStyle = earColor;
+                ctx.fillRect(1*p,4*p,2*p,p); ctx.fillRect(1*p,5*p,2*p,p); ctx.fillRect(1*p,6*p,2*p,p);
+                ctx.fillRect(13*p,4*p,2*p,p); ctx.fillRect(13*p,5*p,2*p,p); ctx.fillRect(13*p,6*p,2*p,p);
+            } else if (style.earType === "fold") { // 折耳
+                ctx.fillStyle = earColor;
+                ctx.fillRect(2*p,4*p,p,p); ctx.fillRect(1*p,5*p,p,p);
+                ctx.fillRect(13*p,4*p,p,p); ctx.fillRect(14*p,5*p,p,p);
             }
+            // 鼻子
+            ctx.fillStyle = nose;
+            ctx.fillRect(7*p,8*p,2*p,p);
             // 眼睛
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(4*p,7*p,p,p); ctx.fillRect(10*p,7*p,p,p);
-            ctx.fillStyle = "#111111";
-            if(style.eyes==="dot") {
-                ctx.fillRect(5*p,7*p,p,p); ctx.fillRect(11*p,7*p,p,p);
-            } else if(style.eyes==="wide") {
-                ctx.fillRect(4*p,8*p,p,p); ctx.fillRect(10*p,8*p,p,p);
-            } else if(style.eyes==="half") {
-                ctx.fillRect(4*p,7*p,p,p); ctx.fillRect(10*p,7*p,p,p);
-                ctx.fillStyle = skin; ctx.fillRect(4*p,6*p,p,p); ctx.fillRect(10*p,6*p,p,p);
-            } else if(style.eyes==="star") {
-                ctx.fillStyle = "#ffff33";
-                ctx.fillRect(4*p,7*p,p,p); ctx.fillRect(10*p,7*p,p,p);
+            if (eyeP === "dot") {
+                ctx.fillStyle = "#111";
+                ctx.fillRect(5*p,6*p,p,p); ctx.fillRect(10*p,6*p,p,p);
+            } else if (eyeP === "big") {
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(4*p,6*p,2*p,p); ctx.fillRect(9*p,6*p,2*p,p);
+                ctx.fillStyle = "#111";
+                ctx.fillRect(5*p,6*p,p,p); ctx.fillRect(10*p,6*p,p,p);
+            } else if (eyeP === "line") {
+                ctx.fillStyle = "#111";
+                ctx.fillRect(4*p,6*p,2*p,p); ctx.fillRect(9*p,6*p,2*p,p);
             }
-            // 眉毛
-            ctx.fillStyle = style.hair || "#4a3120";
-            ctx.fillRect(3*p,5*p,p,p); ctx.fillRect(5*p,5*p,p,p); ctx.fillRect(9*p,5*p,p,p); ctx.fillRect(11*p,5*p,p,p);
             // 嘴巴
-            ctx.fillStyle = "#c44b4b";
-            if(style.mouth==="smile") {
-                ctx.fillRect(5*p,11*p,p,p); ctx.fillRect(6*p,12*p,p,p); ctx.fillRect(8*p,12*p,p,p); ctx.fillRect(9*p,11*p,p,p);
-            } else if(style.mouth==="open") {
-                ctx.fillRect(6*p,11*p,2*p,p); ctx.fillRect(5*p,12*p,4*p,p);
-            } else if(style.mouth==="flat") {
-                ctx.fillRect(5*p,11*p,4*p,p);
+            ctx.fillStyle = "#d99";
+            if (style.mouth === "smile") {
+                ctx.fillRect(6*p,10*p,3*p,p);
+            } else if (style.mouth === "tongue") {
+                ctx.fillRect(6*p,10*p,3*p,p);
+                ctx.fillStyle = "#ff9999";
+                ctx.fillRect(7*p,11*p,2*p,p);
+            } else {
+                ctx.fillRect(6*p,10*p,3*p,p);
             }
             // 腮红
-            ctx.fillStyle = "rgba(255,140,140,0.5)";
-            ctx.fillRect(2*p,9*p,p,p); ctx.fillRect(12*p,9*p,p,p);
-            // 配件
-            if(style.glasses) {
-                ctx.fillStyle = "#aaaaaa";
-                ctx.fillRect(3*p,6*p,3*p,p); ctx.fillRect(9*p,6*p,3*p,p);
-                ctx.fillRect(3*p,7*p,p,p); ctx.fillRect(5*p,7*p,p,p); ctx.fillRect(9*p,7*p,p,p); ctx.fillRect(11*p,7*p,p,p);
-            }
+            ctx.fillStyle = "rgba(255,150,150,0.5)";
+            ctx.fillRect(2*p,8*p,p,p); ctx.fillRect(12*p,8*p,p,p);
         }
 
-        const faceStyles = [
-            { skin:"#f7d9aa", hair:"#5c3b24", hairStyle:"short", eyes:"dot", mouth:"flat" }, //1 纯血吗喽
-            { skin:"#f5d6a8", hair:"#9b6b3a", hairStyle:"messy", eyes:"wide", mouth:"open" }, //2 提前蕉绿
-            { skin:"#ead2ac", hair:"#2c2c2c", hairStyle:"bangs", eyes:"half", mouth:"smile", glasses:true }, //3 弹幕欠费
-            { skin:"#f7dbb0", hair:"#b57e4a", hairStyle:"short", eyes:"dot", mouth:"flat" }, //4 仰卧起坐
-            { skin:"#fce2b0", hair:"#7f8c8d", hairStyle:"long", eyes:"half", mouth:"flat" }, //5 天气型
-            { skin:"#f3d5a2", hair:"#3b2b1f", hairStyle:"messy", eyes:"star", mouth:"open" }, //6 脑补Win
-            { skin:"#e8cfa0", hair:"#444444", hairStyle:"bald", eyes:"dot", mouth:"flat" }, //7 地球NPC
-            { skin:"#fbe5b5", hair:"#6b4c30", hairStyle:"short", eyes:"half", mouth:"smile" }, //8 人间清醒
-            { skin:"#f7ddb2", hair:"#4a3728", hairStyle:"long", eyes:"wide", mouth:"open" }, //9 深夜折学
-            { skin:"#f9e0b5", hair:"#825e3c", hairStyle:"bangs", eyes:"half", mouth:"smile" }, //10 糊弄学叫兽
-            { skin:"#f1d8aa", hair:"#aa6f4c", hairStyle:"short", eyes:"wide", mouth:"open" }, //11 静音尖叫鸡
-            { skin:"#f8d9a6", hair:"#3f4953", hairStyle:"messy", eyes:"dot", mouth:"flat", glasses:true }, //12 薛定谔社恐
-            { skin:"#f6ddb8", hair:"#5e3a24", hairStyle:"long", eyes:"half", mouth:"smile" }, //13 备忘录文蚝
-            { skin:"#f0d4a4", hair:"#626d79", hairStyle:"bald", eyes:"dot", mouth:"flat" }, //14 记忆清空大师
-            { skin:"#fae3b0", hair:"#2e1e12", hairStyle:"messy", eyes:"wide", mouth:"open" }, //15 赛博窦娥
-            { skin:"#eed5ae", hair:"#7a5a40", hairStyle:"short", eyes:"half", mouth:"smile" }, //16 佛系杠鲸
-            { skin:"#f2dbb5", hair:"#b0bec5", hairStyle:"bangs", eyes:"dot", mouth:"flat" }, //17 AI疑似
-            { skin:"#fce7c0", hair:"#8b6c4e", hairStyle:"long", eyes:"wide", mouth:"smile" }, //18 高敏土豆
-            { skin:"#f5d8ab", hair:"#4d4d4d", hairStyle:"messy", eyes:"half", mouth:"open" }, //19 囤积P
-            { skin:"#fadfaf", hair:"#cf8e52", hairStyle:"short", eyes:"star", mouth:"smile" }, //20 精神鼓动家
-            { skin:"#e9d3a3", hair:"#382f28", hairStyle:"bangs", eyes:"half", mouth:"flat" }, //21 高延迟人类
-            { skin:"#fbe2b7", hair:"#b68b5c", hairStyle:"long", eyes:"wide", mouth:"smile", glasses:true }, //22 善意过分解do
-            { skin:"#f4d9ad", hair:"#5b6c7a", hairStyle:"short", eyes:"dot", mouth:"flat" }, //23 Prompt大失
-            { skin:"#f7ddb5", hair:"#3b2e40", hairStyle:"messy", eyes:"star", mouth:"open" }, //24 梦导
-            { skin:"#f3ceb0", hair:"#a83279", hairStyle:"long", eyes:"wide", mouth:"open" } //25 BUG级存在
+        const dogStyles = [
+            { baseColor:"#c49a6c", earType:"up", noseColor:"#222", eyeType:"dot", mouth:"flat" }, //野性中华田园犬
+            { baseColor:"#d9b382", earType:"up", noseColor:"#000", eyeType:"big", mouth:"tongue" }, //焦虑吉娃娃
+            { baseColor:"#444", earType:"fold", noseColor:"#111", eyeType:"line", mouth:"smile" }, //腹黑雪纳瑞
+            { baseColor:"#e0a96d", earType:"up", noseColor:"#333", eyeType:"dot", mouth:"tongue" }, //仰卧起坐柯基
+            { baseColor:"#e6b168", earType:"down", noseColor:"#4a3e35", eyeType:"big", mouth:"smile" }, //敏感金毛
+            { baseColor:"#3b3b3b", earType:"up", noseColor:"#111", eyeType:"dot", mouth:"flat" }, //戏精边牧(黑白)
+            { baseColor:"#f5e0c6", earType:"down", noseColor:"#8b5a2b", eyeType:"line", mouth:"flat" }, //透明比格
+            { baseColor:"#d1b18b", earType:"fold", noseColor:"#2d2d2d", eyeType:"line", mouth:"smile" }, //佛系巴哥
+            { baseColor:"#6e6e6e", earType:"up", noseColor:"#222", eyeType:"big", mouth:"tongue" }, //深夜emo哈士奇
+            { baseColor:"#e2c792", earType:"down", noseColor:"#5c4a3a", eyeType:"dot", mouth:"smile" }, //糊弄学拉布拉多
+            { baseColor:"#d4956b", earType:"up", noseColor:"#000", eyeType:"line", mouth:"flat" }, //闷骚柴犬
+            { baseColor:"#fae0b2", earType:"up", noseColor:"#1f1f1f", eyeType:"big", mouth:"tongue" }, //薛定谔博美
+            { baseColor:"#b28b6b", earType:"down", noseColor:"#4a3a2a", eyeType:"dot", mouth:"smile" }, //文艺贵宾
+            { baseColor:"#fafafa", earType:"up", noseColor:"#000", eyeType:"line", mouth:"tongue" }, //健忘萨摩耶
+            { baseColor:"#e4c4a8", earType:"fold", noseColor:"#5a4030", eyeType:"dot", mouth:"flat" }, //冤种斗牛犬
+            { baseColor:"#8c5a35", earType:"down", noseColor:"#111", eyeType:"line", mouth:"smile" }, //佛系藏獒
+            { baseColor:"#1e1e1e", earType:"up", noseColor:"#aaa", eyeType:"dot", mouth:"flat" }, //AI杜宾
+            { baseColor:"#c9a87c", earType:"up", noseColor:"#111", eyeType:"big", mouth:"smile" }, //高敏感约克夏
+            { baseColor:"#a07050", earType:"up", noseColor:"#2d2d2d", eyeType:"dot", mouth:"flat" }, //囤积松鼠犬
+            { baseColor:"#d89f5b", earType:"down", noseColor:"#4d3a2b", eyeType:"big", mouth:"tongue" }, //鼓舞可卡
+            { baseColor:"#c49a6c", earType:"down", noseColor:"#2b2b2b", eyeType:"line", mouth:"flat" }, //延迟巴吉度
+            { baseColor:"#e0b060", earType:"down", noseColor:"#5c3f2e", eyeType:"big", mouth:"tongue" }, //善意过度金毛
+            { baseColor:"#2b2b2b", earType:"up", noseColor:"#111", eyeType:"dot", mouth:"smile" }, //完美主义边牧
+            { baseColor:"#cfb28c", earType:"down", noseColor:"#2b1e10", eyeType:"line", mouth:"smile" } //梦幻阿富汗
         ];
 
         // ---------- 测试逻辑 ----------
@@ -485,11 +381,13 @@
         const dims = ["T","R","A","S","H","B","I","N"];
         const quizDiv = document.getElementById('quizArea');
         const resultDiv = document.getElementById('resultArea');
+        const splashDiv = document.getElementById('splashScreen');
         const progressFill = document.getElementById('progressFill');
         const questionText = document.getElementById('questionText');
         const optionsContainer = document.getElementById('optionsContainer');
         const prevBtn = document.getElementById('prevBtn');
         const restartBtn = document.getElementById('restartBtn');
+        const startBtn = document.getElementById('startBtn');
         const typeName = document.getElementById('typeName');
         const reportText = document.getElementById('reportText');
         const canvas = document.getElementById('pixelAvatar');
@@ -545,55 +443,59 @@
             return avgScores;
         }
 
-        function matchPersonality(scores) {
-            // 简单匹配：根据八个维度极端组合确定人格
-            let highT = scores.T > 70, lowT = scores.T < 30;
-            let highR = scores.R > 70, lowR = scores.R < 30;
-            let highA = scores.A > 70, lowA = scores.A < 30;
-            let highS = scores.S > 70, lowS = scores.S < 30;
-            let highH = scores.H > 70, lowH = scores.H < 30;
-            let highB = scores.B > 70, lowB = scores.B < 30;
-            let highI = scores.I > 70, lowI = scores.I < 30;
-            let highN = scores.N > 70, lowN = scores.N < 30;
-            // 经典八极
-            if(lowT && lowR && highA && lowS && lowH && lowB && lowI && lowN) return 0; //纯血吗喽
-            if(highT && highR && lowA && highS && highH && highB && highI && highN) return 1; //提前蕉绿
-            if(lowT && highR && lowA && lowS && lowH && lowB && lowI && lowN) return 2; //弹幕欠费
-            if(lowT && lowR && highA && highS && highH && lowB && highI && lowN) return 3; //仰卧起坐
-            if(lowT && lowR && highA && lowS && lowH && highB && highI && highN) return 4; //天气型
-            if(highT && lowR && lowA && highS && highH && lowB && highI && highN) return 5; //脑补Win
-            if(highT && highR && highA && highS && highH && highB && lowI && lowN) return 6; //地球NPC
-            if(lowT && highR && highA && lowS && lowH && lowB && lowI && lowN) return 7; //人间清醒
-            // 融合品种
-            if(highA && highI && highN && !lowT && !highR) return 8; //深夜折学
-            if(lowR && lowS && lowI && scores.T<60) return 9; //糊弄学叫兽
-            if(highR && highS && highI) return 10; //静音尖叫鸡
-            if(Math.abs(scores.S-50)<15 && lowA && highH) return 11; //薛定谔社恐
-            if(lowA && highN && highI) return 12; //备忘录文蚝
-            if(Math.abs(scores.T-50)<20 && lowR && lowB) return 13; //记忆清空大师
-            if(lowH && highN && highB) return 14; //赛博窦娥
-            if(highR && highB && lowI) return 15; //佛系杠鲸
-            if(Math.abs(scores.T-50)<20 && Math.abs(scores.A-50)<20 && Math.abs(scores.S-50)<20 && highI) return 16; //AI疑似
-            if(highS && lowH && highI && highN) return 17; //高敏土豆
-            if(highT && lowB && highI) return 18; //囤积P
-            if(lowA && lowS && highN) return 19; //精神鼓动家
-            if(highR && Math.abs(scores.H-50)<20 && highI) return 20; //高延迟人类
-            if(highB && highN && highH) return 21; //善意过分解do
-            if(highA && lowB && lowI) return 22; //Prompt大失
-            if(highT && lowA && highN && Math.abs(scores.H-50)<20) return 23; //梦导
-            return 24; //BUG
+        function matchDog(scores) {
+            let highT = scores.T > 65, lowT = scores.T < 35;
+            let highR = scores.R > 65, lowR = scores.R < 35;
+            let highA = scores.A > 65, lowA = scores.A < 35;
+            let highS = scores.S > 65, lowS = scores.S < 35;
+            let highH = scores.H > 65, lowH = scores.H < 35;
+            let highB = scores.B > 65, lowB = scores.B < 35;
+            let highI = scores.I > 65, lowI = scores.I < 35;
+            let highN = scores.N > 65, lowN = scores.N < 35;
+
+            // 映射到24种狗格（按之前顺序）
+            if(lowT && lowR && highA && lowS && lowH && lowB && lowI && lowN) return 0; //野性中华田园犬
+            if(highT && highR && lowA && highS && highH && highB && highI && highN) return 1; //焦虑吉娃娃
+            if(lowT && highR && lowA && lowS && lowH && lowB && lowI && lowN) return 2; //腹黑雪纳瑞
+            if(lowT && lowR && highA && highS && highH && lowB && highI && lowN) return 3; //仰卧起坐柯基
+            if(lowT && lowR && highA && lowS && lowH && highB && highI && highN) return 4; //敏感金毛
+            if(highT && lowR && lowA && highS && highH && lowB && highI && highN) return 5; //戏精边牧
+            if(highT && highR && highA && highS && highH && highB && lowI && lowN) return 6; //透明比格
+            if(lowT && highR && highA && lowS && lowH && lowB && lowI && lowN) return 7; //佛系巴哥
+            if(highA && highI && highN) return 8; //深夜emo哈士奇
+            if(lowR && lowS && lowI) return 9; //糊弄学拉布拉多
+            if(highR && highS && highI) return 10; //闷骚柴犬
+            if(Math.abs(scores.S-50)<20 && lowA && highH) return 11; //薛定谔博美
+            if(lowA && highN && highI) return 12; //文艺贵宾
+            if(Math.abs(scores.T-50)<20 && lowR && lowB) return 13; //健忘萨摩耶
+            if(lowH && highN && highB) return 14; //冤种斗牛
+            if(highR && highB && lowI) return 15; //佛系藏獒
+            if(Math.abs(scores.T-50)<20 && Math.abs(scores.A-50)<20 && Math.abs(scores.S-50)<20 && highI) return 16; //AI杜宾
+            if(highS && lowH && highI && highN) return 17; //高敏感约克夏
+            if(highT && lowB && highI) return 18; //囤积松鼠犬
+            if(lowA && lowS && highN) return 19; //鼓舞可卡
+            if(highR && Math.abs(scores.H-50)<20 && highI) return 20; //延迟巴吉度
+            if(highB && highN && highH) return 21; //善意过度金毛
+            if(highA && lowB && lowI) return 22; //完美主义边牧
+            return 23; //梦幻阿富汗猎犬
         }
 
         function showResult() {
             const scores = calculateResult();
-            const idx = matchPersonality(scores);
-            const person = personalities[idx];
+            const idx = matchDog(scores);
+            const dog = dogPersonalities[idx];
             quizDiv.style.display = 'none';
             resultDiv.style.display = 'flex';
-            typeName.textContent = person.name;
-            reportText.textContent = person.report;
-            drawFace(ctx, faceStyles[idx]);
+            typeName.textContent = dog.name;
+            reportText.textContent = dog.report;
+            drawDog(ctx, dogStyles[idx]);
         }
+
+        startBtn.addEventListener('click', ()=>{
+            splashDiv.style.display = 'none';
+            quizDiv.style.display = 'block';
+            renderQuestion();
+        });
 
         restartBtn.addEventListener('click', ()=>{
             currentQ = 0;
@@ -602,9 +504,6 @@
             quizDiv.style.display = 'block';
             renderQuestion();
         });
-
-        // 启动
-        renderQuestion();
     })();
 </script>
 </body>
