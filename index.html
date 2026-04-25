@@ -250,7 +250,7 @@
             ]}
         ];
 
-        // ---------- 狗格数据（形容词+品种） ----------
+        // ---------- 狗格数据 ----------
         const dogPersonalities = [
             { id:1, name:"野性的中华田园犬", report:"恭喜！你内心住着一只血统古老的中华田园犬，自由不羁，保留着犬类最原始的直觉。你不想努力的时候坦然躺着，但该看家时绝不含糊。你的人生信条是“有肉就吃，没肉就睡”，对外界评价基本免疫。朋友眼中你很好相处但有点捉摸不透；你自己清楚，你只是一只懂得自我保全的聪明狗狗。在这个精心修饰的世界，你活得太真了。" },
             { id:2, name:"焦虑的吉娃娃", report:"你的灵魂是一只眼睛瞪得老大的吉娃娃，时刻处于备战状态。别人还在打盹，你已经脑补完一百种危险可能。你的典型行为：主人离开五分钟，你认为自己被抛弃了。快递员敲门，你确信是外星人入侵。虽然有时过度紧张，但你的警觉性也让你避开真正的麻烦。记住，你战过最大的敌人是脑海里那扇不停旋转的螺旋桨。偶尔放松一下，你不是那么容易碎的。" },
@@ -281,19 +281,17 @@
         // ---------- 像素小狗绘制 ----------
         function drawDog(ctx, style) {
             ctx.clearRect(0,0,128,128);
-            const p = 8; // 像素块大小8x8，画布128x128
+            const p = 8;
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0,0,128,128);
 
-            // 用style包含：baseColor（主毛色）、earType（立耳/垂耳/折耳）、noseColor、eyeStyle、mouthStyle
             const base = style.baseColor || "#c49a6c";
             const earColor = style.earColor || base;
             const nose = style.noseColor || "#333";
             const eyeP = style.eyeType || "dot";
 
-            // 画脸（圆形区域，以8x8像素为基础，占据中央偏上）
+            // 脸
             ctx.fillStyle = base;
-            // 脸主体
             for (let y=2; y<13; y++) {
                 let w;
                 if (y<5) w = (y-1)*2+1;
@@ -302,23 +300,26 @@
                 let sx = 8 - Math.floor(w/2);
                 ctx.fillRect(sx*p, y*p, w*p, p);
             }
+
             // 耳朵
-            if (style.earType === "up") { // 立耳
+            if (style.earType === "up") {
                 ctx.fillStyle = earColor;
                 ctx.fillRect(2*p,3*p,p,p); ctx.fillRect(1*p,4*p,p,p); ctx.fillRect(1*p,5*p,p,p);
                 ctx.fillRect(13*p,3*p,p,p); ctx.fillRect(14*p,4*p,p,p); ctx.fillRect(14*p,5*p,p,p);
-            } else if (style.earType === "down") { // 垂耳
+            } else if (style.earType === "down") {
                 ctx.fillStyle = earColor;
                 ctx.fillRect(1*p,4*p,2*p,p); ctx.fillRect(1*p,5*p,2*p,p); ctx.fillRect(1*p,6*p,2*p,p);
                 ctx.fillRect(13*p,4*p,2*p,p); ctx.fillRect(13*p,5*p,2*p,p); ctx.fillRect(13*p,6*p,2*p,p);
-            } else if (style.earType === "fold") { // 折耳
+            } else if (style.earType === "fold") {
                 ctx.fillStyle = earColor;
                 ctx.fillRect(2*p,4*p,p,p); ctx.fillRect(1*p,5*p,p,p);
                 ctx.fillRect(13*p,4*p,p,p); ctx.fillRect(14*p,5*p,p,p);
             }
+
             // 鼻子
             ctx.fillStyle = nose;
             ctx.fillRect(7*p,8*p,2*p,p);
+
             // 眼睛
             if (eyeP === "dot") {
                 ctx.fillStyle = "#111";
@@ -332,6 +333,7 @@
                 ctx.fillStyle = "#111";
                 ctx.fillRect(4*p,6*p,2*p,p); ctx.fillRect(9*p,6*p,2*p,p);
             }
+
             // 嘴巴
             ctx.fillStyle = "#d99";
             if (style.mouth === "smile") {
@@ -343,36 +345,37 @@
             } else {
                 ctx.fillRect(6*p,10*p,3*p,p);
             }
+
             // 腮红
             ctx.fillStyle = "rgba(255,150,150,0.5)";
             ctx.fillRect(2*p,8*p,p,p); ctx.fillRect(12*p,8*p,p,p);
         }
 
         const dogStyles = [
-            { baseColor:"#c49a6c", earType:"up", noseColor:"#222", eyeType:"dot", mouth:"flat" }, //野性中华田园犬
-            { baseColor:"#d9b382", earType:"up", noseColor:"#000", eyeType:"big", mouth:"tongue" }, //焦虑吉娃娃
-            { baseColor:"#444", earType:"fold", noseColor:"#111", eyeType:"line", mouth:"smile" }, //腹黑雪纳瑞
-            { baseColor:"#e0a96d", earType:"up", noseColor:"#333", eyeType:"dot", mouth:"tongue" }, //仰卧起坐柯基
-            { baseColor:"#e6b168", earType:"down", noseColor:"#4a3e35", eyeType:"big", mouth:"smile" }, //敏感金毛
-            { baseColor:"#3b3b3b", earType:"up", noseColor:"#111", eyeType:"dot", mouth:"flat" }, //戏精边牧(黑白)
-            { baseColor:"#f5e0c6", earType:"down", noseColor:"#8b5a2b", eyeType:"line", mouth:"flat" }, //透明比格
-            { baseColor:"#d1b18b", earType:"fold", noseColor:"#2d2d2d", eyeType:"line", mouth:"smile" }, //佛系巴哥
-            { baseColor:"#6e6e6e", earType:"up", noseColor:"#222", eyeType:"big", mouth:"tongue" }, //深夜emo哈士奇
-            { baseColor:"#e2c792", earType:"down", noseColor:"#5c4a3a", eyeType:"dot", mouth:"smile" }, //糊弄学拉布拉多
-            { baseColor:"#d4956b", earType:"up", noseColor:"#000", eyeType:"line", mouth:"flat" }, //闷骚柴犬
-            { baseColor:"#fae0b2", earType:"up", noseColor:"#1f1f1f", eyeType:"big", mouth:"tongue" }, //薛定谔博美
-            { baseColor:"#b28b6b", earType:"down", noseColor:"#4a3a2a", eyeType:"dot", mouth:"smile" }, //文艺贵宾
-            { baseColor:"#fafafa", earType:"up", noseColor:"#000", eyeType:"line", mouth:"tongue" }, //健忘萨摩耶
-            { baseColor:"#e4c4a8", earType:"fold", noseColor:"#5a4030", eyeType:"dot", mouth:"flat" }, //冤种斗牛犬
-            { baseColor:"#8c5a35", earType:"down", noseColor:"#111", eyeType:"line", mouth:"smile" }, //佛系藏獒
-            { baseColor:"#1e1e1e", earType:"up", noseColor:"#aaa", eyeType:"dot", mouth:"flat" }, //AI杜宾
-            { baseColor:"#c9a87c", earType:"up", noseColor:"#111", eyeType:"big", mouth:"smile" }, //高敏感约克夏
-            { baseColor:"#a07050", earType:"up", noseColor:"#2d2d2d", eyeType:"dot", mouth:"flat" }, //囤积松鼠犬
-            { baseColor:"#d89f5b", earType:"down", noseColor:"#4d3a2b", eyeType:"big", mouth:"tongue" }, //鼓舞可卡
-            { baseColor:"#c49a6c", earType:"down", noseColor:"#2b2b2b", eyeType:"line", mouth:"flat" }, //延迟巴吉度
-            { baseColor:"#e0b060", earType:"down", noseColor:"#5c3f2e", eyeType:"big", mouth:"tongue" }, //善意过度金毛
-            { baseColor:"#2b2b2b", earType:"up", noseColor:"#111", eyeType:"dot", mouth:"smile" }, //完美主义边牧
-            { baseColor:"#cfb28c", earType:"down", noseColor:"#2b1e10", eyeType:"line", mouth:"smile" } //梦幻阿富汗
+            { baseColor:"#c49a6c", earType:"up", noseColor:"#222", eyeType:"dot", mouth:"flat" },
+            { baseColor:"#d9b382", earType:"up", noseColor:"#000", eyeType:"big", mouth:"tongue" },
+            { baseColor:"#444", earType:"fold", noseColor:"#111", eyeType:"line", mouth:"smile" },
+            { baseColor:"#e0a96d", earType:"up", noseColor:"#333", eyeType:"dot", mouth:"tongue" },
+            { baseColor:"#e6b168", earType:"down", noseColor:"#4a3e35", eyeType:"big", mouth:"smile" },
+            { baseColor:"#3b3b3b", earType:"up", noseColor:"#111", eyeType:"dot", mouth:"flat" },
+            { baseColor:"#f5e0c6", earType:"down", noseColor:"#8b5a2b", eyeType:"line", mouth:"flat" },
+            { baseColor:"#d1b18b", earType:"fold", noseColor:"#2d2d2d", eyeType:"line", mouth:"smile" },
+            { baseColor:"#6e6e6e", earType:"up", noseColor:"#222", eyeType:"big", mouth:"tongue" },
+            { baseColor:"#e2c792", earType:"down", noseColor:"#5c4a3a", eyeType:"dot", mouth:"smile" },
+            { baseColor:"#d4956b", earType:"up", noseColor:"#000", eyeType:"line", mouth:"flat" },
+            { baseColor:"#fae0b2", earType:"up", noseColor:"#1f1f1f", eyeType:"big", mouth:"tongue" },
+            { baseColor:"#b28b6b", earType:"down", noseColor:"#4a3a2a", eyeType:"dot", mouth:"smile" },
+            { baseColor:"#fafafa", earType:"up", noseColor:"#000", eyeType:"line", mouth:"tongue" },
+            { baseColor:"#e4c4a8", earType:"fold", noseColor:"#5a4030", eyeType:"dot", mouth:"flat" },
+            { baseColor:"#8c5a35", earType:"down", noseColor:"#111", eyeType:"line", mouth:"smile" },
+            { baseColor:"#1e1e1e", earType:"up", noseColor:"#aaa", eyeType:"dot", mouth:"flat" },
+            { baseColor:"#c9a87c", earType:"up", noseColor:"#111", eyeType:"big", mouth:"smile" },
+            { baseColor:"#a07050", earType:"up", noseColor:"#2d2d2d", eyeType:"dot", mouth:"flat" },
+            { baseColor:"#d89f5b", earType:"down", noseColor:"#4d3a2b", eyeType:"big", mouth:"tongue" },
+            { baseColor:"#c49a6c", earType:"down", noseColor:"#2b2b2b", eyeType:"line", mouth:"flat" },
+            { baseColor:"#e0b060", earType:"down", noseColor:"#5c3f2e", eyeType:"big", mouth:"tongue" },
+            { baseColor:"#2b2b2b", earType:"up", noseColor:"#111", eyeType:"dot", mouth:"smile" },
+            { baseColor:"#cfb28c", earType:"down", noseColor:"#2b1e10", eyeType:"line", mouth:"smile" }
         ];
 
         // ---------- 测试逻辑 ----------
@@ -453,38 +456,37 @@
             let highI = scores.I > 65, lowI = scores.I < 35;
             let highN = scores.N > 65, lowN = scores.N < 35;
 
-            // 映射到24种狗格（按之前顺序）
-            if(lowT && lowR && highA && lowS && lowH && lowB && lowI && lowN) return 0; //野性中华田园犬
-            if(highT && highR && lowA && highS && highH && highB && highI && highN) return 1; //焦虑吉娃娃
-            if(lowT && highR && lowA && lowS && lowH && lowB && lowI && lowN) return 2; //腹黑雪纳瑞
-            if(lowT && lowR && highA && highS && highH && lowB && highI && lowN) return 3; //仰卧起坐柯基
-            if(lowT && lowR && highA && lowS && lowH && highB && highI && highN) return 4; //敏感金毛
-            if(highT && lowR && lowA && highS && highH && lowB && highI && highN) return 5; //戏精边牧
-            if(highT && highR && highA && highS && highH && highB && lowI && lowN) return 6; //透明比格
-            if(lowT && highR && highA && lowS && lowH && lowB && lowI && lowN) return 7; //佛系巴哥
-            if(highA && highI && highN) return 8; //深夜emo哈士奇
-            if(lowR && lowS && lowI) return 9; //糊弄学拉布拉多
-            if(highR && highS && highI) return 10; //闷骚柴犬
-            if(Math.abs(scores.S-50)<20 && lowA && highH) return 11; //薛定谔博美
-            if(lowA && highN && highI) return 12; //文艺贵宾
-            if(Math.abs(scores.T-50)<20 && lowR && lowB) return 13; //健忘萨摩耶
-            if(lowH && highN && highB) return 14; //冤种斗牛
-            if(highR && highB && lowI) return 15; //佛系藏獒
-            if(Math.abs(scores.T-50)<20 && Math.abs(scores.A-50)<20 && Math.abs(scores.S-50)<20 && highI) return 16; //AI杜宾
-            if(highS && lowH && highI && highN) return 17; //高敏感约克夏
-            if(highT && lowB && highI) return 18; //囤积松鼠犬
-            if(lowA && lowS && highN) return 19; //鼓舞可卡
-            if(highR && Math.abs(scores.H-50)<20 && highI) return 20; //延迟巴吉度
-            if(highB && highN && highH) return 21; //善意过度金毛
-            if(highA && lowB && lowI) return 22; //完美主义边牧
-            return 23; //梦幻阿富汗猎犬
+            if(lowT && lowR && highA && lowS && lowH && lowB && lowI && lowN) return 0;
+            if(highT && highR && lowA && highS && highH && highB && highI && highN) return 1;
+            if(lowT && highR && lowA && lowS && lowH && lowB && lowI && lowN) return 2;
+            if(lowT && lowR && highA && highS && highH && lowB && highI && lowN) return 3;
+            if(lowT && lowR && highA && lowS && lowH && highB && highI && highN) return 4;
+            if(highT && lowR && lowA && highS && highH && lowB && highI && highN) return 5;
+            if(highT && highR && highA && highS && highH && highB && lowI && lowN) return 6;
+            if(lowT && highR && highA && lowS && lowH && lowB && lowI && lowN) return 7;
+            if(highA && highI && highN) return 8;
+            if(lowR && lowS && lowI) return 9;
+            if(highR && highS && highI) return 10;
+            if(Math.abs(scores.S-50)<20 && lowA && highH) return 11;
+            if(lowA && highN && highI) return 12;
+            if(Math.abs(scores.T-50)<20 && lowR && lowB) return 13;
+            if(lowH && highN && highB) return 14;
+            if(highR && highB && lowI) return 15;
+            if(Math.abs(scores.T-50)<20 && Math.abs(scores.A-50)<20 && Math.abs(scores.S-50)<20 && highI) return 16;
+            if(highS && lowH && highI && highN) return 17;
+            if(highT && lowB && highI) return 18;
+            if(lowA && lowS && highN) return 19;
+            if(highR && Math.abs(scores.H-50)<20 && highI) return 20;
+            if(highB && highN && highH) return 21;
+            if(highA && lowB && lowI) return 22;
+            return 23;
         }
 
         function showResult() {
             const scores = calculateResult();
             const idx = matchDog(scores);
             const dog = dogPersonalities[idx];
-            quizDiv.style.display = 'none';
+            quizDiv.classList.add('hidden');
             resultDiv.style.display = 'flex';
             typeName.textContent = dog.name;
             reportText.textContent = dog.report;
@@ -492,7 +494,8 @@
         }
 
         startBtn.addEventListener('click', ()=>{
-            splashDiv.style.display = 'none';
+            splashDiv.classList.add('hidden');
+            quizDiv.classList.remove('hidden');
             quizDiv.style.display = 'block';
             renderQuestion();
         });
@@ -501,6 +504,7 @@
             currentQ = 0;
             answers = new Array(24).fill(-1);
             resultDiv.style.display = 'none';
+            quizDiv.classList.remove('hidden');
             quizDiv.style.display = 'block';
             renderQuestion();
         });
