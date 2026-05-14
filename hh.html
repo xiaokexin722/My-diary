@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的日记本</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 此处样式部分代码过长，为节省篇幅，假设样式表与之前完全相同且正确 -->
+    <!-- 请确保你的现有文件中的 <style>...</style> 部分保持不变 -->
+    <style>
+        ... /* 你现有的所有CSS样式代码应保留在此处 */
+    </style>
+</head>
+<body>
+    <!-- 此处HTML结构部分也应保持不变 -->
+    <div class="container">
+        ... /* 你现有的所有HTML结构代码应保留在此处 */
+    </div>
+
+    <!-- 从以下 <script> 标签开始，是修复的核心 -->
+    <script>
+        // ========== 全局配置与初始化 ==========
+        let userSettings = {
+            name: '我',
+            age: '',
+            motto: '',
+            avatar: 'https://cdn-icons-png.flaticon.com/512/3237/3237472.png',
+            countdowns: [],
+            theme: 'pink'
+        };
+        let selectedMood = 'neutral';
+        let selectedTags = [];
+        let imageData = null;
+        const now = new Date();
+
+        // 初始化日期选择器
+        document.getElementById('dateInput').valueAsDate = now;
+        document.getElementById('monthSelect').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+
+        // ========== 加载用户设置 ==========
+        function loadUserSettings() {
+            const saved = localStorage.getItem('diaryUserSettings');
+            if (saved) {
+                userSettings = JSON.parse(saved);
+                applyUserSettings();
+            }
+            updateGlobalCountdowns();
+        }
+        function saveUserSettings() {
+            localStorage.setItem('diaryUserSettings', JSON.stringify(userSettings));
+        }
+        function applyUserSettings() {
+            document.getElementById('userNameDisplay').textContent = userSettings.name + ' 的日记本';
+            document.getElementById('inputUserName').value = userSettings.name;
+            document.getElementById('userAvatar').src = userSettings.avatar;
+            document.getElementById('inputUserAge').value = userSettings.age || '';
+            document.getElementById('inputUserMotto').value = userSettings.motto || '';
+            applyTheme(userSettings.theme);
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.theme === userSettings.theme);
+            });
+            renderCountdownList();
+        }
+
+        // ========== 主题切换功能 ==========
+        const themes = {
+            pink: { primary: '#ffb6d9', primaryDark: '#ff8ec7', primaryLight: '#ffeff6', secondary: '#fff9b6', secondaryDark: '#ffeaa5', accent: '#d9cfff', accentDark: '#b8a3ff', text: '#6a4c6e', textLight: '#9b7a9f', bgMain: '#fff9fb', bgCard: 'rgba(255, 255, 255, 0.92)', gridLine: 'rgba(255, 182, 217, 0.15)' },
+            blue: { primary: '#63b3ed', primaryDark: '#3182ce', primaryLight: '#ebf8ff', secondary: '#90cdf4', secondaryDark: '#4299e1', accent: '#9ae6b4', accentDark: '#68d391', text: '#2d3748', textLight: '#718096', bgMain: '#f7fafc', bgCard: 'rgba(255, 255, 255, 0.95)', gridLine: 'rgba(99, 179, 237, 0.15)' },
+            yellow: { primary: '#f6e05e', primaryDark: '#d69e2e', primaryLight: '#fefcbf', secondary: '#faf089', secondaryDark: '#ecc94b', accent: '#9ae6b4', accentDark: '#68d391', text: '#744210', textLight: '#b7791f', bgMain: '#fffaf0', bgCard: 'rgba(255, 255, 255, 0.95)', gridLine: 'rgba(246, 224, 94, 0.15)' },
+            green: { primary: '#68d391', primaryDark: '#38a169', primaryLight: '#c6f6d5', secondary: '#9ae6b4', secondaryDark: '#48bb78', accent: '#d6bcfa', accentDark: '#b794f4', text: '#22543d', textLight: '#38a169', bgMain: '#f0fff4', bgCard: 'rgba(255, 255, 255, 0.95)', gridLine: 'rgba(104, 211, 145, 0.15)' },
+            dark: { primary: '#4fd1c7', primaryDark: '#319795', primaryLight: '#b2f5ea', secondary: '#81e6d9', secondaryDark: '#4fd1c7', accent: '#d6bcfa', accentDark: '#b794f4', text: '#e2e8f0', textLight: '#a0aec0', bgMain: '#1a202c', bgCard: 'rgba(45, 55, 72, 0.95)', gridLine: 'rgba(79, 209, 199, 0.15)' },
+            gray: { primary: '#a0aec0', primaryDark: '#718096', primaryLight: '#edf2f7', secondary: '#cbd5e0', secondaryDark: '#a0aec0', accent: '#e2e8f0', accentDark: '#cbd5e0', text: '#4a5568', textLight: '#718096', bgMain: '#f7fafc', bgCard: 'rgba(255, 255, 255, 0.98)', gridLine: 'rgba(160, 174, 192, 0.15)' }
+        };
+        function applyTheme(themeName) {
+            const theme = themes[themeName];
+            const root = document.documentElement;
+            root.style.setProperty('--color-primary', theme.primary);
+            root.style.setProperty('--color-primary-dark', theme.primaryDark);
+            root.style.setProperty('--color-primary-light', theme.primaryLight);
+            root.style.setProperty('--color-secondary', theme.secondary);
+            root.style.setProperty('--color-secondary-dark', theme.secondaryDark);
+            root.style.setProperty('--color-accent', theme.accent);
+            root.style.setProperty('--color-accent-dark', theme.accentDark);
+            root.style.setProperty('--color-text', theme.text);
+            root.style.setProperty('--color-text-light', theme.textLight);
+            root.style.setProperty('--color-bg-main', theme.bgMain);
+            root.style.setProperty('--color-bg-card', theme.bgCard);
+            root.style.setProperty('--color-grid-line', theme.gridLine);
+            userSettings.theme = themeName;
+        }
+
+        // ========== 头像上传 ==========
+        document.getElementById('avatarContainer').addEventListener('click', () => { document.getElementById('avatarUpload').click(); });
+        document.getElementById('avatarUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    userSettings.avatar = e.target.result;
+                    document.getElementById('userAvatar').src = userSettings.avatar;
+                    saveUserSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ========== 设置模态框控制 ==========
+        document.getElementById('avatarContainer').addEventListener('click', (e) => {
+            if (!e.target.closest('#avatarUpload')) {
+                document.getElementById('settingsModal').style.display = 'flex';
+            }
+        });
+        document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+            document.getElementById('settingsModal').style.display = 'none';
+            applyUserSettings();
+        });
+        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+            userSettings.name = document.getElementById('inputUserName').value.trim() || '我';
+            userSettings.age = document.getElementById('inputUserAge').value;
+            userSettings.motto = document.getElementById('inputUserMotto').value.trim();
+            saveUserSettings();
+            applyUserSettings();
+            document.getElementById('settingsModal').style.display = 'none';
+            renderDiaries();
+        });
+        document.querySelectorAll('.theme-option').forEach(opt => {
+            opt.addEventListener('click', function() {
+                applyTheme(this.dataset.theme);
+                document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // ========== 倒计时管理 ==========
+        function renderCountdownList() {
+            const listEl = document.getElementById('countdownList');
+            listEl.innerHTML = '';
+            userSettings.countdowns.forEach((cd, index) => {
+                const li = document.createElement('li');
+                li.className = 'countdown-item';
+                const daysLeft = Math.ceil((new Date(cd.date) - now) / (1000*60*60*24));
+                li.innerHTML = `<span><i class="far fa-calendar-alt"></i> ${cd.name} (${daysLeft}天)</span><button class="btn-small btn-delete" data-index="${index}">删除</button>`;
+                listEl.appendChild(li);
+            });
+            listEl.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    userSettings.countdowns.splice(index, 1);
+                    saveUserSettings();
+                    renderCountdownList();
+                    renderDiaries();
+                    updateGlobalCountdowns();
+                });
+            });
+        }
+        document.getElementById('addCountdownBtn').addEventListener('click', () => {
+            const name = document.getElementById('inputCountdownName').value.trim();
+            const date = document.getElementById('inputCountdownDate').value;
+            if (!name || !date) { alert('请填写事件名称和日期'); return; }
+            userSettings.countdowns.push({ name, date });
+            document.getElementById('inputCountdownName').value = '';
+            document.getElementById('inputCountdownDate').value = '';
+            saveUserSettings();
+            renderCountdownList();
+            renderDiaries();
+            updateGlobalCountdowns();
+        });
+        function updateGlobalCountdowns() {
+            const container = document.getElementById('userCountdowns');
+            if (userSettings.countdowns.length === 0) {
+                container.innerHTML = '<div class="user-subtitle">点击头像添加重要倒计时</div>';
+                return;
+            }
+            let html = '<div style="display:flex; gap:15px; flex-wrap:wrap;">';
+            userSettings.countdowns.forEach(cd => {
+                const daysLeft = Math.ceil((new Date(cd.date) - now) / (1000*60*60*24));
+                const color = daysLeft <= 30 ? '#ff6b6b' : daysLeft <= 90 ? '#ffa726' : '#4caf50';
+                html += `<div style="background:${color}; color:white; padding:8px 15px; border-radius:10px; font-size:0.9rem;"><i class="far fa-clock"></i> ${cd.name}: <strong>${daysLeft}</strong>天</div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // ========== 核心日记功能 ==========
+        // 1. 心情选择
+        const moodOptions = document.querySelectorAll('.mood-option');
+        moodOptions.forEach(option => {
+            if (option.dataset.mood === 'neutral') option.classList.add('selected');
+            option.addEventListener('click', function() {
+                moodOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedMood = this.dataset.mood;
+            });
+        });
+
+        // 2. 标签选择（多选）
+        const tagOptions = document.querySelectorAll('.tag-option');
+        tagOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const tag = this.dataset.tag;
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                    selectedTags = selectedTags.filter(t => t !== tag);
+                } else {
+                    this.classList.add('selected');
+                    selectedTags.push(tag);
+                }
+            });
+        });
+
+        // 3. 图片上传预览
+        const imageInput = document.getElementById('imageInput');
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imagePreview = document.getElementById('imagePreview');
+        imageUploadArea.addEventListener('click', () => imageInput.click());
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imageData = e.target.result;
+                    imagePreview.src = imageData;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 4. 从本地存储加载日记
+        function loadDiaries() {
+            const diaries = JSON.parse(localStorage.getItem('diaries')) || [];
+            return diaries.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        // 5. 保存日记到本地存储
+        function saveDiary(diary) {
+            const diaries = loadDiaries();
+            const existingIndex = diaries.findIndex(d => d.date === diary.date);
+            if (existingIndex !== -1) {
+                if (confirm('同一天已存在日记，是否覆盖？')) {
+                    diaries[existingIndex] = diary;
+                } else {
+                    return;
+                }
+            } else {
+                diaries.push(diary);
+            }
+            localStorage.setItem('diaries', JSON.stringify(diaries));
+            renderDiaries();
+        }
+
+        // 6. 渲染日记列表
+        function renderDiaries(searchTerm = '') {
+            const entriesContainer = document.getElementById('entriesContainer');
+            const diaries = loadDiaries();
+            const filteredDiaries = diaries.filter(diary =>
+                diary.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                diary.date.includes(searchTerm) ||
+                diary.food?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                diary.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+            entriesContainer.innerHTML = '';
+            if (filteredDiaries.length === 0) {
+                entriesContainer.innerHTML = `<div class="no-entries"><div class="empty-icon"><i class="fas fa-journal-whills"></i></div><p>${searchTerm ? '没有找到匹配的日记' : '还没有日记记录哦~'}</p><p>${searchTerm ? '试试其他关键词吧！' : '快写下第一篇日记吧！'}</p></div>`;
+                return;
+            }
+            filteredDiaries.forEach(diary => {
+                const entryElement = document.createElement('div');
+                entryElement.className = 'entry-item';
+                const dateObj = new Date(diary.date);
+                const formattedDate = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+                const tagsHtml = diary.tags && diary.tags.length > 0 ? `<div class="entry-tags">${diary.tags.map(tag => `<span class="entry-tag">${tag}</span>`).join('')}</div>` : '';
+                const foodHtml = diary.food ? `<div class="entry-food"><strong>🍽️ 今日饮食：</strong>${diary.food}</div>` : '';
+                const imageHtml = diary.image ? `<img src="${diary.image}" class="entry-image" alt="日记配图">` : '';
+                const countdownHtml = renderEntryCountdowns(diary.date);
+                entryElement.innerHTML = `
+                    <div class="entry-header">
+                        <div class="entry-date">${formattedDate}</div>
+                        <div class="entry-mood" title="${diary.mood}">${getMoodIcon(diary.mood)}</div>
+                    </div>
+                    ${countdownHtml}
+                    ${tagsHtml}
+                    ${foodHtml}
+                    <div class="entry-content">${diary.content}</div>
+                    ${imageHtml}
+                    <div class="entry-footer">
+                        <div class="entry-length">${diary.content.length} 字</div>
+                        <div class="entry-actions">
+                            <button class="action-btn view-btn" data-date="${diary.date}"><i class="fas fa-edit"></i> 编辑</button>
+                            <button class="action-btn delete-btn" data-date="${diary.date}"><i class="fas fa-trash"></i> 删除</button>
+                        </div>
+                    </div>
+                `;
+                entriesContainer.appendChild(entryElement);
+            });
+            document.querySelectorAll('.view-btn').forEach(btn => { btn.addEventListener('click', () => viewDiary(btn.dataset.date)); });
+            document.querySelectorAll('.delete-btn').forEach(btn => { btn.addEventListener('click', () => deleteDiary(btn.dataset.date)); });
+        }
+
+        // 7. 查看/编辑日记
+        function viewDiary(date) {
+            const diaries = loadDiaries();
+            const diary = diaries.find(d => d.date === date);
+            if (!diary) return;
+            document.getElementById('dateInput').value = diary.date;
+            document.getElementById('foodInput').value = diary.food || '';
+            document.getElementById('diaryText').value = diary.content;
+            moodOptions.forEach(opt => opt.classList.remove('selected'));
+            const moodOpt = document.querySelector(`.mood-option[data-mood="${diary.mood}"]`);
+            if (moodOpt) moodOpt.classList.add('selected');
+            selectedMood = diary.mood;
+            tagOptions.forEach(opt => opt.classList.remove('selected'));
+            selectedTags = [];
+            if (diary.tags) {
+                diary.tags.forEach(tag => {
+                    const tagOpt = document.querySelector(`.tag-option[data-tag="${tag}"]`);
+                    if (tagOpt) {
+                        tagOpt.classList.add('selected');
+                        selectedTags.push(tag);
+                    }
+                });
+            }
+            if (diary.image) {
+                imageData = diary.image;
+                imagePreview.src = imageData;
+                imagePreview.style.display = 'block';
+            } else {
+                imageData = null;
+                imagePreview.style.display = 'none';
+            }
+            document.querySelector('.editor-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 8. 删除日记
+        function deleteDiary(date) {
+            if (confirm('确定要删除这篇日记吗？')) {
+                const diaries = loadDiaries();
+                const filteredDiaries = diaries.filter(diary => diary.date !== date);
+                localStorage.setItem('diaries', JSON.stringify(filteredDiaries));
+                renderDiaries();
+            }
+        }
+
+        // 9. 工具函数：获取心情图标
+        function getMoodIcon(mood) {
+            const icons = { 'happy':'😊', 'neutral':'😌', 'sad':'😔', 'excited':'🤩', 'tired':'😴', 'love':'🥰' };
+            return icons[mood] || '😌';
+        }
+
+        // 10. 工具函数：渲染日记关联倒计时
+        function renderEntryCountdowns(entryDate) {
+            if (!userSettings.countdowns.length) return '';
+            const entryDateObj = new Date(entryDate);
+            let html = '<div class="entry-countdowns">';
+            userSettings.countdowns.forEach(cd => {
+                const targetDate = new Date(cd.date);
+                const daysDiff = Math.ceil((targetDate - entryDateObj) / (1000*60*60*24));
+                if (Math.abs(daysDiff) <= 365) {
+                    const label = daysDiff > 0 ? `距离${cd.name}还有${daysDiff}天` : `${cd.name}已过去${-daysDiff}天`;
+                    html += `<span class="countdown-badge"><i class="far fa-clock"></i> ${label}</span>`;
+                }
+            });
+            html += '</div>';
+            return html;
+        }
+
+        // ========== 智能备份导入功能 ==========
+        document.getElementById('importBtn').addEventListener('click', function() {
+            const importText = document.getElementById('importTextarea').value.trim();
+            if (!importText) { alert('请粘贴备份文本'); return; }
+            if (!confirm('这将覆盖现有日记中相同日期的条目。确定要继续吗？')) return;
+            const importedDiaries = parseBackupText(importText);
+            if (importedDiaries.length === 0) { alert('未能从文本中解析出有效的日记。请检查格式。'); return; }
+            const existingDiaries = loadDiaries();
+            const dateMap = new Map();
+            existingDiaries.forEach(d => dateMap.set(d.date, d));
+            importedDiaries.forEach(newDiary => { dateMap.set(newDiary.date, newDiary); });
+            const mergedDiaries = Array.from(dateMap.values());
+            localStorage.setItem('diaries', JSON.stringify(mergedDiaries));
+            alert(`成功导入 ${importedDiaries.length} 篇日记！`);
+            document.getElementById('importTextarea').value = '';
+            renderDiaries();
+        });
+        function parseBackupText(text) {
+            const diaries = [];
+            const blocks = text.split(/【日记 \d+】/);
+            const moodMap = { '😊':'happy', '🥰':'love', '😌':'neutral', '😔':'sad', '😴':'tired', '🤩':'excited' };
+            blocks.forEach(block => {
+                if (!block.trim()) return;
+                const diary = { tags: [] };
+                const dateMatch = block.match(/📅 日期：(\d{4})年(\d{1,2})月(\d{1,2})日/);
+                if (dateMatch) {
+                    const [, year, month, day] = dateMatch;
+                    diary.date = `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+                }
+                const moodMatch = block.match(/😊 心情：([😊🥰😌😔😴🤩]) (\w+)/);
+                if (moodMatch) { diary.mood = moodMap[moodMatch[1]] || 'neutral'; }
+                const tagsMatch = block.match(/🏷️ 标签：(.+?)(?:\n|$)/);
+                if (tagsMatch) { diary.tags = tagsMatch[1].split('，').map(t => t.trim()).filter(t => t); }
+                const foodMatch = block.match(/🍽️ 饮食：(.+?)(?:\n|$)/);
+                if (foodMatch) { diary.food = foodMatch[1].trim(); }
+                const contentMatch = block.match(/📝 正文：\n([\s\S]+?)\n(?:\[本篇日记|------------------------------)/);
+                if (contentMatch) { diary.content = contentMatch[1].trim(); }
+                diary.image = null;
+                diary.timestamp = new Date().toISOString();
+                if (diary.date && diary.content) { diaries.push(diary); }
+            });
+            return diaries;
+        }
+
+        // ========== 月度导出功能 ==========
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const monthValue = document.getElementById('monthSelect').value;
+            if (!monthValue) { alert('请先选择月份'); return; }
+            const [year, month] = monthValue.split('-');
+            const diaries = loadDiaries();
+            const monthDiaries = diaries.filter(diary => {
+                const diaryDate = new Date(diary.date);
+                return diaryDate.getFullYear() == year && (diaryDate.getMonth() + 1) == month;
+            });
+            if (monthDiaries.length === 0) {
+                document.getElementById('exportOutput').value = `📅 ${year}年${month}月\n\n该月份没有日记记录。`;
+                return;
+            }
+            let exportText = `📅 ${year}年${month}月 日记备份\n`;
+            exportText += `生成时间：${new Date().toLocaleString('zh-CN')}\n`;
+            exportText += `共计 ${monthDiaries.length} 篇日记\n`;
+            exportText += "=".repeat(40) + "\n\n";
+            monthDiaries.forEach((diary, index) => {
+                const dateObj = new Date(diary.date);
+                const formattedDate = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+                exportText += `【日记 ${index + 1}】\n`;
+                exportText += `📅 日期：${formattedDate}\n`;
+                exportText += `😊 心情：${getMoodIcon(diary.mood)} ${diary.mood}\n`;
+                if (diary.tags && diary.tags.length > 0) { exportText += `🏷️ 标签：${diary.tags.join('， ')}\n`; }
+                if (diary.food) { exportText += `🍽️ 饮食：${diary.food}\n`; }
+                exportText += `\n📝 正文：\n${diary.content}\n`;
+                exportText += `\n${diary.image ? '[本篇日记包含图片]' : '[本篇日记无图片]'}\n`;
+                exportText += "-".repeat(30) + "\n\n";
+            });
+            exportText += `备份提示：此文本文件包含${monthDiaries.length}篇日记的完整内容。\n请妥善保存，如需重新导入，可手动对照录入。`;
+            document.getElementById('exportOutput').value = exportText;
+        });
+
+        // ========== 绑定核心按钮事件 ==========
+        // 保存按钮
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            const date = document.getElementById('dateInput').value;
+            const food = document.getElementById('foodInput').value.trim();
+            const content = document.getElementById('diaryText').value.trim();
+            if (!date) { alert('请选择日期'); return; }
+            if (!content) { alert('请填写日记内容'); return; }
+            const diary = { date: date, mood: selectedMood, food: food, tags: [...selectedTags], content: content, image: imageData, timestamp: new Date().toISOString() };
+            saveDiary(diary);
+            // 清空表单
+            document.getElementById('dateInput').valueAsDate = new Date();
+            document.getElementById('foodInput').value = '';
+            document.getElementById('diaryText').value = '';
+            imageData = null;
+            imagePreview.style.display = 'none';
+            imageInput.value = '';
+            moodOptions.forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.mood-option[data-mood="neutral"]').classList.add('selected');
+            selectedMood = 'neutral';
+            tagOptions.forEach(opt => opt.classList.remove('selected'));
+            selectedTags = [];
+            alert('日记保存成功！✨');
+        });
+
+        // 清空按钮
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            if (confirm('确定要清空当前编辑的内容吗？')) {
+                document.getElementById('dateInput').valueAsDate = new Date();
+                document.getElementById('foodInput').value = '';
+                document.getElementById('diaryText').value = '';
+                imageData = null;
+                imagePreview.style.display = 'none';
+                imageInput.value = '';
+                moodOptions.forEach(opt => opt.classList.remove('selected'));
+                document.querySelector('.mood-option[data-mood="neutral"]').classList.add('selected');
+                selectedMood = 'neutral';
+                tagOptions.forEach(opt => opt.classList.remove('selected'));
+                selectedTags = [];
+            }
+        });
+
+        // 搜索功能
+        document.getElementById('searchInput').addEventListener('input', function() {
+            renderDiaries(this.value);
+        });
+
+        // ========== 页面初始化 ==========
+        loadUserSettings();
+        renderDiaries();
+        console.log('日记本高级版已加载，享受你的个性化日记体验！');
+    </script>
+</body>
+</html>
